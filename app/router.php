@@ -3,8 +3,10 @@
 namespace App;
 
 use App\Container;
+use App\Shared\Http\JsonResponse;
 
 require_once __DIR__ . '/container.php';
+require_once __DIR__ . '/shared/http/json-response.php';
 
 class Router
 {
@@ -55,10 +57,6 @@ class Router
             }
         }
 
-        // TODO: Es esta manera de manejar el 404 la mejor?
-        // Fallback 404
-        echo 'Mensaje de error del router ante ruta no encontrada <br><br>';
-        http_response_code(404);
-        echo json_encode(['error' => 'Ruta no encontrada']);
+        JsonResponse::error('Ruta no encontrada', 404);
     }
 }

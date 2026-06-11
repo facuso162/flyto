@@ -2,6 +2,10 @@
 
 namespace App\Auth\Validators;
 
+use App\Shared\Http\HttpException;
+
+require_once __DIR__ . '/../../shared/http/http-exception.php';
+
 class LoginUsuarioValidator
 {
     public static function validate(array $data): void {
@@ -9,16 +13,18 @@ class LoginUsuarioValidator
         $password = self::getStringValue($data, 'password');
 
         if ($email === '' || filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
-            throw new \Exception(
+            throw new HttpException(
                 'El email es obligatorio y debe tener un formato valido.',
-                400
+                400,
+                ['field' => 'email']
             );
         }
 
         if ($password === '') {
-            throw new \Exception(
+            throw new HttpException(
                 'La contrasena es obligatoria.',
-                400
+                400,
+                ['field' => 'password']
             );
         } elseif (
             strlen($password) < 8 ||
@@ -28,9 +34,10 @@ class LoginUsuarioValidator
             !preg_match('/[0-9]/', $password) ||
             !preg_match('/[^a-zA-Z0-9]/', $password)
         ) {
-            throw new \Exception(
+            throw new HttpException(
                 'La contrasena debe tener entre 8 y 40 caracteres, una mayuscula, una minuscula, un numero y un caracter especial.',
-                400
+                400,
+                ['field' => 'password']
             );
         }
     }

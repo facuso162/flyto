@@ -4,11 +4,12 @@ namespace App\Auth\Services;
 
 use App\Auth\Dtos\LoginUsuarioDTO;
 use App\Auth\Repositories\UsuarioRepository;
-use App\Auth\Services\SessionService;
+use App\Shared\Http\HttpException;
 
 require_once __DIR__ . '/../dtos/login-usuario.dto.php';
 require_once __DIR__ . '/../repositories/usuario.repository.php';
 require_once __DIR__ . '/session.service.php';
+require_once __DIR__ . '/../../shared/http/http-exception.php';
 
 class LoginUsuarioService
 {
@@ -23,32 +24,35 @@ class LoginUsuarioService
         $this->sessionService = $sessionService;
     }
 
-    public function execute(LoginUsuarioDTO $dto): void {
+    public function execute(LoginUsuarioDTO $dto): array
+    {
         $usuario = $this->usuarioRepository->findByEmail($dto->email);
 
-        if (!$usuario) {
-            throw new \Exception('Credenciales inválidas.', 401);
-        }
-
-        if (!password_verify($dto->password, $usuario->claveHash)) {
-            throw new \Exception('Credenciales inválidas.', 401);
+        if (!$usuario || !password_verify($dto->password, $usuario->claveHash)) {
+            throw new HttpException('Credenciales invalidas.', 401);
         }
 
         if (!$usuario->emailVerificado) {
-            throw new \Exception('Debes verificar tu cuenta antes de iniciar sesión', 403);
+            throw new HttpException('Debes verificar tu cuenta antes de iniciar sesion.', 403);
         }
 
         if (!$usuario->activo) {
-            throw new \Exception('Usuario inactivo', 403);
+            throw new HttpException('Usuario inactivo.', 403);
         }
 
-        $this->sessionService->login([
+        $userData = [
             'id' => $usuario->id,
             'nombre' => $usuario->nombre,
             'apellido' => $usuario->apellido,
             'email' => $usuario->email,
-            'tipo_usuario_id' => $usuario->tipoUsuario->id,
-            'tipo_usuario_nombre' => $usuario->tipoUsuario->nombre
-        ]);
+            'tipo_usuario' => [
+                'id' => $usuario->tipoUsuario->id,
+                'nombre' => $usuario->tipoUsuario->nombre
+            ]
+        ];
+
+        $this->sessionService->login($userData);
+
+        return $userData;
     }
 }

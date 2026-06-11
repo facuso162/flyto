@@ -7,6 +7,7 @@
 use App\Container;
 use App\Router;
 
+use App\Shared\Config\Env;
 use App\Shared\Database\Database;
 
 // Modulo Auth
@@ -26,11 +27,19 @@ use App\Auth\Controllers\ConfirmarUsuarioController;
 use App\Auth\Controllers\LoginUsuarioController;
 use App\Auth\Controllers\LogoutUsuarioController;
 
+$autoload = __DIR__ . '/../vendor/autoload.php';
+
+if (file_exists($autoload)) {
+    require_once $autoload;
+}
 
 require_once __DIR__ . '/../app/container.php';
 require_once __DIR__ . '/../app/router.php';
 
+require_once __DIR__ . '/../app/shared/config/env.php';
 require_once __DIR__ . '/../app/shared/database/database.php';
+
+Env::load(__DIR__ . '/../.env');
 
 require_once __DIR__ . '/../app/auth/routes.php';
 
@@ -78,7 +87,10 @@ $container->scoped(RegisterUsuarioService::class, function ($c) {
 });
 
 $container->scoped(RegisterUsuarioController::class, function ($c) {
-    return new RegisterUsuarioController($c->get(RegisterUsuarioService::class));
+    return new RegisterUsuarioController(
+        $c->get(RegisterUsuarioService::class),
+        $c->get(SessionService::class)
+    );
 });
 
 
@@ -87,7 +99,10 @@ $container->scoped(ConfirmarUsuarioService::class, function ($c) {
 });
 
 $container->scoped(ConfirmarUsuarioController::class, function ($c) {
-    return new ConfirmarUsuarioController($c->get(ConfirmarUsuarioService::class));
+    return new ConfirmarUsuarioController(
+        $c->get(ConfirmarUsuarioService::class),
+        $c->get(SessionService::class)
+    );
 });
 
 $container->scoped(LoginUsuarioService::class, function ($c) {
@@ -98,6 +113,11 @@ $container->scoped(LoginUsuarioService::class, function ($c) {
 });
 
 $container->scoped(LoginUsuarioController::class, function ($c) {
+    return new LoginUsuarioController(
+        $c->get(LoginUsuarioService::class),
+        $c->get(SessionService::class)
+    );
+});
 
 $container->scoped(LogoutUsuarioService::class, function ($c) {
     return new LogoutUsuarioService($c->get(SessionService::class));

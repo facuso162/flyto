@@ -3,8 +3,10 @@
 namespace App\Auth\Middlewares;
 
 use App\Auth\Services\SessionService;
+use App\Shared\Http\HttpException;
 
 require_once __DIR__ . '/../services/session.service.php';
+require_once __DIR__ . '/../../shared/http/http-exception.php';
 
 class GuestMiddleware
 {
@@ -20,13 +22,7 @@ class GuestMiddleware
         $this->sessionService->start();
 
         if ($this->sessionService->isAuthenticated()) {
-            http_response_code(401);
-
-            echo json_encode([
-                'error' => 'Ya autenticado'
-            ]);
-
-            exit;
+            throw new HttpException('Ya autenticado', 403);
         }
     }
 }
