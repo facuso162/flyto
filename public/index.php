@@ -17,6 +17,8 @@ use App\Auth\Repositories\TipoUsuarioRepository;
 
 use App\Auth\Services\SessionService;
 
+use App\Auth\Services\EmailService;
+use App\Auth\Services\ConfirmacionUsuarioEmailService;
 use App\Auth\Services\RegisterUsuarioService;
 use App\Auth\Services\ConfirmarUsuarioService;
 use App\Auth\Services\LoginUsuarioService;
@@ -48,6 +50,8 @@ require_once __DIR__ . '/../app/auth/repositories/tipo-usuario.repository.php';
 
 require_once __DIR__ . '/../app/auth/services/session.service.php';
 
+require_once __DIR__ . '/../app/auth/services/email.service.php';
+require_once __DIR__ . '/../app/auth/services/confirmacion-usuario-email.service.php';
 require_once __DIR__ . '/../app/auth/services/register-usuario.service.php';
 require_once __DIR__ . '/../app/auth/services/confirmar-usuario.service.php';
 require_once __DIR__ . '/../app/auth/services/login-usuario.service.php';
@@ -78,11 +82,19 @@ $container->singleton(SessionService::class, function () {
     return new SessionService();
 });
 
+$container->scoped(EmailService::class, function () {
+    return new EmailService();
+});
+
+$container->scoped(ConfirmacionUsuarioEmailService::class, function ($c) {
+    return new ConfirmacionUsuarioEmailService($c->get(EmailService::class));
+});
 
 $container->scoped(RegisterUsuarioService::class, function ($c) {
     return new RegisterUsuarioService(
         $c->get(UsuarioRepository::class),
-        $c->get(TipoUsuarioRepository::class)
+        $c->get(TipoUsuarioRepository::class),
+        $c->get(ConfirmacionUsuarioEmailService::class)
     );
 });
 

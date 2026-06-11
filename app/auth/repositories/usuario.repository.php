@@ -5,6 +5,7 @@ namespace App\Auth\Repositories;
 use PDO;
 use App\Auth\Models\Usuario;
 use App\Auth\Models\TipoUsuario;
+use Throwable;
 
 require_once __DIR__ . '/../models/usuario.model.php';
 require_once __DIR__ . '/../models/tipo-usuario.model.php';
@@ -19,8 +20,23 @@ class UsuarioRepository
         $this->pdo = $pdo;
     }
 
-    // TODO: deberian los metodos de guardado/actualizacion retornar algo?
-    public function create(Usuario $usuario): void {
+    public function register(Usuario $usuario): void {
+        try {
+            $this->pdo->beginTransaction();
+
+            $this->create($usuario);
+
+            $this->pdo->commit();
+        } catch (Throwable $exception) {
+            if ($this->pdo->inTransaction()) {
+                $this->pdo->rollBack();
+            }
+
+            throw $exception;
+        }
+    }
+
+    private function create(Usuario $usuario): void {
         $sql = "
             INSERT INTO usuarios (
                 nombre,

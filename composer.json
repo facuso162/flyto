@@ -1,0 +1,9 @@
+{
+    "name": "flyto/app",
+    "description": "Flyto PHP application",
+    "type": "project",
+    "require": {
+        "php": ">=8.0",
+        "phpmailer/phpmailer": "^6.9"
+    }
+}
