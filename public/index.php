@@ -19,10 +19,13 @@ use App\Auth\Services\SessionService;
 use App\Auth\Services\RegisterUsuarioService;
 use App\Auth\Services\ConfirmarUsuarioService;
 use App\Auth\Services\LoginUsuarioService;
+use App\Auth\Services\LogoutUsuarioService;
 
 use App\Auth\Controllers\RegisterUsuarioController;
 use App\Auth\Controllers\ConfirmarUsuarioController;
 use App\Auth\Controllers\LoginUsuarioController;
+use App\Auth\Controllers\LogoutUsuarioController;
+
 
 require_once __DIR__ . '/../app/container.php';
 require_once __DIR__ . '/../app/router.php';
@@ -39,10 +42,12 @@ require_once __DIR__ . '/../app/auth/services/session.service.php';
 require_once __DIR__ . '/../app/auth/services/register-usuario.service.php';
 require_once __DIR__ . '/../app/auth/services/confirmar-usuario.service.php';
 require_once __DIR__ . '/../app/auth/services/login-usuario.service.php';
+require_once __DIR__ . '/../app/auth/services/logout-usuario.service.php';
 
 require_once __DIR__ . '/../app/auth/controllers/register-usuario.controller.php';
 require_once __DIR__ . '/../app/auth/controllers/confirmar-usuario.controller.php';
 require_once __DIR__ . '/../app/auth/controllers/login-usuario.controller.php';
+require_once __DIR__ . '/../app/auth/controllers/logout-usuario.controller.php';
 
 $container = new Container();
 
@@ -93,7 +98,16 @@ $container->scoped(LoginUsuarioService::class, function ($c) {
 });
 
 $container->scoped(LoginUsuarioController::class, function ($c) {
-    return new LoginUsuarioController($c->get(LoginUsuarioService::class));
+
+$container->scoped(LogoutUsuarioService::class, function ($c) {
+    return new LogoutUsuarioService($c->get(SessionService::class));
+});
+
+$container->scoped(LogoutUsuarioController::class, function ($c) {
+    return new LogoutUsuarioController(
+        $c->get(LogoutUsuarioService::class),
+        $c->get(SessionService::class)
+    );
 });
 
 // Instanciar router
