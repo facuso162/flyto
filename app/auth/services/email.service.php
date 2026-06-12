@@ -17,24 +17,35 @@ class EmailService
         }
 
         $host = $this->env('SMTP_HOST');
-        $port = (int) $this->env('SMTP_PORT', '587');
-        $username = $this->env('SMTP_USER');
-        $password = $this->env('SMTP_PASS');
+        $port = (int) $this->env('SMTP_PORT', '1025');
+        $auth = $this->envBool('SMTP_AUTH', false);
+        $username = $this->env('SMTP_USER', '');
+        $password = $this->env('SMTP_PASS', '');
         $fromEmail = $this->env('SMTP_FROM_EMAIL');
         $fromName = $this->env('SMTP_FROM_NAME', 'Flyto');
-        $secure = $this->env('SMTP_SECURE', PHPMailer::ENCRYPTION_STARTTLS);
+        $secure = $this->env('SMTP_SECURE', '');
 
         $mail = new PHPMailer(true);
 
         try {
             $mail->isSMTP();
             $mail->Host = $host;
-            $mail->SMTPAuth = true;
-            $mail->Username = $username;
-            $mail->Password = $password;
-            $mail->SMTPSecure = $secure;
             $mail->Port = $port;
             $mail->CharSet = 'UTF-8';
+
+            $mail->SMTPAuth = $auth;
+
+            if ($auth) {
+                $mail->Username = $username;
+                $mail->Password = $password;
+            }
+
+            if ($secure !== '') {
+                $mail->SMTPSecure = $secure;
+            } else {
+                $mail->SMTPSecure = false;
+                $mail->SMTPAutoTLS = false;
+            }
 
             $mail->setFrom($fromEmail, $fromName);
             $mail->addAddress($toEmail, $toName);
@@ -63,5 +74,16 @@ class EmailService
         }
 
         return $value;
+    }
+
+    private function envBool(string $key, bool $default = false): bool
+    {
+        $value = getenv($key);
+
+        if ($value === false || $value === '') {
+            return $default;
+        }
+
+        return in_array(strtolower($value), ['1', 'true', 'yes', 'on'], true);
     }
 }

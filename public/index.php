@@ -41,7 +41,7 @@ require_once __DIR__ . '/../app/router.php';
 require_once __DIR__ . '/../app/shared/config/env.php';
 require_once __DIR__ . '/../app/shared/database/database.php';
 
-Env::load(__DIR__ . '/../.env');
+Env::load(__DIR__ . '/../.env.example');
 
 require_once __DIR__ . '/../app/auth/routes.php';
 
