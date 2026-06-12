@@ -20,7 +20,7 @@ class TipoUsuarioRepository
     public function findByNombre(string $nombre): ?TipoUsuario {
         $sql = "
             SELECT id, nombre
-            FROM tipos_usuario
+            FROM tipos_usuarios
             WHERE nombre = :nombre
             LIMIT 1
         ";

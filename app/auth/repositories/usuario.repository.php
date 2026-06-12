@@ -122,7 +122,7 @@ class UsuarioRepository
                 tu.id AS tipo_usuario_id,
                 tu.nombre AS tipo_usuario_nombre
             FROM usuarios u
-            JOIN tipos_usuario tu ON u.tipo_usuario_id = tu.id
+            JOIN tipos_usuarios tu ON u.tipo_usuario_id = tu.id
             WHERE u.token_verificacion = :token
             LIMIT 1
         ";
@@ -179,7 +179,7 @@ class UsuarioRepository
                 tu.id AS tipo_usuario_id,
                 tu.nombre AS tipo_usuario_nombre
             FROM usuarios u
-            JOIN tipos_usuario tu ON u.tipo_usuario_id = tu.id
+            JOIN tipos_usuarios tu ON u.tipo_usuario_id = tu.id
             WHERE u.email = :email
             LIMIT 1
         ";
