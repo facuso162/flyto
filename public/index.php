@@ -29,6 +29,12 @@ use App\Auth\Controllers\ConfirmarUsuarioController;
 use App\Auth\Controllers\LoginUsuarioController;
 use App\Auth\Controllers\LogoutUsuarioController;
 
+// Modulo Contacto
+
+use App\Contacto\Services\ContactoEmailService;
+use App\Contacto\Services\EnviarMensajeService;
+use App\Contacto\Controllers\EnviarMensajeController;
+
 $autoload = __DIR__ . '/../vendor/autoload.php';
 
 if (file_exists($autoload)) {
@@ -90,6 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($publicRoutes[$requestPath])) 
 }
 
 require_once __DIR__ . '/../app/auth/routes.php';
+require_once __DIR__ . '/../app/contacto/routes.php';
 
 require_once __DIR__ . '/../app/auth/repositories/usuario.repository.php';
 require_once __DIR__ . '/../app/auth/repositories/tipo-usuario.repository.php';
@@ -107,6 +114,10 @@ require_once __DIR__ . '/../app/auth/controllers/register-usuario.controller.php
 require_once __DIR__ . '/../app/auth/controllers/confirmar-usuario.controller.php';
 require_once __DIR__ . '/../app/auth/controllers/login-usuario.controller.php';
 require_once __DIR__ . '/../app/auth/controllers/logout-usuario.controller.php';
+
+require_once __DIR__ . '/../app/contacto/services/contacto-email.service.php';
+require_once __DIR__ . '/../app/contacto/services/enviar-mensaje.service.php';
+require_once __DIR__ . '/../app/contacto/controllers/enviar-mensaje.controller.php';
 
 $container = new Container();
 
@@ -188,14 +199,36 @@ $container->scoped(LogoutUsuarioController::class, function ($c) {
     );
 });
 
+// Registrar dependencias de modulo Contacto en container
+
+$container->scoped(ContactoEmailService::class, function ($c) {
+    return new ContactoEmailService($c->get(EmailService::class));
+});
+
+$container->scoped(EnviarMensajeService::class, function ($c) {
+    return new EnviarMensajeService($c->get(ContactoEmailService::class));
+});
+
+$container->scoped(EnviarMensajeController::class, function ($c) {
+    return new EnviarMensajeController($c->get(EnviarMensajeService::class));
+});
+
 // Instanciar router
 
 $router = new Router();
 
 $router->registerModule(require __DIR__ . '/../app/auth/routes.php');
+$router->registerModule(require __DIR__ . '/../app/contacto/routes.php');
+
+$normalizedUri = $requestPath;
+$requestQuery = parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY);
+
+if ($requestQuery !== null && $requestQuery !== false && $requestQuery !== '') {
+    $normalizedUri .= '?' . $requestQuery;
+}
 
 $router->resolve(
     $_SERVER['REQUEST_METHOD'], 
-    $_SERVER['REQUEST_URI'], 
+    $normalizedUri, 
     $container
 );

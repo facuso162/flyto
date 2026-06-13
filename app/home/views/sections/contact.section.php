@@ -1,4 +1,4 @@
-<section class="border-t border-flyto-ink/10 bg-flyto-sand py-16" aria-labelledby="contacto-title">
+<section id="contacto" class="border-t border-flyto-ink/10 bg-flyto-sand py-16" aria-labelledby="contacto-title">
     <div class="mx-auto max-w-7xl px-6">
         <div class="grid border border-flyto-ink/10 md:grid-cols-[452px_1fr]">
             <div class="bg-white p-8 md:border-r md:border-flyto-ink/10">
@@ -35,8 +35,17 @@
                 </div>
             </div>
 
-            <form action="<?= htmlspecialchars($basePath ?? '', ENT_QUOTES, 'UTF-8') ?>/contacto" method="get" class="p-8">
+            <form action="<?= htmlspecialchars($basePath ?? '', ENT_QUOTES, 'UTF-8') ?>/api/contacto/enviar" method="post" class="p-8">
                 <p class="font-mono text-xs uppercase tracking-[1.2px] text-flyto-muted">Formulario de consulta</p>
+                <?php if (($_GET['contacto'] ?? '') === 'enviado'): ?>
+                    <p class="mt-4 border border-flyto-navy bg-flyto-navy/10 px-4 py-3 text-sm leading-5 text-flyto-navy">
+                        Tu consulta fue enviada correctamente.
+                    </p>
+                <?php elseif (($_GET['contacto'] ?? '') === 'error'): ?>
+                    <p class="mt-4 border border-flyto-ink bg-white px-4 py-3 text-sm leading-5 text-flyto-ink">
+                        No pudimos enviar tu consulta. Intentalo nuevamente en unos minutos.
+                    </p>
+                <?php endif; ?>
                 <div class="mt-6 grid gap-4 md:grid-cols-2">
                     <label class="block">
                         <span class="font-mono text-[10.4px] font-medium uppercase tracking-[0.26px] text-flyto-muted">Nombre</span>
