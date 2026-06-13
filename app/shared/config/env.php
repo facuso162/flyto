@@ -2,6 +2,8 @@
 
 namespace App\Shared\Config;
 
+use App\Shared\Http\HttpException;
+
 class Env
 {
     public static function load(string $path): void
@@ -25,5 +27,20 @@ class Env
             $_ENV[$key] = $value;
             $_SERVER[$key] = $value;
         }
+    }
+
+    public static function env(string $key, ?string $default = null): string
+    {
+        $value = getenv($key);
+
+        if ($value === false || $value === '') {
+            if ($default !== null) {
+                return $default;
+            }
+
+            throw new HttpException("Falta configurar {$key}.", 500);
+        }
+
+        return $value;
     }
 }
