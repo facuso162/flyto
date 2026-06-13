@@ -3,3 +3,4 @@
 /composer.phar
 /composer-setup.php
 /.env
+/node_modules

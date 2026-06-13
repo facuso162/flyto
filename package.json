@@ -1,0 +1,13 @@
+{
+  "name": "flyto-public-frontend",
+  "private": true,
+  "scripts": {
+    "dev:css": "tailwindcss -i ./public/assets/css/input.css -o ./public/assets/css/app.css --watch",
+    "build:css": "tailwindcss -i ./public/assets/css/input.css -o ./public/assets/css/app.css --minify"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.5.0",
+    "postcss": "^8.5.15",
+    "tailwindcss": "^3.4.17"
+  }
+}

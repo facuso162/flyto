@@ -43,6 +43,52 @@ require_once __DIR__ . '/../app/shared/database/database.php';
 
 Env::load(__DIR__ . '/../.env.example');
 
+function renderPublicPage(string $viewPath, string $title, string $basePath, string $currentPath): void
+{
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+
+    $pageTitle = $title;
+    $isAuthenticated = isset($_SESSION['usuario']);
+
+    ob_start();
+    require $viewPath;
+    $content = ob_get_clean();
+
+    require __DIR__ . '/../app/shared/views/layouts/public.layout.php';
+}
+
+$requestPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?: '/';
+$scriptDir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? ''));
+$basePath = $scriptDir === '/' ? '' : rtrim($scriptDir, '/');
+
+if ($basePath !== '' && str_starts_with($requestPath, $basePath)) {
+    $requestPath = substr($requestPath, strlen($basePath)) ?: '/';
+}
+
+$requestPath = $requestPath !== '/' ? rtrim($requestPath, '/') : '/';
+
+$publicRoutes = [
+    '/' => [
+        'view' => __DIR__ . '/../app/home/views/pages/home.page.php',
+        'title' => 'Flyto - Reservas de vuelos',
+    ],
+    '/novedades' => [
+        'view' => __DIR__ . '/../app/novedades/views/pages/novedades.page.php',
+        'title' => 'Novedades - Flyto',
+    ],
+    '/contacto' => [
+        'view' => __DIR__ . '/../app/contacto/views/pages/contacto.page.php',
+        'title' => 'Contacto - Flyto',
+    ],
+];
+
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($publicRoutes[$requestPath])) {
+    renderPublicPage($publicRoutes[$requestPath]['view'], $publicRoutes[$requestPath]['title'], $basePath, $requestPath);
+    return;
+}
+
 require_once __DIR__ . '/../app/auth/routes.php';
 
 require_once __DIR__ . '/../app/auth/repositories/usuario.repository.php';
