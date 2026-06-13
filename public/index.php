@@ -17,7 +17,7 @@ use App\Auth\Repositories\TipoUsuarioRepository;
 
 use App\Auth\Services\SessionService;
 
-use App\Auth\Services\EmailService;
+use App\Shared\Services\EmailService;
 use App\Auth\Services\ConfirmacionUsuarioEmailService;
 use App\Auth\Services\RegisterUsuarioService;
 use App\Auth\Services\ConfirmarUsuarioService;
@@ -96,7 +96,7 @@ require_once __DIR__ . '/../app/auth/repositories/tipo-usuario.repository.php';
 
 require_once __DIR__ . '/../app/auth/services/session.service.php';
 
-require_once __DIR__ . '/../app/auth/services/email.service.php';
+require_once __DIR__ . '/../app/shared/services/email.service.php';
 require_once __DIR__ . '/../app/auth/services/confirmacion-usuario-email.service.php';
 require_once __DIR__ . '/../app/auth/services/register-usuario.service.php';
 require_once __DIR__ . '/../app/auth/services/confirmar-usuario.service.php';

@@ -4,10 +4,12 @@ namespace App\Auth\Services;
 
 use App\Auth\Models\Usuario;
 use App\Shared\Http\HttpException;
+use App\Shared\Services\EmailService;
+use Throwable;
 
 require_once __DIR__ . '/../models/usuario.model.php';
-require_once __DIR__ . '/email.service.php';
 require_once __DIR__ . '/../../shared/http/http-exception.php';
+require_once __DIR__ . '/../../shared/services/email.service.php';
 
 class ConfirmacionUsuarioEmailService
 {
@@ -27,13 +29,17 @@ class ConfirmacionUsuarioEmailService
         $confirmationUrl = $this->buildConfirmationUrl($usuario->tokenVerificacion);
         $fullName = trim($usuario->nombre . ' ' . $usuario->apellido);
 
-        $this->emailService->send(
-            $usuario->email,
-            $fullName,
-            'Confirma tu cuenta de Flyto',
-            $this->htmlBody($usuario->nombre, $confirmationUrl),
-            $this->textBody($confirmationUrl)
-        );
+        try {
+            $this->emailService->send(
+                $usuario->email,
+                $fullName,
+                'Confirma tu cuenta de Flyto',
+                $this->htmlBody($usuario->nombre, $confirmationUrl),
+                $this->textBody($confirmationUrl)
+            );
+        } catch (Throwable $exception) {
+            throw new HttpException('No se pudo enviar el email de confirmacion.', 500);
+        }
     }
 
     private function buildConfirmationUrl(string $token): string
