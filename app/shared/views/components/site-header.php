@@ -3,7 +3,7 @@
 $navItems = [
     ['label' => 'Inicio', 'href' => '/'],
     ['label' => 'Novedades', 'href' => '/novedades'],
-    ['label' => 'Ayuda', 'href' => '/#como-reservar'],
+    ['label' => 'Ayuda', 'href' => '/faq'],
     ['label' => 'Contacto', 'href' => '/contacto'],
     ['label' => 'Buscar vuelos', 'href' => '/#hero-section'],
 ];

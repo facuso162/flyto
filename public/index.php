@@ -112,6 +112,10 @@ $publicRoutes = [
         'view' => __DIR__ . '/../app/novedades/views/pages/novedades.page.php',
         'title' => 'Novedades - Flyto',
     ],
+    '/faq' => [
+        'view' => __DIR__ . '/../app/faq/views/pages/faq.page.php',
+        'title' => 'Preguntas frecuentes - Flyto',
+    ],
     '/contacto' => [
         'view' => __DIR__ . '/../app/contacto/views/pages/contacto.page.php',
         'title' => 'Contacto - Flyto',
