@@ -9,6 +9,7 @@ use App\Auth\Services\SessionService;
 use App\Auth\Validators\LoginUsuarioValidator;
 use App\Shared\Http\JsonRequest;
 use App\Shared\Http\JsonResponse;
+use App\Shared\Http\RedirectResponse;
 use Throwable;
 
 require_once __DIR__ . '/../dtos/login-usuario.dto.php';
@@ -18,6 +19,7 @@ require_once __DIR__ . '/../services/session.service.php';
 require_once __DIR__ . '/../validators/login-usuario.validator.php';
 require_once __DIR__ . '/../../shared/http/json-request.php';
 require_once __DIR__ . '/../../shared/http/json-response.php';
+require_once __DIR__ . '/../../shared/http/redirect-response.php';
 
 class LoginUsuarioController
 {
@@ -37,7 +39,8 @@ class LoginUsuarioController
             $middleware = new GuestMiddleware($this->sessionService);
             $middleware->handle();
 
-            $data = JsonRequest::body();
+            $expectsJson = JsonRequest::expectsJson();
+            $data = JsonRequest::data();
 
             LoginUsuarioValidator::validate($data);
 
@@ -48,11 +51,21 @@ class LoginUsuarioController
 
             $usuario = $this->loginUsuarioService->execute($dto);
 
+            if (!$expectsJson) {
+                RedirectResponse::to('/');
+                return;
+            }
+
             JsonResponse::success([
                 'message' => 'Login exitoso',
                 'usuario' => $usuario
             ]);
         } catch (Throwable $exception) {
+            if (!JsonRequest::expectsJson()) {
+                RedirectResponse::to('/login', ['login' => 'error']);
+                return;
+            }
+
             JsonResponse::exception($exception);
         }
     }

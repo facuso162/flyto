@@ -80,6 +80,34 @@ $publicRoutes = [
         'view' => __DIR__ . '/../app/home/views/pages/home.page.php',
         'title' => 'Flyto - Reservas de vuelos',
     ],
+    '/login' => [
+        'view' => __DIR__ . '/../app/auth/views/pages/login.page.php',
+        'title' => 'Ingresar - Flyto',
+    ],
+    '/registro' => [
+        'view' => __DIR__ . '/../app/auth/views/pages/registro.page.php',
+        'title' => 'Registrarse - Flyto',
+    ],
+    '/registro/confirmacion-enviada' => [
+        'view' => __DIR__ . '/../app/auth/views/pages/registro-confirmacion-enviada.page.php',
+        'title' => 'Confirmacion enviada - Flyto',
+    ],
+    '/cuenta-confirmada' => [
+        'view' => __DIR__ . '/../app/auth/views/pages/cuenta-confirmada.page.php',
+        'title' => 'Cuenta confirmada - Flyto',
+    ],
+    '/recuperar-contrasena' => [
+        'view' => __DIR__ . '/../app/auth/views/pages/recuperar-contrasena.page.php',
+        'title' => 'Recuperar contrasena - Flyto',
+    ],
+    '/recuperar-contrasena/codigo' => [
+        'view' => __DIR__ . '/../app/auth/views/pages/recuperar-contrasena-token.page.php',
+        'title' => 'Codigo de recuperacion - Flyto',
+    ],
+    '/recuperar-contrasena/cambiar' => [
+        'view' => __DIR__ . '/../app/auth/views/pages/recuperar-contrasena-cambiar.page.php',
+        'title' => 'Cambiar contrasena - Flyto',
+    ],
     '/novedades' => [
         'view' => __DIR__ . '/../app/novedades/views/pages/novedades.page.php',
         'title' => 'Novedades - Flyto',

@@ -6,11 +6,28 @@ require_once __DIR__ . '/http-exception.php';
 
 class JsonRequest
 {
+    public static function data(): array
+    {
+        if (!self::isJsonRequest()) {
+            return $_POST;
+        }
+
+        return self::body();
+    }
+
+    public static function expectsJson(): bool
+    {
+        $accept = $_SERVER['HTTP_ACCEPT'] ?? '';
+
+        return self::isJsonRequest()
+            || str_contains($accept, 'application/json')
+            || $accept === ''
+            || $accept === '*/*';
+    }
+
     public static function body(): array
     {
-        $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
-
-        if (!str_contains($contentType, 'application/json')) {
+        if (!self::isJsonRequest()) {
             throw new HttpException('Content-Type debe ser application/json', 400);
         }
 
@@ -26,5 +43,12 @@ class JsonRequest
         }
 
         return $data;
+    }
+
+    private static function isJsonRequest(): bool
+    {
+        $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
+
+        return str_contains($contentType, 'application/json');
     }
 }
