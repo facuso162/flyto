@@ -50,9 +50,11 @@ CREATE TABLE ciudades (
 
 CREATE TABLE novedades (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    fecha_publicacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    fecha_expiracion DATETIME NOT NULL,
-    texto VARCHAR(200) NOT NULL
+    titulo VARCHAR(100) NOT NULL,
+    categoria VARCHAR(50) NOT NULL,
+    texto VARCHAR(200) NOT NULL,
+    fechaPublicacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    fechaExpiracion DATETIME NOT NULL,
 );
 
 CREATE TABLE usuarios (

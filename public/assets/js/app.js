@@ -38,6 +38,10 @@
         var slides = Array.prototype.slice.call(carousel.querySelectorAll('[data-news-slide]'));
         var currentIndex = 0;
 
+        if (slides.length === 0) {
+            return;
+        }
+
         function showSlide(nextIndex) {
             slides.forEach(function (slide, index) {
                 slide.classList.toggle('hidden', index !== nextIndex);

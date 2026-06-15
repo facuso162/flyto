@@ -35,6 +35,12 @@ use App\Contacto\Services\ContactoEmailService;
 use App\Contacto\Services\EnviarMensajeService;
 use App\Contacto\Controllers\EnviarMensajeController;
 
+// Modulo Novedades
+
+use App\Novedades\Repositories\NovedadRepository;
+use App\Novedades\Services\NovedadService;
+use App\Novedades\Controllers\NovedadController;
+
 $autoload = __DIR__ . '/../vendor/autoload.php';
 
 if (file_exists($autoload)) {
@@ -46,10 +52,31 @@ require_once __DIR__ . '/../app/router.php';
 
 require_once __DIR__ . '/../app/shared/config/env.php';
 require_once __DIR__ . '/../app/shared/database/database.php';
+require_once __DIR__ . '/../app/novedades/repositories/novedad.repository.php';
+require_once __DIR__ . '/../app/novedades/services/novedad.service.php';
 
 Env::load(__DIR__ . '/../.env.example');
 
-function renderPublicPage(string $viewPath, string $title, string $basePath, string $currentPath): void
+function createNovedadService(): NovedadService
+{
+    return new NovedadService(
+        new NovedadRepository(Database::getConnection())
+    );
+}
+
+function loadPublicNovedades(callable $loader): array
+{
+    try {
+        return array_map(
+            fn ($novedad) => $novedad->toArray(),
+            $loader(createNovedadService())
+        );
+    } catch (Throwable) {
+        return [];
+    }
+}
+
+function renderPublicPage(string $viewPath, string $title, string $basePath, string $currentPath, array $viewData = []): void
 {
     if (session_status() === PHP_SESSION_NONE) {
         session_start();
@@ -59,6 +86,7 @@ function renderPublicPage(string $viewPath, string $title, string $basePath, str
     $isAuthenticated = isset($_SESSION['usuario']);
 
     ob_start();
+    extract($viewData, EXTR_SKIP);
     require $viewPath;
     $content = ob_get_clean();
 
@@ -79,6 +107,11 @@ $publicRoutes = [
     '/' => [
         'view' => __DIR__ . '/../app/home/views/pages/home.page.php',
         'title' => 'Flyto - Reservas de vuelos',
+        'data' => fn () => [
+            'ultimasNovedades' => loadPublicNovedades(
+                fn (NovedadService $service) => $service->getUltimas()
+            ),
+        ],
     ],
     '/login' => [
         'view' => __DIR__ . '/../app/auth/views/pages/login.page.php',
@@ -111,6 +144,11 @@ $publicRoutes = [
     '/novedades' => [
         'view' => __DIR__ . '/../app/novedades/views/pages/novedades.page.php',
         'title' => 'Novedades - Flyto',
+        'data' => fn () => [
+            'novedades' => loadPublicNovedades(
+                fn (NovedadService $service) => $service->getVigentes()
+            ),
+        ],
     ],
     '/faq' => [
         'view' => __DIR__ . '/../app/faq/views/pages/faq.page.php',
@@ -123,15 +161,21 @@ $publicRoutes = [
 ];
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($publicRoutes[$requestPath])) {
-    renderPublicPage($publicRoutes[$requestPath]['view'], $publicRoutes[$requestPath]['title'], $basePath, $requestPath);
+    $viewData = isset($publicRoutes[$requestPath]['data'])
+        ? $publicRoutes[$requestPath]['data']()
+        : [];
+
+    renderPublicPage($publicRoutes[$requestPath]['view'], $publicRoutes[$requestPath]['title'], $basePath, $requestPath, $viewData);
     return;
 }
 
 require_once __DIR__ . '/../app/auth/routes.php';
 require_once __DIR__ . '/../app/contacto/routes.php';
+require_once __DIR__ . '/../app/novedades/routes.php';
 
 require_once __DIR__ . '/../app/auth/repositories/usuario.repository.php';
 require_once __DIR__ . '/../app/auth/repositories/tipo-usuario.repository.php';
+require_once __DIR__ . '/../app/novedades/repositories/novedad.repository.php';
 
 require_once __DIR__ . '/../app/auth/services/session.service.php';
 
@@ -150,6 +194,9 @@ require_once __DIR__ . '/../app/auth/controllers/logout-usuario.controller.php';
 require_once __DIR__ . '/../app/contacto/services/contacto-email.service.php';
 require_once __DIR__ . '/../app/contacto/services/enviar-mensaje.service.php';
 require_once __DIR__ . '/../app/contacto/controllers/enviar-mensaje.controller.php';
+
+require_once __DIR__ . '/../app/novedades/services/novedad.service.php';
+require_once __DIR__ . '/../app/novedades/controllers/novedad.controller.php';
 
 $container = new Container();
 
@@ -245,12 +292,30 @@ $container->scoped(EnviarMensajeController::class, function ($c) {
     return new EnviarMensajeController($c->get(EnviarMensajeService::class));
 });
 
+// Registrar dependencias de modulo Novedades en container
+
+$container->scoped(NovedadRepository::class, function ($c) {
+    return new NovedadRepository($c->get(Database::class));
+});
+
+$container->scoped(NovedadService::class, function ($c) {
+    return new NovedadService($c->get(NovedadRepository::class));
+});
+
+$container->scoped(NovedadController::class, function ($c) {
+    return new NovedadController(
+        $c->get(NovedadService::class),
+        $c->get(SessionService::class)
+    );
+});
+
 // Instanciar router
 
 $router = new Router();
 
 $router->registerModule(require __DIR__ . '/../app/auth/routes.php');
 $router->registerModule(require __DIR__ . '/../app/contacto/routes.php');
+$router->registerModule(require __DIR__ . '/../app/novedades/routes.php');
 
 $normalizedUri = $requestPath;
 $requestQuery = parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY);

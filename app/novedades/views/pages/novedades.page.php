@@ -1,8 +1,3 @@
-<?php
-
-$novedades = require __DIR__ . '/../../../shared/mocks/novedades.mock.php';
-
-?>
 <div class="bg-flyto-navy px-6 pt-16 pb-8 text-flyto-sand">
     <div class="mx-auto max-w-7xl">
         <p class="font-mono text-xs uppercase tracking-[1.2px] text-flyto-gold">Novedades</p>
@@ -13,7 +8,10 @@ $novedades = require __DIR__ . '/../../../shared/mocks/novedades.mock.php';
 <section class="bg-flyto-sand px-6 py-16">
     <div class="mx-auto max-w-7xl">
         <div class="mt-10 grid gap-6 bg-white p-6 border border-flyto-ink/10">
-            <?php foreach ($novedades as $news): ?>
+            <?php if (($novedades ?? []) === []): ?>
+                <p class="text-sm leading-[22.75px] text-flyto-muted">No hay novedades vigentes.</p>
+            <?php endif; ?>
+            <?php foreach (($novedades ?? []) as $news): ?>
                 <?php
                 $showNextNewsButton = false;
                 require __DIR__ . '/../components/news-card.php';
