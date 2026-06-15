@@ -11,6 +11,12 @@ $navItems = [
 $basePath = $basePath ?? '';
 $currentPath= $currentPath ?? '';
 $isAuthenticated = $isAuthenticated ?? false;
+$currentUser = is_array($currentUser ?? null) ? $currentUser : [];
+$userName = trim((string) (($currentUser['nombre'] ?? '') . ' ' . ($currentUser['apellido'] ?? '')));
+
+if ($userName === '') {
+    $userName = 'Mi perfil';
+}
 
 ?>
 <header class="sticky top-0 z-50 border-b border-flyto-ink/10 bg-white">
@@ -39,7 +45,13 @@ $isAuthenticated = $isAuthenticated ?? false;
             <?php endforeach; ?>
         </nav>
 
-        <?php if (!$isAuthenticated): ?>
+        <?php if ($isAuthenticated): ?>
+            <div class="hidden items-center gap-3 md:flex">
+                <a href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/mi-perfil" class="text-sm font-medium text-flyto-muted hover:text-flyto-ink">
+                    <?= htmlspecialchars($userName, ENT_QUOTES, 'UTF-8') ?>
+                </a>
+            </div>
+        <?php else: ?>
             <div class="hidden items-center gap-3 md:flex">
                 <a href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/login" class="text-sm font-medium text-flyto-muted hover:text-flyto-ink">Ingresar</a>
                 <a href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/registro" class="bg-flyto-navy px-4 py-2 text-sm font-medium text-flyto-sand">Registrarse</a>
@@ -58,7 +70,11 @@ $isAuthenticated = $isAuthenticated ?? false;
                         <?= htmlspecialchars($item['label'], ENT_QUOTES, 'UTF-8') ?>
                     </a>
                 <?php endforeach; ?>
-                <?php if (!$isAuthenticated): ?>
+                <?php if ($isAuthenticated): ?>
+                    <a href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/mi-perfil" class="mt-2 block bg-flyto-navy px-3 py-2 text-sm font-medium text-flyto-sand">
+                        <?= htmlspecialchars($userName, ENT_QUOTES, 'UTF-8') ?>
+                    </a>
+                <?php else: ?>
                     <a href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/login" class="mt-2 block px-3 py-2 text-sm font-medium text-flyto-muted hover:bg-flyto-sand hover:text-flyto-ink">Ingresar</a>
                     <a href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/registro" class="block bg-flyto-navy px-3 py-2 text-sm font-medium text-flyto-sand">Registrarse</a>
                 <?php endif; ?>

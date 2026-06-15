@@ -83,7 +83,8 @@ function renderPublicPage(string $viewPath, string $title, string $basePath, str
     }
 
     $pageTitle = $title;
-    $isAuthenticated = isset($_SESSION['usuario']);
+    $currentUser = $_SESSION['usuario'] ?? null;
+    $isAuthenticated = $currentUser !== null;
 
     ob_start();
     extract($viewData, EXTR_SKIP);
@@ -102,6 +103,22 @@ if ($basePath !== '' && str_starts_with($requestPath, $basePath)) {
 }
 
 $requestPath = $requestPath !== '/' ? rtrim($requestPath, '/') : '/';
+
+function requireAuthenticatedPublicUser(string $basePath): array
+{
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+
+    $usuario = $_SESSION['usuario'] ?? null;
+
+    if (!is_array($usuario)) {
+        header('Location: ' . ($basePath ?: '') . '/login');
+        exit;
+    }
+
+    return $usuario;
+}
 
 $publicRoutes = [
     '/' => [
@@ -157,6 +174,13 @@ $publicRoutes = [
     '/contacto' => [
         'view' => __DIR__ . '/../app/contacto/views/pages/contacto.page.php',
         'title' => 'Contacto - Flyto',
+    ],
+    '/mi-perfil' => [
+        'view' => __DIR__ . '/../app/perfil/views/pages/mi-perfil.page.php',
+        'title' => 'Mi perfil - Flyto',
+        'data' => fn () => [
+            'usuario' => requireAuthenticatedPublicUser($basePath),
+        ],
     ],
 ];
 
