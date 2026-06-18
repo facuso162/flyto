@@ -33,7 +33,8 @@ use App\Auth\Controllers\LogoutUsuarioController;
 
 use App\Contacto\Services\ContactoEmailService;
 use App\Contacto\Services\EnviarMensajeService;
-use App\Contacto\Controllers\EnviarMensajeController;
+use App\Contacto\Controllers\ContactoPageController;
+use App\Contacto\Controllers\EnviarMensajeActionController;
 
 // Modulo Novedades
 
@@ -60,6 +61,7 @@ require_once __DIR__ . '/../app/router.php';
 
 require_once __DIR__ . '/../app/shared/config/env.php';
 require_once __DIR__ . '/../app/shared/database/database.php';
+require_once __DIR__ . '/../app/contacto/controllers/contacto-page.controller.php';
 require_once __DIR__ . '/../app/novedades/repositories/novedad.repository.php';
 require_once __DIR__ . '/../app/novedades/services/novedad.service.php';
 require_once __DIR__ . '/../app/vuelos/repositories/vuelo.repository.php';
@@ -208,8 +210,8 @@ $publicRoutes = [
         'title' => 'Preguntas frecuentes - Flyto',
     ],
     '/contacto' => [
-        'view' => __DIR__ . '/../app/contacto/views/pages/contacto.page.php',
-        'title' => 'Contacto - Flyto',
+        'controller' => ContactoPageController::class,
+        'action' => 'show',
     ],
     '/vuelos/buscar' => [
         'view' => __DIR__ . '/../app/vuelos/views/pages/buscar-vuelos.page.php',
@@ -228,6 +230,14 @@ $publicRoutes = [
 ];
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($publicRoutes[$requestPath])) {
+    if (isset($publicRoutes[$requestPath]['controller'], $publicRoutes[$requestPath]['action'])) {
+        $controllerClass = $publicRoutes[$requestPath]['controller'];
+        $controllerAction = $publicRoutes[$requestPath]['action'];
+        $controller = new $controllerClass();
+        $controller->{$controllerAction}();
+        return;
+    }
+
     $viewData = isset($publicRoutes[$requestPath]['data'])
         ? $publicRoutes[$requestPath]['data']()
         : [];
@@ -262,7 +272,7 @@ require_once __DIR__ . '/../app/auth/controllers/logout-usuario.controller.php';
 
 require_once __DIR__ . '/../app/contacto/services/contacto-email.service.php';
 require_once __DIR__ . '/../app/contacto/services/enviar-mensaje.service.php';
-require_once __DIR__ . '/../app/contacto/controllers/enviar-mensaje.controller.php';
+require_once __DIR__ . '/../app/contacto/controllers/enviar-mensaje-action.controller.php';
 
 require_once __DIR__ . '/../app/novedades/services/novedad.service.php';
 require_once __DIR__ . '/../app/novedades/controllers/novedad.controller.php';
@@ -362,8 +372,8 @@ $container->scoped(EnviarMensajeService::class, function ($c) {
     return new EnviarMensajeService($c->get(ContactoEmailService::class));
 });
 
-$container->scoped(EnviarMensajeController::class, function ($c) {
-    return new EnviarMensajeController($c->get(EnviarMensajeService::class));
+$container->scoped(EnviarMensajeActionController::class, function ($c) {
+    return new EnviarMensajeActionController($c->get(EnviarMensajeService::class));
 });
 
 // Registrar dependencias de modulo Novedades en container
