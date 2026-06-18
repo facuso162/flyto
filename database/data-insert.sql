@@ -84,3 +84,34 @@ INSERT INTO novedades (
     '2026-04-01 10:00:00',
     '2026-04-30 23:59:59'
 );
+
+INSERT INTO paises (nombre, codigo) VALUES
+('Argentina', 'ARG'),
+('Brasil', 'BRA'),
+('Chile', 'CHL'),
+('Uruguay', 'URY'),
+('Paraguay', 'PRY'),
+('Perú', 'PER');
+
+INSERT INTO ciudades (nombre, abreviacion, pais_id) VALUES
+('Buenos Aires', 'BUE', (SELECT id FROM paises WHERE codigo = 'ARG')),
+('Rosario', 'ROS', (SELECT id FROM paises WHERE codigo = 'ARG')),
+('Córdoba', 'COR', (SELECT id FROM paises WHERE codigo = 'ARG')),
+('Mendoza', 'MDZ', (SELECT id FROM paises WHERE codigo = 'ARG')),
+
+('São Paulo', 'SAO', (SELECT id FROM paises WHERE codigo = 'BRA')),
+('Río de Janeiro', 'RIO', (SELECT id FROM paises WHERE codigo = 'BRA')),
+('Brasilia', 'BSB', (SELECT id FROM paises WHERE codigo = 'BRA')),
+
+('Santiago de Chile', 'SCL', (SELECT id FROM paises WHERE codigo = 'CHL')),
+('Valparaíso', 'VAP', (SELECT id FROM paises WHERE codigo = 'CHL')),
+
+('Montevideo', 'MVD', (SELECT id FROM paises WHERE codigo = 'URY')),
+('Punta del Este', 'PDP', (SELECT id FROM paises WHERE codigo = 'URY')),
+
+('Asunción', 'ASU', (SELECT id FROM paises WHERE codigo = 'PRY')),
+('Ciudad del Este', 'CDE', (SELECT id FROM paises WHERE codigo = 'PRY')),
+
+('Lima', 'LIM', (SELECT id FROM paises WHERE codigo = 'PER')),
+('Cusco', 'CUZ', (SELECT id FROM paises WHERE codigo = 'PER')),
+('Arequipa', 'AQP', (SELECT id FROM paises WHERE codigo = 'PER'));

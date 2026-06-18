@@ -40,12 +40,15 @@ CREATE TABLE paises (
 CREATE TABLE ciudades (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(80) NOT NULL,
+    abreviacion CHAR(3) NOT NULL,
     pais_id INT NOT NULL,
 
     CONSTRAINT fk_ciudades_pais
         FOREIGN KEY (pais_id) REFERENCES paises(id),
 
-    CONSTRAINT uq_ciudad_pais UNIQUE (nombre, pais_id)
+    CONSTRAINT uq_ciudad_pais UNIQUE (nombre, pais_id),
+
+    CONSTRAINT uq_ciudades_abreviacion UNIQUE (abreviacion)
 );
 
 CREATE TABLE novedades (
@@ -117,12 +120,14 @@ CREATE TABLE promociones (
 
 CREATE TABLE vuelos (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    codigoVuelo VARCHAR(10) NOT NULL,
     aerolinea_id INT NOT NULL,
     origen_ciudad_id INT NOT NULL,
     destino_ciudad_id INT NOT NULL,
 
     precio DECIMAL(10,2) NOT NULL,
     asientos_disponibles INT NOT NULL,
+    asientosOcupados INT NOT NULL DEFAULT 0,
 
     fecha_salida DATETIME NOT NULL,
     fecha_llegada DATETIME NOT NULL,
@@ -132,6 +137,8 @@ CREATE TABLE vuelos (
     duracion_horas DECIMAL(5,2) NOT NULL,
 
     estado_id INT NOT NULL,
+
+    CONSTRAINT uq_vuelos_codigoVuelo UNIQUE (codigoVuelo),
 
     CONSTRAINT fk_vuelos_aerolinea
         FOREIGN KEY (aerolinea_id) REFERENCES aerolineas(id),
