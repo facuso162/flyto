@@ -1,10 +1,11 @@
 <?php
-$usuario = isset($usuario) ? is_array($usuario ?? null) ? $usuario : [] : [];
+$currentUser = $currentUser ?? null;
+$currentUser = is_array($currentUser) ? $currentUser : [];
 $basePath = $basePath ?? '';
 
-$nombre = trim((string) ($usuario['nombre'] ?? ''));
-$apellido = trim((string) ($usuario['apellido'] ?? ''));
-$email = trim((string) ($usuario['email'] ?? ''));
+$nombre = trim((string) ($currentUser['nombre'] ?? ''));
+$apellido = trim((string) ($currentUser['apellido'] ?? ''));
+$email = trim((string) ($currentUser['email'] ?? ''));
 $nombreCompleto = trim($nombre . ' ' . $apellido);
 
 if ($nombreCompleto === '') {
