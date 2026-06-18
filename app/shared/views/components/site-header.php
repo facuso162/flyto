@@ -5,7 +5,7 @@ $navItems = [
     ['label' => 'Novedades', 'href' => '/novedades'],
     ['label' => 'Ayuda', 'href' => '/faq'],
     ['label' => 'Contacto', 'href' => '/contacto'],
-    ['label' => 'Buscar vuelos', 'href' => '/vuelos/buscar'],
+    ['label' => 'Buscar vuelos', 'href' => '/#hero-section'],
 ];
 
 $basePath = $basePath ?? '';
