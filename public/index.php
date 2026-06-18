@@ -41,6 +41,14 @@ use App\Novedades\Repositories\NovedadRepository;
 use App\Novedades\Services\NovedadService;
 use App\Novedades\Controllers\NovedadController;
 
+// Modulo Vuelos
+
+use App\Vuelos\Repositories\VueloRepository;
+use App\Vuelos\Services\VueloService;
+use App\Vuelos\Dtos\BuscarVuelosDto;
+use App\Vuelos\Validators\BuscarVueloValidator;
+use App\Vuelos\Controllers\VueloController;
+
 $autoload = __DIR__ . '/../vendor/autoload.php';
 
 if (file_exists($autoload)) {
@@ -54,6 +62,10 @@ require_once __DIR__ . '/../app/shared/config/env.php';
 require_once __DIR__ . '/../app/shared/database/database.php';
 require_once __DIR__ . '/../app/novedades/repositories/novedad.repository.php';
 require_once __DIR__ . '/../app/novedades/services/novedad.service.php';
+require_once __DIR__ . '/../app/vuelos/repositories/vuelo.repository.php';
+require_once __DIR__ . '/../app/vuelos/services/vuelo.service.php';
+require_once __DIR__ . '/../app/vuelos/dtos/buscar-vuelos.dto.php';
+require_once __DIR__ . '/../app/vuelos/validators/buscar-vuelo.validator.php';
 
 Env::load(__DIR__ . '/../.env.example');
 
@@ -74,6 +86,30 @@ function loadPublicNovedades(callable $loader): array
     } catch (Throwable) {
         return [];
     }
+}
+
+function createVueloService(): VueloService
+{
+    return new VueloService(new VueloRepository(Database::getConnection()));
+}
+
+function defaultBusquedaVuelosQuery(): array
+{
+    return [
+        'origen' => '1',
+        'destino' => '2',
+        'fechaSalida' => '2026-08-15',
+        'cantidadPasajeros' => '1',
+        'orden' => 'precio',
+    ];
+}
+
+function loadPublicBusquedaVuelos(array $query): array
+{
+    $data = $query === [] ? defaultBusquedaVuelosQuery() : $query;
+    BuscarVueloValidator::validate($data);
+
+    return createVueloService()->buscar(BuscarVuelosDto::fromArray($data));
 }
 
 function renderPublicPage(string $viewPath, string $title, string $basePath, string $currentPath, array $viewData = []): void
@@ -175,6 +211,13 @@ $publicRoutes = [
         'view' => __DIR__ . '/../app/contacto/views/pages/contacto.page.php',
         'title' => 'Contacto - Flyto',
     ],
+    '/vuelos/buscar' => [
+        'view' => __DIR__ . '/../app/vuelos/views/pages/buscar-vuelos.page.php',
+        'title' => 'Buscar vuelos - Flyto',
+        'data' => fn () => [
+            'resultadoBusqueda' => loadPublicBusquedaVuelos($_GET),
+        ],
+    ],
     '/mi-perfil' => [
         'view' => __DIR__ . '/../app/perfil/views/pages/mi-perfil.page.php',
         'title' => 'Mi perfil - Flyto',
@@ -196,10 +239,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($publicRoutes[$requestPath])) 
 require_once __DIR__ . '/../app/auth/routes.php';
 require_once __DIR__ . '/../app/contacto/routes.php';
 require_once __DIR__ . '/../app/novedades/routes.php';
+require_once __DIR__ . '/../app/vuelos/routes.php';
 
 require_once __DIR__ . '/../app/auth/repositories/usuario.repository.php';
 require_once __DIR__ . '/../app/auth/repositories/tipo-usuario.repository.php';
 require_once __DIR__ . '/../app/novedades/repositories/novedad.repository.php';
+require_once __DIR__ . '/../app/vuelos/repositories/vuelo.repository.php';
 
 require_once __DIR__ . '/../app/auth/services/session.service.php';
 
@@ -221,6 +266,11 @@ require_once __DIR__ . '/../app/contacto/controllers/enviar-mensaje.controller.p
 
 require_once __DIR__ . '/../app/novedades/services/novedad.service.php';
 require_once __DIR__ . '/../app/novedades/controllers/novedad.controller.php';
+
+require_once __DIR__ . '/../app/vuelos/dtos/buscar-vuelos.dto.php';
+require_once __DIR__ . '/../app/vuelos/validators/buscar-vuelo.validator.php';
+require_once __DIR__ . '/../app/vuelos/services/vuelo.service.php';
+require_once __DIR__ . '/../app/vuelos/controllers/vuelo.controller.php';
 
 $container = new Container();
 
@@ -333,6 +383,20 @@ $container->scoped(NovedadController::class, function ($c) {
     );
 });
 
+// Registrar dependencias de modulo Vuelos en container
+
+$container->scoped(VueloRepository::class, function ($c) {
+    return new VueloRepository($c->get(Database::class));
+});
+
+$container->scoped(VueloService::class, function ($c) {
+    return new VueloService($c->get(VueloRepository::class));
+});
+
+$container->scoped(VueloController::class, function ($c) {
+    return new VueloController($c->get(VueloService::class));
+});
+
 // Instanciar router
 
 $router = new Router();
@@ -340,6 +404,7 @@ $router = new Router();
 $router->registerModule(require __DIR__ . '/../app/auth/routes.php');
 $router->registerModule(require __DIR__ . '/../app/contacto/routes.php');
 $router->registerModule(require __DIR__ . '/../app/novedades/routes.php');
+$router->registerModule(require __DIR__ . '/../app/vuelos/routes.php');
 
 $normalizedUri = $requestPath;
 $requestQuery = parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY);
