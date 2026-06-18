@@ -66,7 +66,7 @@ class BorrarNovedadActionController
             Flash::error('Necesitas permisos de administrador para realizar esta accion.');
 
             if ($exception->getStatusCode() === 401) {
-                RedirectResponse::to('/login', [], 303);
+                RedirectResponse::to('/auth/login', [], 303);
                 return false;
             }
 

@@ -1,7 +1,7 @@
 <?php
 
 $basePath = $basePath ?? '';
-$logoutUrl = rtrim($basePath, '/') . '/logout';
+$logoutUrl = rtrim($basePath, '/') . '/auth/logout';
 
 ?>
 <aside aria-label="Opciones de usuario">

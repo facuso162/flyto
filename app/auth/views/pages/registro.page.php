@@ -10,7 +10,7 @@ $registroError = fn (string $key): string => (string) ($registroValidationErrors
 
 flytoAuthShellStart('Registro de usuario', 'Cre&aacute; tu cuenta en Flyto');
 ?>
-<form action="<?= flytoAuthUrl($basePath ?? '', '/registro') ?>" method="post" class="mt-8 border border-flyto-ink/10 bg-white p-8">
+<form action="<?= flytoAuthUrl($basePath ?? '', '/auth/registro') ?>" method="post" class="mt-8 border border-flyto-ink/10 bg-white p-8">
     <?php if (!empty($registroFlash['success'])): ?>
         <p class="mb-5 border border-flyto-navy bg-flyto-navy/10 px-4 py-3 text-sm leading-5 text-flyto-navy">
             <?= htmlspecialchars((string) $registroFlash['success'], ENT_QUOTES, 'UTF-8') ?>
@@ -48,7 +48,7 @@ flytoAuthShellStart('Registro de usuario', 'Cre&aacute; tu cuenta en Flyto');
 
     <p class="mt-5 text-center text-xs leading-6 text-flyto-muted">
         &iquest;Ya ten&eacute;s una cuenta?
-        <a href="<?= flytoAuthUrl($basePath ?? '', '/login') ?>" class="text-base font-medium text-flyto-navy">Inici&aacute; sesi&oacute;n</a>
+        <a href="<?= flytoAuthUrl($basePath ?? '', '/auth/login') ?>" class="text-base font-medium text-flyto-navy">Inici&aacute; sesi&oacute;n</a>
     </p>
 </form>
 <?php flytoAuthShellEnd(); ?>

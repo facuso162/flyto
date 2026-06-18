@@ -53,8 +53,8 @@ if ($userName === '') {
             </div>
         <?php else: ?>
             <div class="hidden items-center gap-3 md:flex">
-                <a href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/login" class="text-sm font-medium text-flyto-muted hover:text-flyto-ink">Ingresar</a>
-                <a href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/registro" class="bg-flyto-navy px-4 py-2 text-sm font-medium text-flyto-sand">Registrarse</a>
+                <a href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/auth/login" class="text-sm font-medium text-flyto-muted hover:text-flyto-ink">Ingresar</a>
+                <a href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/auth/registro" class="bg-flyto-navy px-4 py-2 text-sm font-medium text-flyto-sand">Registrarse</a>
             </div>
         <?php endif; ?>
 
@@ -75,8 +75,8 @@ if ($userName === '') {
                         <?= htmlspecialchars($userName, ENT_QUOTES, 'UTF-8') ?>
                     </a>
                 <?php else: ?>
-                    <a href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/login" class="mt-2 block px-3 py-2 text-sm font-medium text-flyto-muted hover:bg-flyto-sand hover:text-flyto-ink">Ingresar</a>
-                    <a href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/registro" class="block bg-flyto-navy px-3 py-2 text-sm font-medium text-flyto-sand">Registrarse</a>
+                    <a href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/auth/login" class="mt-2 block px-3 py-2 text-sm font-medium text-flyto-muted hover:bg-flyto-sand hover:text-flyto-ink">Ingresar</a>
+                    <a href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/auth/registro" class="block bg-flyto-navy px-3 py-2 text-sm font-medium text-flyto-sand">Registrarse</a>
                 <?php endif; ?>
             </nav>
         </details>

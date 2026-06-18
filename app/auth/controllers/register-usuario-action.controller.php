@@ -57,18 +57,18 @@ class RegisterUsuarioActionController
             $this->registerUsuarioService->execute($dto);
 
             Flash::success('Revisa tu email para confirmar la cuenta.');
-            RedirectResponse::to('/registro/confirmacion-enviada', [], 303);
+            RedirectResponse::to('/auth/registro/confirmacion-enviada', [], 303);
         } catch (HttpException $exception) {
             Flash::error('No pudimos crear la cuenta. Revisa los datos e intentalo nuevamente.');
             Flash::validationErrors($this->validationErrorsFromException($exception));
             Flash::old($this->safeOldInput($_POST));
 
-            RedirectResponse::to('/registro', [], 303);
+            RedirectResponse::to('/auth/registro', [], 303);
         } catch (Throwable) {
             Flash::error('No pudimos crear la cuenta. Intentalo nuevamente en unos minutos.');
             Flash::old($this->safeOldInput($_POST));
 
-            RedirectResponse::to('/registro', [], 303);
+            RedirectResponse::to('/auth/registro', [], 303);
         }
     }
 

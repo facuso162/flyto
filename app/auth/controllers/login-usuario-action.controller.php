@@ -59,12 +59,12 @@ class LoginUsuarioActionController
             Flash::validationErrors($this->validationErrorsFromException($exception));
             Flash::old($this->safeOldInput($_POST));
 
-            RedirectResponse::to('/login', [], 303);
+            RedirectResponse::to('/auth/login', [], 303);
         } catch (Throwable) {
             Flash::error('No pudimos iniciar sesion. Intentalo nuevamente en unos minutos.');
             Flash::old($this->safeOldInput($_POST));
 
-            RedirectResponse::to('/login', [], 303);
+            RedirectResponse::to('/auth/login', [], 303);
         }
     }
 

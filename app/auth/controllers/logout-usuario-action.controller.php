@@ -36,7 +36,7 @@ class LogoutUsuarioActionController
 
             RedirectResponse::to('/', [], 303);
         } catch (Throwable) {
-            RedirectResponse::to('/login', [], 303);
+            RedirectResponse::to('/auth/login', [], 303);
         }
     }
 }
