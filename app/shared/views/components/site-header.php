@@ -11,7 +11,8 @@ $navItems = [
 $basePath = $basePath ?? '';
 $currentPath= $currentPath ?? '';
 $isAuthenticated = $isAuthenticated ?? false;
-$currentUser = is_array($currentUser ?? null) ? $currentUser : [];
+$currentUser = $currentUser ?? null;
+$currentUser = is_array($currentUser) ? $currentUser : [];
 $userName = trim((string) (($currentUser['nombre'] ?? '') . ' ' . ($currentUser['apellido'] ?? '')));
 
 if ($userName === '') {
