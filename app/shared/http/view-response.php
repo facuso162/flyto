@@ -2,20 +2,34 @@
 
 namespace App\Shared\Http;
 
+use App\Auth\Services\SessionService;
+
+require_once __DIR__ . '/../../auth/services/session.service.php';
+
 class ViewResponse
 {
-    public static function render(string $viewPath, string $title, array $viewData = [], int $statusCode = 200): void
+    private SessionService $sessionService;
+
+    public function __construct(SessionService $sessionService)
     {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
+        $this->sessionService = $sessionService;
+    }
+
+    public function render(
+        string $viewPath,
+        string $title,
+        array $viewData,
+        int $statusCode,
+        string $layoutPath
+    ): void {
+        $this->sessionService->start();
 
         http_response_code($statusCode);
 
         $basePath = self::basePath();
         $currentPath = self::currentPath($basePath);
         $pageTitle = $title;
-        $currentUser = $_SESSION['usuario'] ?? null;
+        $currentUser = $this->sessionService->getUser();
         $isAuthenticated = $currentUser !== null;
 
         ob_start();
@@ -23,7 +37,7 @@ class ViewResponse
         require $viewPath;
         $content = ob_get_clean();
 
-        require __DIR__ . '/../views/layouts/public.layout.php';
+        require $layoutPath;
     }
 
     private static function basePath(): string
