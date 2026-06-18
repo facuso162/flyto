@@ -6,8 +6,6 @@ use App\Auth\Middlewares\GuestMiddleware;
 use App\Auth\Services\ConfirmarUsuarioService;
 use App\Auth\Services\SessionService;
 use App\Shared\Http\HttpException;
-use App\Shared\Http\JsonRequest;
-use App\Shared\Http\JsonResponse;
 use App\Shared\Http\RedirectResponse;
 use Throwable;
 
@@ -15,8 +13,6 @@ require_once __DIR__ . '/../middlewares/guest.middleware.php';
 require_once __DIR__ . '/../services/confirmar-usuario.service.php';
 require_once __DIR__ . '/../services/session.service.php';
 require_once __DIR__ . '/../../shared/http/http-exception.php';
-require_once __DIR__ . '/../../shared/http/json-request.php';
-require_once __DIR__ . '/../../shared/http/json-response.php';
 require_once __DIR__ . '/../../shared/http/redirect-response.php';
 
 class ConfirmarUsuarioController
@@ -46,21 +42,9 @@ class ConfirmarUsuarioController
 
             $this->confirmarUsuarioService->execute($token);
 
-            if (!JsonRequest::expectsJson()) {
-                RedirectResponse::to('/cuenta-confirmada');
-                return;
-            }
-
-            JsonResponse::success([
-                'message' => 'Usuario confirmado exitosamente',
-            ]);
-        } catch (Throwable $exception) {
-            if (!JsonRequest::expectsJson()) {
-                RedirectResponse::to('/cuenta-confirmada', ['confirmacion' => 'error']);
-                return;
-            }
-
-            JsonResponse::exception($exception);
+            RedirectResponse::to('/cuenta-confirmada');
+        } catch (Throwable) {
+            RedirectResponse::to('/cuenta-confirmada', ['confirmacion' => 'error']);
         }
     }
 }

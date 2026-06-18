@@ -24,10 +24,12 @@ use App\Auth\Services\ConfirmarUsuarioService;
 use App\Auth\Services\LoginUsuarioService;
 use App\Auth\Services\LogoutUsuarioService;
 
-use App\Auth\Controllers\RegisterUsuarioController;
 use App\Auth\Controllers\ConfirmarUsuarioController;
-use App\Auth\Controllers\LoginUsuarioController;
-use App\Auth\Controllers\LogoutUsuarioController;
+use App\Auth\Controllers\LoginPageController;
+use App\Auth\Controllers\RegistroPageController;
+use App\Auth\Controllers\LoginUsuarioActionController;
+use App\Auth\Controllers\RegisterUsuarioActionController;
+use App\Auth\Controllers\LogoutUsuarioActionController;
 
 // Modulo Contacto
 
@@ -61,6 +63,8 @@ require_once __DIR__ . '/../app/router.php';
 
 require_once __DIR__ . '/../app/shared/config/env.php';
 require_once __DIR__ . '/../app/shared/database/database.php';
+require_once __DIR__ . '/../app/auth/controllers/login-page.controller.php';
+require_once __DIR__ . '/../app/auth/controllers/registro-page.controller.php';
 require_once __DIR__ . '/../app/contacto/controllers/contacto-page.controller.php';
 require_once __DIR__ . '/../app/novedades/repositories/novedad.repository.php';
 require_once __DIR__ . '/../app/novedades/services/novedad.service.php';
@@ -169,12 +173,12 @@ $publicRoutes = [
         ],
     ],
     '/login' => [
-        'view' => __DIR__ . '/../app/auth/views/pages/login.page.php',
-        'title' => 'Ingresar - Flyto',
+        'controller' => LoginPageController::class,
+        'action' => 'show',
     ],
     '/registro' => [
-        'view' => __DIR__ . '/../app/auth/views/pages/registro.page.php',
-        'title' => 'Registrarse - Flyto',
+        'controller' => RegistroPageController::class,
+        'action' => 'show',
     ],
     '/registro/confirmacion-enviada' => [
         'view' => __DIR__ . '/../app/auth/views/pages/registro-confirmacion-enviada.page.php',
@@ -269,6 +273,9 @@ require_once __DIR__ . '/../app/auth/controllers/register-usuario.controller.php
 require_once __DIR__ . '/../app/auth/controllers/confirmar-usuario.controller.php';
 require_once __DIR__ . '/../app/auth/controllers/login-usuario.controller.php';
 require_once __DIR__ . '/../app/auth/controllers/logout-usuario.controller.php';
+require_once __DIR__ . '/../app/auth/controllers/login-usuario-action.controller.php';
+require_once __DIR__ . '/../app/auth/controllers/register-usuario-action.controller.php';
+require_once __DIR__ . '/../app/auth/controllers/logout-usuario-action.controller.php';
 
 require_once __DIR__ . '/../app/contacto/services/contacto-email.service.php';
 require_once __DIR__ . '/../app/contacto/services/enviar-mensaje.service.php';
@@ -318,8 +325,8 @@ $container->scoped(RegisterUsuarioService::class, function ($c) {
     );
 });
 
-$container->scoped(RegisterUsuarioController::class, function ($c) {
-    return new RegisterUsuarioController(
+$container->scoped(RegisterUsuarioActionController::class, function ($c) {
+    return new RegisterUsuarioActionController(
         $c->get(RegisterUsuarioService::class),
         $c->get(SessionService::class)
     );
@@ -344,8 +351,8 @@ $container->scoped(LoginUsuarioService::class, function ($c) {
     );
 });
 
-$container->scoped(LoginUsuarioController::class, function ($c) {
-    return new LoginUsuarioController(
+$container->scoped(LoginUsuarioActionController::class, function ($c) {
+    return new LoginUsuarioActionController(
         $c->get(LoginUsuarioService::class),
         $c->get(SessionService::class)
     );
@@ -355,8 +362,8 @@ $container->scoped(LogoutUsuarioService::class, function ($c) {
     return new LogoutUsuarioService($c->get(SessionService::class));
 });
 
-$container->scoped(LogoutUsuarioController::class, function ($c) {
-    return new LogoutUsuarioController(
+$container->scoped(LogoutUsuarioActionController::class, function ($c) {
+    return new LogoutUsuarioActionController(
         $c->get(LogoutUsuarioService::class),
         $c->get(SessionService::class)
     );
