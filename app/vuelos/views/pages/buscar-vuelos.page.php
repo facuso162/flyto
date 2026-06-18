@@ -6,7 +6,7 @@ use App\Vuelos\Dtos\BuscarVuelosDto;
 
 $resultadoBusqueda = $resultadoBusqueda ?? [];
 /** @var BuscarVuelosDto $criterios */
-$criterios = $resultadoBusqueda['criterios'] ?? BuscarVuelosDto::fromArray($_GET);
+$criterios = $resultadoBusqueda['criterios'];
 $vuelos = $resultadoBusqueda['vuelos'] ?? [];
 $aerolineas = $resultadoBusqueda['aerolineas'] ?? [];
 $precioMaximoDisponible = (float) ($resultadoBusqueda['precioMaximoDisponible'] ?? 0);
