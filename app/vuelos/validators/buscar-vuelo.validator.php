@@ -15,7 +15,7 @@ class BuscarVueloValidator
         $fechaSalida = self::getRequiredStringValue($data, 'fechaSalida');
         $cantidadPasajeros = self::getRequiredStringValue($data, 'cantidadPasajeros');
         $precioMaximo = self::getOptionalStringValue($data, 'precioMaximo');
-        $aerolineas = self::getOptionalStringValue($data, 'aerolineas');
+        $aerolineas = self::getOptionalAirlineValues($data, 'aerolineas');
         $orden = self::getOptionalStringValue($data, 'orden');
 
         if (!ctype_digit($origen)) {
@@ -45,12 +45,14 @@ class BuscarVueloValidator
             );
         }
 
-        if ($aerolineas !== null && !preg_match('/^[A-Z0-9]{2,3}(,[A-Z0-9]{2,3})*$/', $aerolineas)) {
-            throw new HttpException(
-                'Las aerolineas deben enviarse como codigos IATA separados por coma.',
-                400,
-                ['field' => 'aerolineas']
-            );
+        foreach ($aerolineas as $aerolinea) {
+            if (!preg_match('/^[A-Z0-9]{2,3}$/', $aerolinea)) {
+                throw new HttpException(
+                    'Las aerolineas deben enviarse como codigos IATA validos.',
+                    400,
+                    ['field' => 'aerolineas']
+                );
+            }
         }
 
         if ($orden !== null && !in_array($orden, ['precio', 'duracion', 'salida'], true)) {
@@ -147,5 +149,31 @@ class BuscarVueloValidator
         }
 
         return $value;
+    }
+
+    /**
+     * @return string[]
+     */
+    private static function getOptionalAirlineValues(array $data, string $key): array
+    {
+        if (!array_key_exists($key, $data) || $data[$key] === null) {
+            return [];
+        }
+
+        $values = is_array($data[$key])
+            ? $data[$key]
+            : explode(',', (string) $data[$key]);
+
+        foreach ($values as $value) {
+            if (is_array($value) || trim((string) $value) === '') {
+                throw new HttpException(
+                    "El campo {$key} contiene un valor invalido.",
+                    400,
+                    ['field' => $key]
+                );
+            }
+        }
+
+        return array_map(static fn ($value): string => trim((string) $value), $values);
     }
 }

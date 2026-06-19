@@ -27,15 +27,7 @@ class VueloController
         try {
             BuscarVueloValidator::validate($_GET);
 
-            $dto = new BuscarVuelosDto(
-                origen: (int) $_GET['origen'],
-                destino: (int) $_GET['destino'],
-                fechaSalida: (string) $_GET['fechaSalida'],
-                cantidadPasajeros: (int) $_GET['cantidadPasajeros'],
-                precioMaximo: array_key_exists('precioMaximo', $_GET) ? (int) $_GET['precioMaximo'] : null,
-                aerolineas: array_key_exists('aerolineas', $_GET) ? explode(',', (string) $_GET['aerolineas']) : [],
-                orden: (string) ($_GET['orden'] ?? 'precio')
-            );
+            $dto = BuscarVuelosDto::fromArray($_GET);
 
             $resultado = $this->vueloService->buscar($dto);
 

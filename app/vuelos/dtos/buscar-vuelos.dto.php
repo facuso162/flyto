@@ -39,7 +39,7 @@ class BuscarVuelosDto
             fechaSalida: (string) $data['fechaSalida'],
             cantidadPasajeros: (int) $data['cantidadPasajeros'],
             precioMaximo: array_key_exists('precioMaximo', $data) ? (int) $data['precioMaximo'] : null,
-            aerolineas: array_key_exists('aerolineas', $data) ? explode(',', (string) $data['aerolineas']) : [],
+            aerolineas: self::parseAerolineas($data['aerolineas'] ?? []),
             orden: (string) ($data['orden'] ?? 'precio')
         );
     }
@@ -55,6 +55,18 @@ class BuscarVuelosDto
             aerolineas: [],
             orden: $this->orden
         );
+    }
+
+    /**
+     * @return string[]
+     */
+    private static function parseAerolineas(mixed $aerolineas): array
+    {
+        if (is_array($aerolineas)) {
+            return array_values(array_map(static fn ($codigo): string => (string) $codigo, $aerolineas));
+        }
+
+        return $aerolineas === '' ? [] : explode(',', (string) $aerolineas);
     }
 
 }

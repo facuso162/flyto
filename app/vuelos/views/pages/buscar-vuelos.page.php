@@ -22,8 +22,6 @@ foreach ($ciudades as $ciudad) {
 $origen = $ciudadesPorId[$criterios->origen] ?? ['nombre' => 'Origen', 'abreviacion' => 'ORI'];
 $destino = $ciudadesPorId[$criterios->destino] ?? ['nombre' => 'Destino', 'abreviacion' => 'DST'];
 $formatMoney = static fn (float $amount): string => '$' . number_format($amount, 0, ',', '.');
-$aerolineasSeleccionadas = implode(',', $criterios->aerolineas);
-
 $buildQuery = static function (array $overrides = []) use ($criterios): string {
     $query = [
         'origen' => $criterios->origen,
@@ -53,7 +51,7 @@ $buildQuery = static function (array $overrides = []) use ($criterios): string {
     return http_build_query($query);
 };
 
-$renderFilterForm = static function (string $id) use ($basePath, $criterios, $aerolineas, $precioMaximoDisponible, $precioMaximoSeleccionado, $formatMoney, $aerolineasSeleccionadas): void {
+$renderFilterForm = static function (string $id) use ($basePath, $criterios, $aerolineas, $precioMaximoDisponible, $precioMaximoSeleccionado, $formatMoney): void {
     ?>
     <form id="<?= htmlspecialchars($id, ENT_QUOTES, 'UTF-8') ?>" action="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/vuelos/buscar" method="get" class="space-y-6">
         <input type="hidden" name="origen" value="<?= htmlspecialchars((string) $criterios->origen, ENT_QUOTES, 'UTF-8') ?>">
@@ -89,24 +87,18 @@ $renderFilterForm = static function (string $id) use ($basePath, $criterios, $ae
                     <p class="text-sm leading-6 text-flyto-muted">No hay aerolineas para estos criterios.</p>
                 <?php endif; ?>
                 <?php foreach ($aerolineas as $aerolinea): ?>
-                    <div class="flex items-center gap-3 text-sm text-flyto-ink">
-                        <span class="flex h-7 w-7 items-center justify-center bg-flyto-mist font-mono text-[11px] text-flyto-ink">
-                            <?= htmlspecialchars($aerolinea['codigoIata'], ENT_QUOTES, 'UTF-8') ?>
-                        </span>
+                    <?php $codigoIata = (string) $aerolinea['codigoIata']; ?>
+                    <label class="flex cursor-pointer items-center gap-3 text-sm text-flyto-ink">
+                        <input
+                            type="checkbox"
+                            name="aerolineas[]"
+                            value="<?= htmlspecialchars($codigoIata, ENT_QUOTES, 'UTF-8') ?>"
+                            class="h-4 w-4 shrink-0 accent-flyto-navy"
+                            <?= in_array($codigoIata, $criterios->aerolineas, true) ? 'checked' : '' ?>
+                        >
                         <span><?= htmlspecialchars($aerolinea['nombre'], ENT_QUOTES, 'UTF-8') ?></span>
-                    </div>
+                    </label>
                 <?php endforeach; ?>
-                <label class="block">
-                    <span class="sr-only">Codigos IATA de aerolineas</span>
-                    <input
-                        type="text"
-                        name="aerolineas"
-                        value="<?= htmlspecialchars($aerolineasSeleccionadas, ENT_QUOTES, 'UTF-8') ?>"
-                        placeholder="AS,NJ"
-                        class="mt-2 h-10 w-full border border-flyto-ink/15 bg-white px-3 text-sm text-flyto-ink outline-none focus:border-flyto-navy"
-                    >
-                    <span class="mt-2 block text-xs leading-5 text-flyto-muted">Codigos separados por coma. Vacio muestra todas.</span>
-                </label>
             </div>
         </fieldset>
 
