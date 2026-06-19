@@ -41,6 +41,7 @@ function flytoProfileText(string $value, string $fallback = '-'): string
         <?php require __DIR__ . '/../components/profile-sidebar.php'; ?>
 
         <div>
+            <?php require __DIR__ . '/../../../reservas/views/components/reserva-feedback.php'; ?>
             <h2 class="font-display text-[23px] font-medium leading-8 text-flyto-ink">Datos personales</h2>
             <section class="mt-5 border border-flyto-ink/10 bg-white" aria-labelledby="profile-account-info">
                 <div class="border-b border-flyto-ink/10 px-6 py-4">

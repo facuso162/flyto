@@ -33,6 +33,10 @@ use App\Novedades\Controllers\EditarNovedadActionController;
 use App\Novedades\Controllers\NovedadesPageController;
 use App\Novedades\Repositories\NovedadRepository;
 use App\Novedades\Services\NovedadService;
+use App\Perfil\Controllers\MiPerfilPageController;
+use App\Reservas\Controllers\CrearReservaActionController;
+use App\Reservas\Repositories\ReservaRepository;
+use App\Reservas\Services\ReservaService;
 use App\Router;
 use App\Shared\Config\Env;
 use App\Shared\Database\Database;
@@ -99,6 +103,12 @@ require_once __DIR__ . '/../app/novedades/controllers/admin-novedades-page.contr
 require_once __DIR__ . '/../app/novedades/controllers/crear-novedad-action.controller.php';
 require_once __DIR__ . '/../app/novedades/controllers/editar-novedad-action.controller.php';
 require_once __DIR__ . '/../app/novedades/controllers/borrar-novedad-action.controller.php';
+
+require_once __DIR__ . '/../app/perfil/controllers/mi-perfil-page.controller.php';
+
+require_once __DIR__ . '/../app/reservas/repositories/reserva.repository.php';
+require_once __DIR__ . '/../app/reservas/services/reserva.service.php';
+require_once __DIR__ . '/../app/reservas/controllers/crear-reserva-action.controller.php';
 
 require_once __DIR__ . '/../app/vuelos/repositories/vuelo.repository.php';
 require_once __DIR__ . '/../app/vuelos/services/vuelo.service.php';
@@ -289,6 +299,25 @@ $container->scoped(EditarNovedadActionController::class, function ($c) {
 $container->scoped(BorrarNovedadActionController::class, function ($c) {
     return new BorrarNovedadActionController(
         $c->get(NovedadService::class),
+        $c->get(SessionService::class)
+    );
+});
+
+$container->scoped(MiPerfilPageController::class, function ($c) {
+    return new MiPerfilPageController($c->get(ViewResponse::class));
+});
+
+$container->scoped(ReservaRepository::class, function ($c) {
+    return new ReservaRepository($c->get(Database::class));
+});
+
+$container->scoped(ReservaService::class, function ($c) {
+    return new ReservaService($c->get(ReservaRepository::class));
+});
+
+$container->scoped(CrearReservaActionController::class, function ($c) {
+    return new CrearReservaActionController(
+        $c->get(ReservaService::class),
         $c->get(SessionService::class)
     );
 });
@@ -500,8 +529,8 @@ $publicRoutes = [
 
 $protectedPublicRoutes = [
     '/mi-perfil' => [
-        'view' => __DIR__ . '/../app/perfil/views/pages/mi-perfil.page.php',
-        'title' => 'Mi perfil - Flyto',
+        'controller' => MiPerfilPageController::class,
+        'action' => 'show',
     ],
 ];
 
@@ -546,6 +575,7 @@ $router = new Router();
 $router->registerModule(require __DIR__ . '/../app/auth/routes.php');
 $router->registerModule(require __DIR__ . '/../app/contacto/routes.php');
 $router->registerModule(require __DIR__ . '/../app/novedades/routes.php');
+$router->registerModule(require __DIR__ . '/../app/reservas/routes.php');
 $router->registerModule(require __DIR__ . '/../app/vuelos/routes.php');
 
 $normalizedUri = $requestPath;

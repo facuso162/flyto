@@ -172,3 +172,39 @@ CREATE TABLE reservas (
     CONSTRAINT fk_reservas_estado
         FOREIGN KEY (estado_id) REFERENCES estados_reservas(id)
 );
+
+CREATE TABLE pasajeros (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    reserva_id INT NOT NULL,
+
+    nombre VARCHAR(80) NOT NULL,
+    apellido VARCHAR(80) NOT NULL,
+    documento VARCHAR(30) NOT NULL,
+    pasaporte VARCHAR(30) NOT NULL,
+    fecha_nacimiento DATE NOT NULL,
+    telefono_contacto VARCHAR(30) NOT NULL,
+    correo_electronico VARCHAR(120) NOT NULL,
+
+    CONSTRAINT fk_pasajeros_reserva
+        FOREIGN KEY (reserva_id) REFERENCES reservas(id)
+        ON DELETE CASCADE
+);
+
+CREATE TABLE metodos_pago (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    reserva_id INT NOT NULL,
+
+    nombre_titular VARCHAR(120) NOT NULL,
+    ultimos_cuatro_digitos CHAR(4) NOT NULL,
+    vencimiento_mes TINYINT NOT NULL,
+    vencimiento_anio SMALLINT NOT NULL,
+
+    fecha_pago DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT uq_metodos_pago_reserva
+        UNIQUE (reserva_id),
+
+    CONSTRAINT fk_metodos_pago_reserva
+        FOREIGN KEY (reserva_id) REFERENCES reservas(id)
+        ON DELETE CASCADE
+);

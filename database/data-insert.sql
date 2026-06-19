@@ -7,6 +7,12 @@ VALUES
     ('ceo'),
     ('cliente');
 
+INSERT INTO estados_reservas (nombre)
+VALUES
+    ('confirmada'),
+    ('cancelada'),
+    ('completada');
+
 INSERT INTO novedades (
     titulo,
     categoria,
