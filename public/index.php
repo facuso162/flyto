@@ -34,6 +34,7 @@ use App\Novedades\Controllers\NovedadesPageController;
 use App\Novedades\Repositories\NovedadRepository;
 use App\Novedades\Services\NovedadService;
 use App\Perfil\Controllers\MiPerfilPageController;
+use App\Reservas\Controllers\CancelarReservaActionController;
 use App\Reservas\Controllers\CrearReservaActionController;
 use App\Reservas\Controllers\ConfirmacionPageController;
 use App\Reservas\Controllers\GuardarPasajerosActionController;
@@ -114,6 +115,7 @@ require_once __DIR__ . '/../app/perfil/controllers/mi-perfil-page.controller.php
 
 require_once __DIR__ . '/../app/reservas/repositories/reserva.repository.php';
 require_once __DIR__ . '/../app/reservas/services/reserva.service.php';
+require_once __DIR__ . '/../app/reservas/controllers/cancelar-reserva-action.controller.php';
 require_once __DIR__ . '/../app/reservas/controllers/crear-reserva-action.controller.php';
 require_once __DIR__ . '/../app/reservas/controllers/confirmacion-page.controller.php';
 require_once __DIR__ . '/../app/reservas/controllers/guardar-pasajeros-action.controller.php';
@@ -325,6 +327,13 @@ $container->scoped(ReservaRepository::class, function ($c) {
 
 $container->scoped(ReservaService::class, function ($c) {
     return new ReservaService($c->get(ReservaRepository::class));
+});
+
+$container->scoped(CancelarReservaActionController::class, function ($c) {
+    return new CancelarReservaActionController(
+        $c->get(ReservaService::class),
+        $c->get(SessionService::class)
+    );
 });
 
 $container->scoped(MisReservasPageController::class, function ($c) {

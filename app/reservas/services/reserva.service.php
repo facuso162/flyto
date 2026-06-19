@@ -106,6 +106,12 @@ class ReservaService
         return $reserva;
     }
 
+    public function puedeCancelar(Reserva $reserva): bool
+    {
+        return strtolower($reserva->estado) === 'confirmada'
+            && $reserva->vuelo->fechaSalida >= (new \DateTime())->modify('+72 hours');
+    }
+
     public function cancelar(int $reservaId, int $usuarioId): Reserva
     {
         $reserva = $this->reservaRepository->findById($reservaId);
@@ -118,7 +124,7 @@ class ReservaService
             throw new HttpException('Esta reserva ya no puede cancelarse.', 409);
         }
 
-        if ($reserva->vuelo->fechaSalida < (new \DateTime())->modify('+72 hours')) {
+        if (!$this->puedeCancelar($reserva)) {
             throw new HttpException('La reserva solo puede cancelarse hasta 72 horas antes del vuelo.', 409);
         }
 
