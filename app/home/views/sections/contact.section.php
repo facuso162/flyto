@@ -2,7 +2,7 @@
     $contactFlash = $flash ?? []; 
     $contactOldInput = $oldInput ?? [];
     $contactValidationErrors = $validationErrors ?? [];
-    $contactRedirectTo = ($contactRedirectTo ?? '') === 'home' ? 'home' : 'contacto';
+    $contactRedirectTo = $contactRedirectTo ?? 'contacto';
     $contactValue = fn (string $key): string => htmlspecialchars((string) ($contactOldInput[$key] ?? ''), ENT_QUOTES, 'UTF-8');
     $contactError = fn (string $key): string => htmlspecialchars((string) ($contactValidationErrors[$key] ?? ''), ENT_QUOTES, 'UTF-8');
     $contactSelected = fn (string $value): string => (($contactOldInput['asunto'] ?? '') === $value) ? ' selected' : '';
