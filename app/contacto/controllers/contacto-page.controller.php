@@ -33,6 +33,7 @@ class ContactoPageController
                 ],
                 'oldInput' => is_array($oldInput) ? $oldInput : [],
                 'validationErrors' => is_array($validationErrors) ? $validationErrors : [],
+                'contactRedirectTo' => 'contacto',
             ],
             200,
             $layoutPath

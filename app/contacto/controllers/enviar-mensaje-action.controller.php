@@ -24,22 +24,27 @@ class EnviarMensajeActionController
 
     public function enviar(array $params = [], array $query = []): void
     {
+        $redirectTo = $_POST['redirectTo'] ?? 'contacto';
+        $target = $redirectTo === 'home' ? '/' : '/contacto';
+        $oldInput = $_POST;
+        unset($oldInput['redirectTo']);
+
         try {
             $this->enviarMensajeService->execute($_POST);
 
             Flash::success('Tu consulta fue enviada correctamente.');
-            RedirectResponse::to('/contacto', [], 303, 'contacto');
+            RedirectResponse::to($target, [], 303, 'contacto');
         } catch (HttpException $exception) {
             Flash::error('No pudimos enviar tu consulta. Revisá los datos e intentalo nuevamente.');
             Flash::validationErrors($this->validationErrorsFromException($exception));
-            Flash::old($_POST);
+            Flash::old($oldInput);
 
-            RedirectResponse::to('/contacto', [], 303, 'contacto');
+            RedirectResponse::to($target, [], 303, 'contacto');
         } catch (Throwable) {
             Flash::error('No pudimos enviar tu consulta. Intentalo nuevamente en unos minutos.');
-            Flash::old($_POST);
+            Flash::old($oldInput);
 
-            RedirectResponse::to('/contacto', [], 303, 'contacto');
+            RedirectResponse::to($target, [], 303, 'contacto');
         }
     }
 

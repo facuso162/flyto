@@ -2,6 +2,7 @@
     $contactFlash = $flash ?? []; 
     $contactOldInput = $oldInput ?? [];
     $contactValidationErrors = $validationErrors ?? [];
+    $contactRedirectTo = ($contactRedirectTo ?? '') === 'home' ? 'home' : 'contacto';
     $contactValue = fn (string $key): string => htmlspecialchars((string) ($contactOldInput[$key] ?? ''), ENT_QUOTES, 'UTF-8');
     $contactError = fn (string $key): string => htmlspecialchars((string) ($contactValidationErrors[$key] ?? ''), ENT_QUOTES, 'UTF-8');
     $contactSelected = fn (string $value): string => (($contactOldInput['asunto'] ?? '') === $value) ? ' selected' : '';
@@ -44,6 +45,7 @@
             </div>
 
             <form action="<?= htmlspecialchars($basePath ?? '', ENT_QUOTES, 'UTF-8') ?>/contacto/enviar" method="post" class="p-8">
+                <input type="hidden" name="redirectTo" value="<?= $contactRedirectTo ?>">
                 <p class="font-mono text-xs uppercase tracking-[1.2px] text-flyto-muted">Formulario de consulta</p>
                 <?php if (!empty($contactFlash['success'])): ?>
                     <p class="mt-4 border border-flyto-navy bg-flyto-navy/10 px-4 py-3 text-sm leading-5 text-flyto-navy">
