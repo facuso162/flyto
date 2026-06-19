@@ -28,7 +28,7 @@ $renderCityOptions = static function (array $ciudades, string $selectedId): void
 
     foreach ($ciudades as $ciudad) {
         $id = (string) $ciudad['id'];
-        $label = sprintf('%s', $ciudad['abreviacion']);
+        $label = sprintf('%s', $ciudad['nombre']);
         $description = sprintf('%s, %s', $ciudad['nombre'], $ciudad['nombrePais']);
         ?>
         <option
