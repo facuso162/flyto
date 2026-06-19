@@ -18,6 +18,7 @@ class Vuelo
     public array $ciudadOrigen;
     public array $ciudadDestino;
     public array $aerolinea;
+    public ?array $promocion;
 
     public function __construct(
         int $id,
@@ -33,7 +34,8 @@ class Vuelo
         int $asientosOcupados,
         array $ciudadOrigen,
         array $ciudadDestino,
-        array $aerolinea
+        array $aerolinea,
+        ?array $promocion
     ) {
         $this->id = $id;
         $this->codigoVuelo = $codigoVuelo;
@@ -49,6 +51,7 @@ class Vuelo
         $this->ciudadOrigen = $ciudadOrigen;
         $this->ciudadDestino = $ciudadDestino;
         $this->aerolinea = $aerolinea;
+        $this->promocion = $promocion;
     }
 
     public function asientosLibres(): int
@@ -68,6 +71,15 @@ class Vuelo
         $remainingMinutes = $minutes % 60;
 
         return sprintf('%dh %02dm', $hours, $remainingMinutes);
+    }
+
+    public function precioConPromocion(): float
+    {
+        if ($this->promocion === null) {
+            return $this->precio;
+        }
+
+        return $this->precio * (1 - (float) $this->promocion['descuento']);
     }
 
     public function toArray(): array
@@ -91,6 +103,7 @@ class Vuelo
             'ciudadOrigen' => $this->ciudadOrigen,
             'ciudadDestino' => $this->ciudadDestino,
             'aerolinea' => $this->aerolinea,
+            'promocion' => $this->promocion
         ];
     }
 }

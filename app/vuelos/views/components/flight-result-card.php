@@ -6,6 +6,8 @@ use App\Vuelos\Models\Vuelo;
 $formatMoney = $formatMoney ?? static fn (float $amount): string => '$' . number_format($amount, 0, ',', '.');
 $asientosLibres = $vuelo->asientosLibres();
 $asientosTexto = $asientosLibres === 1 ? 'asiento' : 'asientos';
+$tienePromocion = $vuelo->promocion !== null;
+$precioFinal = $vuelo->precioConPromocion();
 
 ?>
 <article class="border border-flyto-ink/10 bg-white p-5 shadow-flyto md:p-6">
@@ -61,11 +63,22 @@ $asientosTexto = $asientosLibres === 1 ? 'asiento' : 'asientos';
         </div>
 
         <div class="border-t border-flyto-ink/10 pt-5 lg:min-w-[190px] lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0">
-            <p class="font-mono text-xs uppercase tracking-[0.3px] text-flyto-muted">Precio final</p>
-            <p class="mt-2 font-display text-[30px] font-semibold leading-none text-flyto-navy">
-                <?= htmlspecialchars($formatMoney($vuelo->precio), ENT_QUOTES, 'UTF-8') ?>
+            <?php if ($tienePromocion): ?>
+                <p class="mt-2 text-sm text-flyto-muted line-through">
+                    <?= htmlspecialchars($formatMoney($vuelo->precio), ENT_QUOTES, 'UTF-8') ?>
+                </p>
+            <?php endif; ?>
+            <p class="<?= $tienePromocion ? 'mt-2' : '' ?> font-display text-[30px] font-semibold leading-none text-flyto-navy">
+                <span class="mb-1 block font-mono text-xs font-normal uppercase tracking-[0.3px] text-flyto-muted">Precio final</span>
+                <?= htmlspecialchars($formatMoney($precioFinal), ENT_QUOTES, 'UTF-8') ?>
             </p>
             <p class="mt-2 text-xs text-flyto-muted">por pasajero</p>
+
+            <?php if ($tienePromocion): ?>
+                <p class="mt-3 border border-flyto-gold/60 bg-flyto-gold/10 px-3 py-2 text-xs font-semibold leading-5 text-flyto-ink">
+                    Promocion aplicada: <?= htmlspecialchars(number_format((float) $vuelo->promocion['descuento'] * 100, 0, ',', '.'), ENT_QUOTES, 'UTF-8') ?>% de descuento
+                </p>
+            <?php endif; ?>
 
             <?php if ($asientosLibres < 10): ?>
                 <p class="mt-4 border border-flyto-gold/60 bg-flyto-gold/10 px-3 py-2 text-xs font-medium leading-5 text-flyto-ink">

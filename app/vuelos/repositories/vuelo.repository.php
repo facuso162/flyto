@@ -30,6 +30,13 @@ class VueloRepository
                 v.aerolinea_id,
                 a.nombre AS aerolinea_nombre,
                 a.codigo_iata AS aerolinea_codigo_iata,
+                promocion.id AS promocion_id,
+                promocion.descripcion AS promocion_descripcion,
+                promocion.descuento AS promocion_descuento,
+                promocion.fecha_creacion AS promocion_fecha_creacion,
+                promocion.fecha_aprobacion AS promocion_fecha_aprobacion,
+                promocion.fecha_fin AS promocion_fecha_fin,
+                promocion.estado AS promocion_estado,
                 v.origen_ciudad_id,
                 origen.nombre AS origen_nombre,
                 origen.abreviacion AS origen_abreviacion,
@@ -48,16 +55,28 @@ class VueloRepository
                 v.distancia_km,
                 v.duracion_horas,
                 ev.nombre AS estado,
-                COALESCE(SUM(CASE WHEN r.id IS NOT NULL AND LOWER(er.nombre) <> 'cancelada' THEN 1 ELSE 0 END), 0) AS asientos_ocupados
+                v.asientosOcupados AS asientos_ocupados
             FROM vuelos v
             INNER JOIN aerolineas a ON a.id = v.aerolinea_id
+            LEFT JOIN (
+                SELECT
+                    p.id,
+                    p.descripcion,
+                    p.descuento,
+                    p.fecha_creacion,
+                    p.fecha_aprobacion,
+                    p.fecha_fin,
+                    p.aerolinea_id,
+                    ep.nombre AS estado
+                FROM promociones p
+                INNER JOIN estados_promociones ep ON ep.id = p.estado_id
+                WHERE LOWER(ep.nombre) = 'activa'
+            ) promocion ON promocion.aerolinea_id = a.id
             INNER JOIN ciudades origen ON origen.id = v.origen_ciudad_id
             INNER JOIN paises origen_pais ON origen_pais.id = origen.pais_id
             INNER JOIN ciudades destino ON destino.id = v.destino_ciudad_id
             INNER JOIN paises destino_pais ON destino_pais.id = destino.pais_id
             INNER JOIN estados_vuelos ev ON ev.id = v.estado_id
-            LEFT JOIN reservas r ON r.vuelo_id = v.id
-            LEFT JOIN estados_reservas er ON er.id = r.estado_id
             WHERE v.origen_ciudad_id = :origen
                 AND v.destino_ciudad_id = :destino
                 AND DATE(v.fecha_salida) = :fechaSalida
@@ -68,6 +87,13 @@ class VueloRepository
                 v.aerolinea_id,
                 a.nombre,
                 a.codigo_iata,
+                promocion.id,
+                promocion.descripcion,
+                promocion.descuento,
+                promocion.fecha_creacion,
+                promocion.fecha_aprobacion,
+                promocion.fecha_fin,
+                promocion.estado,
                 v.origen_ciudad_id,
                 origen.nombre,
                 origen.abreviacion,
@@ -140,6 +166,15 @@ class VueloRepository
                 'idAerolinea' => (int) $row['aerolinea_id'],
                 'codigoIataAerolinea' => $codigoIata,
                 'nombreAerolinea' => (string) $row['aerolinea_nombre'],
+            ],
+            promocion: $row['promocion_id'] === null ? null : [
+                'idPromocion' => (int) $row['promocion_id'],
+                'descripcion' => (string) $row['promocion_descripcion'],
+                'descuento' => (float) $row['promocion_descuento'],
+                'fechaCreacion' => (string) $row['promocion_fecha_creacion'],
+                'fechaAprobacion' => $row['promocion_fecha_aprobacion'],
+                'fechaFin' => $row['promocion_fecha_fin'],
+                'estado' => (string) $row['promocion_estado'],
             ]
         );
     }
