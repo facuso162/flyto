@@ -11,8 +11,7 @@ $vuelos = $resultadoBusqueda['vuelos'] ?? [];
 $aerolineas = $resultadoBusqueda['aerolineas'] ?? [];
 $precioMaximoDisponible = (float) ($resultadoBusqueda['precioMaximoDisponible'] ?? 0);
 $precioMaximoSeleccionado = (float) ($resultadoBusqueda['precioMaximoSeleccionado'] ?? $precioMaximoDisponible);
-// TOEDIT: Reemplazar por datos del modulo de ciudades cuando este disponible.
-$ciudades = $ciudades ?? (require __DIR__ . '/../../../shared/mocks/ciudades.mock.php');
+$ciudades = $ciudades ?? [];
 $basePath = $basePath ?? '';
 
 $ciudadesPorId = [];

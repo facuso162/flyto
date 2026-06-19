@@ -22,6 +22,8 @@ use App\Contacto\Controllers\ContactoPageController;
 use App\Contacto\Controllers\EnviarMensajeActionController;
 use App\Contacto\Services\ContactoEmailService;
 use App\Contacto\Services\EnviarMensajeService;
+use App\Ciudades\Repositories\CiudadRepository;
+use App\Ciudades\Services\CiudadService;
 use App\Container;
 use App\Home\Controllers\HomePageController;
 use App\Novedades\Controllers\AdminNovedadesPageController;
@@ -84,6 +86,9 @@ require_once __DIR__ . '/../app/contacto/services/contacto-email.service.php';
 require_once __DIR__ . '/../app/contacto/services/enviar-mensaje.service.php';
 require_once __DIR__ . '/../app/contacto/controllers/contacto-page.controller.php';
 require_once __DIR__ . '/../app/contacto/controllers/enviar-mensaje-action.controller.php';
+
+require_once __DIR__ . '/../app/ciudades/repositories/ciudad.repository.php';
+require_once __DIR__ . '/../app/ciudades/services/ciudad.service.php';
 
 require_once __DIR__ . '/../app/home/controllers/home-page.controller.php';
 
@@ -229,8 +234,17 @@ $container->scoped(EnviarMensajeActionController::class, function ($c) {
     return new EnviarMensajeActionController($c->get(EnviarMensajeService::class));
 });
 
+$container->scoped(CiudadRepository::class, function ($c) {
+    return new CiudadRepository($c->get(Database::class));
+});
+
+$container->scoped(CiudadService::class, function ($c) {
+    return new CiudadService($c->get(CiudadRepository::class));
+});
+
 $container->scoped(HomePageController::class, function ($c) {
     return new HomePageController(
+        $c->get(CiudadService::class),
         $c->get(NovedadService::class),
         $c->get(ViewResponse::class)
     );
@@ -293,6 +307,7 @@ $container->scoped(VueloController::class, function ($c) {
 
 $container->scoped(BuscarVuelosPageController::class, function ($c) {
     return new BuscarVuelosPageController(
+        $c->get(CiudadService::class),
         $c->get(VueloService::class),
         $c->get(ViewResponse::class)
     );
