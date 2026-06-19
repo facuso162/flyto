@@ -35,6 +35,7 @@ use App\Novedades\Repositories\NovedadRepository;
 use App\Novedades\Services\NovedadService;
 use App\Perfil\Controllers\MiPerfilPageController;
 use App\Reservas\Controllers\CrearReservaActionController;
+use App\Reservas\Controllers\ConfirmacionPageController;
 use App\Reservas\Controllers\GuardarPasajerosActionController;
 use App\Reservas\Controllers\PagoPageController;
 use App\Reservas\Controllers\PasajerosPageController;
@@ -112,6 +113,7 @@ require_once __DIR__ . '/../app/perfil/controllers/mi-perfil-page.controller.php
 require_once __DIR__ . '/../app/reservas/repositories/reserva.repository.php';
 require_once __DIR__ . '/../app/reservas/services/reserva.service.php';
 require_once __DIR__ . '/../app/reservas/controllers/crear-reserva-action.controller.php';
+require_once __DIR__ . '/../app/reservas/controllers/confirmacion-page.controller.php';
 require_once __DIR__ . '/../app/reservas/controllers/guardar-pasajeros-action.controller.php';
 require_once __DIR__ . '/../app/reservas/controllers/pago-page.controller.php';
 require_once __DIR__ . '/../app/reservas/controllers/pasajeros-page.controller.php';
@@ -325,6 +327,14 @@ $container->scoped(CrearReservaActionController::class, function ($c) {
     return new CrearReservaActionController(
         $c->get(ReservaService::class),
         $c->get(SessionService::class)
+    );
+});
+
+$container->scoped(ConfirmacionPageController::class, function ($c) {
+    return new ConfirmacionPageController(
+        $c->get(ReservaService::class),
+        $c->get(SessionService::class),
+        $c->get(ViewResponse::class)
     );
 });
 
@@ -563,6 +573,10 @@ $protectedPublicRoutes = [
     ],
     '/reservas/pago' => [
         'controller' => PagoPageController::class,
+        'action' => 'show',
+    ],
+    '/reservas/confirmacion' => [
+        'controller' => ConfirmacionPageController::class,
         'action' => 'show',
     ],
     '/mi-perfil' => [

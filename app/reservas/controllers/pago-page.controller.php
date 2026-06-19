@@ -47,11 +47,19 @@ class PagoPageController
         }
 
         $vuelo = $this->reservaService->obtenerVueloPendiente((int) $vueloId, $datosPasajeros->cantidadPasajeros);
+        $flash = Flash::consume();
+        $oldInput = Flash::consumeOld();
 
         $this->viewResponse->render(
-            __DIR__ . '/../views/pages/pago-test.page.php',
+            __DIR__ . '/../views/pages/pago.page.php',
             'Pago - Flyto',
-            ['vuelo' => $vuelo, 'datosPasajeros' => $datosPasajeros, 'usuario' => $usuario],
+            [
+                'vuelo' => $vuelo,
+                'datosPasajeros' => $datosPasajeros,
+                'flash' => ['error' => $flash['error'] ?? null],
+                'validationErrors' => is_array($flash['validationErrors'] ?? null) ? $flash['validationErrors'] : [],
+                'oldInput' => is_array($oldInput) ? $oldInput : [],
+            ],
             200,
             $layoutPath
         );

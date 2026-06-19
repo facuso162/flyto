@@ -633,8 +633,16 @@ body {
   right: 0px;
 }
 
+.right-3 {
+  right: 0.75rem;
+}
+
 .top-0 {
   top: 0px;
+}
+
+.top-1\/2 {
+  top: 50%;
 }
 
 .top-20 {
@@ -791,6 +799,10 @@ body {
   height: 2.25rem;
 }
 
+.h-\[13px\] {
+  height: 13px;
+}
+
 .h-\[41\.6px\] {
   height: 41.6px;
 }
@@ -813,6 +825,10 @@ body {
 
 .min-h-\[45\.6px\] {
   min-height: 45.6px;
+}
+
+.min-h-\[696px\] {
+  min-height: 696px;
 }
 
 .min-h-\[720px\] {
@@ -857,6 +873,10 @@ body {
 
 .w-8 {
   width: 2rem;
+}
+
+.w-\[13px\] {
+  width: 13px;
 }
 
 .w-full {
@@ -917,6 +937,11 @@ body {
 
 .shrink-0 {
   flex-shrink: 0;
+}
+
+.-translate-y-1\/2 {
+  --tw-translate-y: -50%;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
 .cursor-pointer {
@@ -983,6 +1008,10 @@ body {
   gap: 0.5rem;
 }
 
+.gap-2\.5 {
+  gap: 0.625rem;
+}
+
 .gap-3 {
   gap: 0.75rem;
 }
@@ -1014,6 +1043,12 @@ body {
 
 .gap-y-4 {
   row-gap: 1rem;
+}
+
+.space-y-2 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-y-reverse: 0;
+  margin-top: calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));
+  margin-bottom: calc(0.5rem * var(--tw-space-y-reverse));
 }
 
 .space-y-3 > :not([hidden]) ~ :not([hidden]) {
@@ -1257,6 +1292,11 @@ body {
   padding-bottom: 0.5rem;
 }
 
+.py-2\.5 {
+  padding-top: 0.625rem;
+  padding-bottom: 0.625rem;
+}
+
 .py-3 {
   padding-top: 0.75rem;
   padding-bottom: 0.75rem;
@@ -1300,6 +1340,14 @@ body {
 
 .pb-8 {
   padding-bottom: 2rem;
+}
+
+.pl-3 {
+  padding-left: 0.75rem;
+}
+
+.pr-10 {
+  padding-right: 2.5rem;
 }
 
 .pt-16 {
@@ -1572,6 +1620,10 @@ body {
   color: rgb(153 27 27 / var(--tw-text-opacity, 1));
 }
 
+.underline {
+  text-decoration-line: underline;
+}
+
 .line-through {
   text-decoration-line: line-through;
 }
@@ -1603,6 +1655,14 @@ body {
 
 .placeholder\:text-flyto-muted\/40::placeholder {
   color: rgb(107 107 96 / 0.4);
+}
+
+.placeholder\:text-flyto-muted\/50::-moz-placeholder {
+  color: rgb(107 107 96 / 0.5);
+}
+
+.placeholder\:text-flyto-muted\/50::placeholder {
+  color: rgb(107 107 96 / 0.5);
 }
 
 .last\:border-b-0:last-child {

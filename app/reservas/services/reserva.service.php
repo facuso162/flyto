@@ -95,6 +95,17 @@ class ReservaService
         return $this->reservaRepository->findById((int) $reserva->id) ?? $reserva;
     }
 
+    public function obtenerReservaUsuario(int $reservaId, int $usuarioId): Reserva
+    {
+        $reserva = $this->reservaRepository->findById($reservaId);
+
+        if (!$reserva || (int) $reserva->usuario['id'] !== $usuarioId) {
+            throw new HttpException('Reserva no encontrada.', 404);
+        }
+
+        return $reserva;
+    }
+
     public function cancelar(int $reservaId, int $usuarioId): Reserva
     {
         $reserva = $this->reservaRepository->findById($reservaId);

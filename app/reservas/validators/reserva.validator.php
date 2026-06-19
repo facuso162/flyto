@@ -8,6 +8,35 @@ require_once __DIR__ . '/../../shared/http/http-exception.php';
 
 class ReservaValidator
 {
+    public static function validatePaymentForm(array $data): void
+    {
+        if (!isset($data['pago']) || !is_array($data['pago'])) {
+            throw new HttpException('El metodo de pago es obligatorio.', 400, ['field' => 'pago']);
+        }
+
+        $pago = $data['pago'];
+        self::requiredString($pago, 'nombreTitular', 120, 'pago.nombreTitular');
+
+        $numeroTarjeta = preg_replace('/\s+/', '', self::requiredString($pago, 'numeroTarjeta', 23, 'pago.numeroTarjeta'));
+        if (!is_string($numeroTarjeta) || preg_match('/^\d{13,19}$/', $numeroTarjeta) !== 1) {
+            throw new HttpException('El numero de tarjeta no tiene un formato valido.', 400, ['field' => 'pago.numeroTarjeta']);
+        }
+
+        $vencimiento = self::requiredString($pago, 'vencimiento', 5, 'pago.vencimiento');
+        if (preg_match('/^(0[1-9]|1[0-2])\/(\d{2})$/', $vencimiento) !== 1) {
+            throw new HttpException('El vencimiento debe tener el formato MM/AA.', 400, ['field' => 'pago.vencimiento']);
+        }
+
+        $cvv = self::requiredString($pago, 'cvv', 4, 'pago.cvv');
+        if (preg_match('/^\d{3,4}$/', $cvv) !== 1) {
+            throw new HttpException('El codigo de seguridad no tiene un formato valido.', 400, ['field' => 'pago.cvv']);
+        }
+
+        if (($pago['aceptaTerminos'] ?? null) !== '1') {
+            throw new HttpException('Debes aceptar los terminos y condiciones.', 400, ['field' => 'pago.aceptaTerminos']);
+        }
+    }
+
     public static function validate(array $data): void
     {
         self::positiveInteger($data, 'vueloId', 'El vuelo es obligatorio.');
