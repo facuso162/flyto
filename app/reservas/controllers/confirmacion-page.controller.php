@@ -37,7 +37,7 @@ class ConfirmacionPageController
         $reservaId = filter_var($query['reservaId'] ?? null, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
         if ($reservaId === false) {
             Flash::error('La reserva indicada no es valida.');
-            RedirectResponse::to('/mi-perfil', [], 303);
+            RedirectResponse::to('/mi-perfil/mis-reservas', [], 303);
             return;
         }
 

@@ -912,6 +912,11 @@ body {
   width: 13px;
 }
 
+.w-fit {
+  width: -moz-fit-content;
+  width: fit-content;
+}
+
 .w-full {
   width: 100%;
 }
@@ -950,6 +955,10 @@ body {
 
 .max-w-\[948px\] {
   max-width: 948px;
+}
+
+.max-w-full {
+  max-width: 100%;
 }
 
 .max-w-lg {
@@ -1127,6 +1136,14 @@ body {
   margin-bottom: calc(1.5rem * var(--tw-space-y-reverse));
 }
 
+.overflow-x-auto {
+  overflow-x: auto;
+}
+
+.whitespace-nowrap {
+  white-space: nowrap;
+}
+
 .rounded-full {
   border-radius: 9999px;
 }
@@ -1141,6 +1158,10 @@ body {
 
 .border-t {
   border-top-width: 1px;
+}
+
+.border-t-0 {
+  border-top-width: 0px;
 }
 
 .border-emerald-200 {
@@ -1249,6 +1270,10 @@ body {
 .bg-flyto-sand {
   --tw-bg-opacity: 1;
   background-color: rgb(242 241 239 / var(--tw-bg-opacity, 1));
+}
+
+.bg-flyto-sand\/10 {
+  background-color: rgb(242 241 239 / 0.1);
 }
 
 .bg-flyto-sand\/20 {
@@ -1486,6 +1511,10 @@ body {
   font-size: 18.4px;
 }
 
+.text-\[20\.8px\] {
+  font-size: 20.8px;
+}
+
 .text-\[23px\] {
   font-size: 23px;
 }
@@ -1581,6 +1610,10 @@ body {
 
 .leading-8 {
   line-height: 2rem;
+}
+
+.leading-9 {
+  line-height: 2.25rem;
 }
 
 .leading-\[19\.5px\] {
@@ -1767,6 +1800,10 @@ body {
   background-color: rgb(242 241 239 / var(--tw-bg-opacity, 1));
 }
 
+.hover\:bg-flyto-sand\/50:hover {
+  background-color: rgb(242 241 239 / 0.5);
+}
+
 .hover\:bg-red-50:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(254 242 242 / var(--tw-bg-opacity, 1));
@@ -1919,6 +1956,10 @@ body {
     grid-template-columns: 259px 1fr;
   }
 
+  .md\:grid-cols-\[259px_minmax\(0\2c 1fr\)\] {
+    grid-template-columns: 259px minmax(0,1fr);
+  }
+
   .md\:grid-cols-\[282px_1fr\] {
     grid-template-columns: 282px 1fr;
   }
@@ -2053,8 +2094,20 @@ body {
     grid-template-columns: minmax(0,640px) 304px;
   }
 
+  .lg\:grid-cols-\[minmax\(180px\2c 1fr\)_minmax\(120px\2c 0\.65fr\)_72px_100px_84px_16px\] {
+    grid-template-columns: minmax(180px,1fr) minmax(120px,0.65fr) 72px 100px 84px 16px;
+  }
+
+  .lg\:flex-row {
+    flex-direction: row;
+  }
+
   .lg\:items-center {
     align-items: center;
+  }
+
+  .lg\:justify-between {
+    justify-content: space-between;
   }
 
   .lg\:border-l {

@@ -41,6 +41,8 @@ use App\Reservas\Controllers\PagoPageController;
 use App\Reservas\Controllers\PasajerosPageController;
 use App\Reservas\Repositories\ReservaRepository;
 use App\Reservas\Services\ReservaService;
+use App\Reservas\Controllers\MisReservasPageController;
+use App\Reservas\Controllers\ReservaDetallePageController;
 use App\Router;
 use App\Shared\Config\Env;
 use App\Shared\Database\Database;
@@ -117,6 +119,8 @@ require_once __DIR__ . '/../app/reservas/controllers/confirmacion-page.controlle
 require_once __DIR__ . '/../app/reservas/controllers/guardar-pasajeros-action.controller.php';
 require_once __DIR__ . '/../app/reservas/controllers/pago-page.controller.php';
 require_once __DIR__ . '/../app/reservas/controllers/pasajeros-page.controller.php';
+require_once __DIR__ . '/../app/reservas/controllers/mis-reservas-page.controller.php';
+require_once __DIR__ . '/../app/reservas/controllers/reserva-detalle-page.controller.php';
 
 require_once __DIR__ . '/../app/vuelos/repositories/vuelo.repository.php';
 require_once __DIR__ . '/../app/vuelos/services/vuelo.service.php';
@@ -321,6 +325,22 @@ $container->scoped(ReservaRepository::class, function ($c) {
 
 $container->scoped(ReservaService::class, function ($c) {
     return new ReservaService($c->get(ReservaRepository::class));
+});
+
+$container->scoped(MisReservasPageController::class, function ($c) {
+    return new MisReservasPageController(
+        $c->get(ReservaService::class),
+        $c->get(SessionService::class),
+        $c->get(ViewResponse::class)
+    );
+});
+
+$container->scoped(ReservaDetallePageController::class, function ($c) {
+    return new ReservaDetallePageController(
+        $c->get(ReservaService::class),
+        $c->get(SessionService::class),
+        $c->get(ViewResponse::class)
+    );
 });
 
 $container->scoped(CrearReservaActionController::class, function ($c) {
@@ -579,8 +599,16 @@ $protectedPublicRoutes = [
         'controller' => ConfirmacionPageController::class,
         'action' => 'show',
     ],
-    '/mi-perfil' => [
+    '/mi-perfil/mis-reservas' => [
+        'controller' => MisReservasPageController::class,
+        'action' => 'show',
+    ],
+    '/mi-perfil/datos' => [
         'controller' => MiPerfilPageController::class,
+        'action' => 'show',
+    ],
+    '/reservas/detalle' => [
+        'controller' => ReservaDetallePageController::class,
         'action' => 'show',
     ],
 ];

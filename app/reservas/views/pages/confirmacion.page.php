@@ -128,7 +128,7 @@ $steps = ['Selección', 'Pasajeros', 'Pago', 'Confirmación'];
         </section>
 
         <div class="mt-8 grid gap-3 sm:grid-cols-2">
-            <a href="<?= $html($basePath) ?>/mi-perfil" class="flex h-[46px] items-center justify-center gap-2 border border-flyto-ink/10 bg-transparent px-5 text-sm font-medium transition hover:border-flyto-ink/30 hover:bg-white">
+            <a href="<?= $html($basePath) ?>/mi-perfil/mis-reservas" class="flex h-[46px] items-center justify-center gap-2 border border-flyto-ink/10 bg-transparent px-5 text-sm font-medium transition hover:border-flyto-ink/30 hover:bg-white">
                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v10h13V10M9 20v-6h6v6"/></svg>
                 Ver mis reservas
             </a>

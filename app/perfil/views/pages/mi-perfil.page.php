@@ -2,6 +2,7 @@
 $currentUser = $currentUser ?? null;
 $currentUser = is_array($currentUser) ? $currentUser : [];
 $basePath = $basePath ?? '';
+$profileSection = 'datos';
 
 $nombre = trim((string) ($currentUser['nombre'] ?? ''));
 $apellido = trim((string) ($currentUser['apellido'] ?? ''));

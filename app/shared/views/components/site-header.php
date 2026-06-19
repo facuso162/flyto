@@ -48,7 +48,7 @@ if ($userName === '') {
 
         <?php if ($isAuthenticated): ?>
             <div class="hidden items-center gap-3 md:flex">
-                <a href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/mi-perfil" class="text-sm font-medium text-flyto-muted hover:text-flyto-ink">
+                <a href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/mi-perfil/mis-reservas" class="text-sm font-medium text-flyto-muted hover:text-flyto-ink">
                     <?= htmlspecialchars($userName, ENT_QUOTES, 'UTF-8') ?>
                 </a>
             </div>
@@ -72,7 +72,7 @@ if ($userName === '') {
                     </a>
                 <?php endforeach; ?>
                 <?php if ($isAuthenticated): ?>
-                    <a href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/mi-perfil" class="mt-2 block bg-flyto-navy px-3 py-2 text-sm font-medium text-flyto-sand">
+                    <a href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/mi-perfil/mis-reservas" class="mt-2 block bg-flyto-navy px-3 py-2 text-sm font-medium text-flyto-sand">
                         <?= htmlspecialchars($userName, ENT_QUOTES, 'UTF-8') ?>
                     </a>
                 <?php else: ?>
