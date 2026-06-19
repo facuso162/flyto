@@ -23,6 +23,7 @@ use App\Contacto\Controllers\EnviarMensajeActionController;
 use App\Contacto\Services\ContactoEmailService;
 use App\Contacto\Services\EnviarMensajeService;
 use App\Container;
+use App\Home\Controllers\HomePageController;
 use App\Novedades\Controllers\AdminNovedadesPageController;
 use App\Novedades\Controllers\BorrarNovedadActionController;
 use App\Novedades\Controllers\CrearNovedadActionController;
@@ -84,6 +85,8 @@ require_once __DIR__ . '/../app/contacto/services/enviar-mensaje.service.php';
 require_once __DIR__ . '/../app/contacto/controllers/contacto-page.controller.php';
 require_once __DIR__ . '/../app/contacto/controllers/enviar-mensaje-action.controller.php';
 
+require_once __DIR__ . '/../app/home/controllers/home-page.controller.php';
+
 require_once __DIR__ . '/../app/novedades/repositories/novedad.repository.php';
 require_once __DIR__ . '/../app/novedades/services/novedad.service.php';
 require_once __DIR__ . '/../app/novedades/controllers/novedades-page.controller.php';
@@ -98,26 +101,6 @@ require_once __DIR__ . '/../app/vuelos/controllers/vuelo.controller.php';
 require_once __DIR__ . '/../app/vuelos/controllers/buscar-vuelos-page.controller.php';
 
 Env::load(__DIR__ . '/../.env.example');
-
-// Home todavia no usa PageController y conserva temporalmente esta carga directa.
-function createNovedadService(): NovedadService
-{
-    return new NovedadService(
-        new NovedadRepository(Database::getConnection())
-    );
-}
-
-function loadPublicNovedades(callable $loader): array
-{
-    try {
-        return array_map(
-            fn ($novedad) => $novedad->toArray(),
-            $loader(createNovedadService())
-        );
-    } catch (Throwable) {
-        return [];
-    }
-}
 
 $container = new Container();
 
@@ -244,6 +227,13 @@ $container->scoped(ContactoPageController::class, function ($c) {
 
 $container->scoped(EnviarMensajeActionController::class, function ($c) {
     return new EnviarMensajeActionController($c->get(EnviarMensajeService::class));
+});
+
+$container->scoped(HomePageController::class, function ($c) {
+    return new HomePageController(
+        $c->get(NovedadService::class),
+        $c->get(ViewResponse::class)
+    );
 });
 
 $container->scoped(NovedadRepository::class, function ($c) {
@@ -443,16 +433,9 @@ $requestQuery = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_QUERY);
 parse_str(is_string($requestQuery) ? $requestQuery : '', $queryParams);
 
 $publicRoutes = [
-    // Esto luego mutara, con un controller, llevando datos de ultimas novedades
-    // asi como los datos del usuario, necesarios para habilitacion de paginas protegidas
     '/' => [
-        'view' => __DIR__ . '/../app/home/views/pages/home.page.php',
-        'title' => 'Flyto - Reservas de vuelos',
-        'data' => fn () => [
-            'ultimasNovedades' => loadPublicNovedades(
-                fn (NovedadService $service) => $service->getUltimas()
-            ),
-        ],
+        'controller' => HomePageController::class,
+        'action' => 'show',
     ],
     '/auth/login' => [
         'controller' => LoginPageController::class,
