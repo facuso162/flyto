@@ -35,6 +35,9 @@ use App\Novedades\Repositories\NovedadRepository;
 use App\Novedades\Services\NovedadService;
 use App\Perfil\Controllers\MiPerfilPageController;
 use App\Reservas\Controllers\CrearReservaActionController;
+use App\Reservas\Controllers\GuardarPasajerosActionController;
+use App\Reservas\Controllers\PagoPageController;
+use App\Reservas\Controllers\PasajerosPageController;
 use App\Reservas\Repositories\ReservaRepository;
 use App\Reservas\Services\ReservaService;
 use App\Router;
@@ -109,6 +112,9 @@ require_once __DIR__ . '/../app/perfil/controllers/mi-perfil-page.controller.php
 require_once __DIR__ . '/../app/reservas/repositories/reserva.repository.php';
 require_once __DIR__ . '/../app/reservas/services/reserva.service.php';
 require_once __DIR__ . '/../app/reservas/controllers/crear-reserva-action.controller.php';
+require_once __DIR__ . '/../app/reservas/controllers/guardar-pasajeros-action.controller.php';
+require_once __DIR__ . '/../app/reservas/controllers/pago-page.controller.php';
+require_once __DIR__ . '/../app/reservas/controllers/pasajeros-page.controller.php';
 
 require_once __DIR__ . '/../app/vuelos/repositories/vuelo.repository.php';
 require_once __DIR__ . '/../app/vuelos/services/vuelo.service.php';
@@ -322,6 +328,29 @@ $container->scoped(CrearReservaActionController::class, function ($c) {
     );
 });
 
+$container->scoped(PasajerosPageController::class, function ($c) {
+    return new PasajerosPageController(
+        $c->get(ReservaService::class),
+        $c->get(SessionService::class),
+        $c->get(ViewResponse::class)
+    );
+});
+
+$container->scoped(GuardarPasajerosActionController::class, function ($c) {
+    return new GuardarPasajerosActionController(
+        $c->get(ReservaService::class),
+        $c->get(SessionService::class)
+    );
+});
+
+$container->scoped(PagoPageController::class, function ($c) {
+    return new PagoPageController(
+        $c->get(ReservaService::class),
+        $c->get(SessionService::class),
+        $c->get(ViewResponse::class)
+    );
+});
+
 $container->scoped(VueloRepository::class, function ($c) {
     return new VueloRepository($c->get(Database::class));
 });
@@ -528,6 +557,14 @@ $publicRoutes = [
 ];
 
 $protectedPublicRoutes = [
+    '/reservas/pasajeros' => [
+        'controller' => PasajerosPageController::class,
+        'action' => 'show',
+    ],
+    '/reservas/pago' => [
+        'controller' => PagoPageController::class,
+        'action' => 'show',
+    ],
     '/mi-perfil' => [
         'controller' => MiPerfilPageController::class,
         'action' => 'show',

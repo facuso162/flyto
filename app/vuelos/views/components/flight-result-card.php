@@ -8,6 +8,11 @@ $asientosLibres = $vuelo->asientosLibres();
 $asientosTexto = $asientosLibres === 1 ? 'asiento' : 'asientos';
 $tienePromocion = $vuelo->promocion !== null;
 $precioFinal = $vuelo->precioConPromocion();
+$cantidadPasajerosSeleccionada = isset($criterios) ? (int) $criterios->cantidadPasajeros : 1;
+$seleccionarQuery = http_build_query([
+    'vueloId' => $vuelo->id,
+    'cantidadPasajeros' => $cantidadPasajerosSeleccionada,
+]);
 
 ?>
 <article class="border border-flyto-ink/10 bg-white p-5 shadow-flyto md:p-6">
@@ -90,7 +95,7 @@ $precioFinal = $vuelo->precioConPromocion();
                 </p>
             <?php endif; ?>
 
-            <a href="#" class="mt-5 inline-flex h-10 w-full items-center justify-center bg-flyto-navy px-4 text-sm font-medium text-flyto-sand">
+            <a href="<?= htmlspecialchars(($basePath ?? '') . '/reservas/pasajeros?' . $seleccionarQuery, ENT_QUOTES, 'UTF-8') ?>" class="mt-5 inline-flex h-10 w-full items-center justify-center bg-flyto-navy px-4 text-sm font-medium text-flyto-sand">
                 Seleccionar
             </a>
         </div>

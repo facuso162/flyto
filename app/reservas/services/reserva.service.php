@@ -6,6 +6,7 @@ use App\Reservas\Dtos\CrearReservaDto;
 use App\Reservas\Models\Reserva;
 use App\Reservas\Repositories\ReservaRepository;
 use App\Shared\Http\HttpException;
+use App\Vuelos\Models\Vuelo;
 
 require_once __DIR__ . '/../dtos/crear-reserva.dto.php';
 require_once __DIR__ . '/../models/reserva.model.php';
@@ -21,6 +22,25 @@ class ReservaService
     public function __construct(ReservaRepository $reservaRepository)
     {
         $this->reservaRepository = $reservaRepository;
+    }
+
+    public function obtenerVueloPendiente(int $vueloId, int $cantidadPasajeros): Vuelo
+    {
+        $vuelo = $this->reservaRepository->findVueloParaReserva($vueloId);
+
+        if (!$vuelo) {
+            throw new HttpException('El vuelo seleccionado no existe.', 404, ['field' => 'vueloId']);
+        }
+
+        if (strtolower($vuelo->estado) !== 'pendiente' || $vuelo->fechaSalida <= new \DateTime()) {
+            throw new HttpException('El vuelo seleccionado ya no esta disponible.', 409, ['field' => 'vueloId']);
+        }
+
+        if ($vuelo->asientosLibres() < $cantidadPasajeros) {
+            throw new HttpException('No hay suficientes asientos disponibles.', 409, ['field' => 'cantidadPasajeros']);
+        }
+
+        return $vuelo;
     }
 
     /** @return Reserva[] */
@@ -45,24 +65,11 @@ class ReservaService
 
     public function crear(CrearReservaDto $dto): Reserva
     {
-        $vuelo = $this->reservaRepository->findVueloParaReserva($dto->vueloId);
-
-        if (!$vuelo) {
-            throw new HttpException('El vuelo seleccionado no existe.', 404, ['field' => 'vueloId']);
-        }
-
-        if (strtolower($vuelo->estado) !== 'pendiente' || $vuelo->fechaSalida <= new \DateTime()) {
-            throw new HttpException('El vuelo seleccionado ya no esta disponible.', 409, ['field' => 'vueloId']);
-        }
-
         $cantidadPasajeros = count($dto->pasajeros);
         if ($cantidadPasajeros < 1) {
             throw new HttpException('Debes incluir al menos un pasajero.', 400, ['field' => 'pasajeros']);
         }
-
-        if ($vuelo->asientosLibres() < $cantidadPasajeros) {
-            throw new HttpException('No hay suficientes asientos disponibles.', 409, ['field' => 'pasajeros']);
-        }
+        $vuelo = $this->obtenerVueloPendiente($dto->vueloId, $cantidadPasajeros);
 
         $ahora = new \DateTime();
         $vencimientoActual = ((int) $ahora->format('Y') * 100) + (int) $ahora->format('n');
