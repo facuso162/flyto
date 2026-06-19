@@ -43,10 +43,19 @@ class ConfirmacionPageController
 
         $reserva = $this->reservaService->obtenerReservaUsuario((int) $reservaId, (int) $usuario['id']);
 
+        $codigoReserva = sprintf(
+            'FLY-%06d',
+            $reserva->id
+        );
+
         $this->viewResponse->render(
             __DIR__ . '/../views/pages/confirmacion.page.php',
             'Reserva confirmada - Flyto',
-            ['reserva' => $reserva],
+            [
+                'reserva' => $reserva,
+                'codigoReserva' => $codigoReserva,
+                'correoConfirmacion' => (string) ($reserva->usuario['email'] ?? $usuario['email'] ?? ''),
+            ],
             200,
             $layoutPath
         );
