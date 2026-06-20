@@ -131,7 +131,8 @@ VALUES
 INSERT INTO estados_promociones (nombre)
 VALUES
     ('activa'),
-    ('inactiva');
+    ('inactiva'),
+    ('pendiente_activacion');
 
 INSERT INTO usuarios (
     nombre,
