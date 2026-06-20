@@ -4,11 +4,13 @@ namespace App\Vuelos\Repositories;
 
 use App\Vuelos\Dtos\BuscarVuelosDto;
 use App\Vuelos\Dtos\CrearVueloDto;
+use App\Vuelos\Dtos\EditarVueloDto;
 use App\Vuelos\Models\Vuelo;
 use PDO;
 
 require_once __DIR__ . '/../dtos/buscar-vuelos.dto.php';
 require_once __DIR__ . '/../dtos/crear-vuelo.dto.php';
+require_once __DIR__ . '/../dtos/editar-vuelo.dto.php';
 require_once __DIR__ . '/../models/vuelo.model.php';
 
 class VueloRepository
@@ -295,6 +297,82 @@ class VueloRepository
         return $stmt->fetchColumn() !== false;
     }
 
+    public function existsByCodigoExcludingId(string $codigo, int $vueloId): bool
+    {
+        $stmt = $this->pdo->prepare(
+            'SELECT 1 FROM vuelos WHERE codigoVuelo = :codigo AND id <> :id LIMIT 1'
+        );
+        $stmt->execute([':codigo' => $codigo, ':id' => $vueloId]);
+
+        return $stmt->fetchColumn() !== false;
+    }
+
+    public function getById(int $vueloId): ?Vuelo
+    {
+        $stmt = $this->pdo->prepare("
+            SELECT
+                v.id,
+                v.codigoVuelo,
+                v.aerolinea_id,
+                a.nombre AS aerolinea_nombre,
+                a.codigo_iata AS aerolinea_codigo_iata,
+                NULL AS promocion_id,
+                NULL AS promocion_descripcion,
+                NULL AS promocion_descuento,
+                NULL AS promocion_fecha_creacion,
+                NULL AS promocion_fecha_aprobacion,
+                NULL AS promocion_fecha_fin,
+                NULL AS promocion_estado,
+                v.origen_ciudad_id,
+                origen.nombre AS origen_nombre,
+                origen.abreviacion AS origen_abreviacion,
+                origen_pais.id AS origen_pais_id,
+                origen_pais.nombre AS origen_pais_nombre,
+                v.destino_ciudad_id,
+                destino.nombre AS destino_nombre,
+                destino.abreviacion AS destino_abreviacion,
+                destino_pais.id AS destino_pais_id,
+                destino_pais.nombre AS destino_pais_nombre,
+                v.precio,
+                v.asientos_disponibles,
+                v.asientosOcupados AS asientos_ocupados,
+                v.fecha_salida,
+                v.fecha_llegada,
+                v.fecha_creacion,
+                v.distancia_km,
+                v.duracion_horas,
+                ev.nombre AS estado
+            FROM vuelos v
+            INNER JOIN aerolineas a ON a.id = v.aerolinea_id
+            INNER JOIN ciudades origen ON origen.id = v.origen_ciudad_id
+            INNER JOIN paises origen_pais ON origen_pais.id = origen.pais_id
+            INNER JOIN ciudades destino ON destino.id = v.destino_ciudad_id
+            INNER JOIN paises destino_pais ON destino_pais.id = destino.pais_id
+            INNER JOIN estados_vuelos ev ON ev.id = v.estado_id
+            WHERE v.id = :id
+            LIMIT 1
+        ");
+        $stmt->execute([':id' => $vueloId]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $row ? $this->mapRow($row) : null;
+    }
+
+    public function hasConfirmedReservations(int $vueloId): bool
+    {
+        $stmt = $this->pdo->prepare("
+            SELECT 1
+            FROM reservas r
+            INNER JOIN estados_reservas er ON er.id = r.estado_id
+            WHERE r.vuelo_id = :vuelo_id
+                AND LOWER(er.nombre) = 'confirmada'
+            LIMIT 1
+        ");
+        $stmt->execute([':vuelo_id' => $vueloId]);
+
+        return $stmt->fetchColumn() !== false;
+    }
+
     /** @return array{id: int, nombre: string}|null */
     public function getAerolineaByCeoId(int $ceoId): ?array
     {
@@ -341,6 +419,35 @@ class VueloRepository
         ]);
 
         return (int) $this->pdo->lastInsertId();
+    }
+
+    public function editar(int $vueloId, EditarVueloDto $dto): void
+    {
+        $stmt = $this->pdo->prepare(
+            'UPDATE vuelos SET
+                codigoVuelo = :codigo,
+                origen_ciudad_id = :origen,
+                destino_ciudad_id = :destino,
+                precio = :precio,
+                asientos_disponibles = :asientos,
+                fecha_salida = :salida,
+                fecha_llegada = :llegada,
+                distancia_km = :distancia,
+                duracion_horas = :duracion
+            WHERE id = :id'
+        );
+        $stmt->execute([
+            ':id' => $vueloId,
+            ':codigo' => $dto->codigoVuelo,
+            ':origen' => $dto->origenCiudadId,
+            ':destino' => $dto->destinoCiudadId,
+            ':precio' => $dto->precio,
+            ':asientos' => $dto->asientosDisponibles,
+            ':salida' => $dto->fechaSalida->format('Y-m-d H:i:s'),
+            ':llegada' => $dto->fechaLlegada->format('Y-m-d H:i:s'),
+            ':distancia' => $dto->distanciaKm,
+            ':duracion' => $dto->duracionHoras,
+        ]);
     }
 
     private function mapRow(array $row): Vuelo

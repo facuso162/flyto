@@ -5,6 +5,7 @@ namespace App\Vuelos\Services;
 use App\Ciudades\Services\CiudadService;
 use App\Vuelos\Dtos\BuscarVuelosDto;
 use App\Vuelos\Dtos\CrearVueloDto;
+use App\Vuelos\Dtos\EditarVueloDto;
 use App\Vuelos\Models\Vuelo;
 use App\Vuelos\Repositories\VueloRepository;
 use App\Shared\Http\HttpException;
@@ -13,6 +14,7 @@ require_once __DIR__ . '/../../ciudades/services/ciudad.service.php';
 require_once __DIR__ . '/../../shared/http/http-exception.php';
 require_once __DIR__ . '/../dtos/buscar-vuelos.dto.php';
 require_once __DIR__ . '/../dtos/crear-vuelo.dto.php';
+require_once __DIR__ . '/../dtos/editar-vuelo.dto.php';
 require_once __DIR__ . '/../models/vuelo.model.php';
 require_once __DIR__ . '/../repositories/vuelo.repository.php';
 
@@ -98,6 +100,44 @@ class VueloService
         }
 
         return $this->vueloRepository->crear($dto, (int) $aerolinea['id'], $estadoId);
+    }
+
+    public function getEditableByCeoId(int $vueloId, int $ceoId): Vuelo
+    {
+        $vuelo = $this->vueloRepository->getById($vueloId);
+        if ($vuelo === null) {
+            throw new HttpException('El vuelo solicitado no existe.', 404);
+        }
+
+        $aerolinea = $this->aerolineaDelCeo($ceoId);
+        if ((int) $vuelo->aerolinea['idAerolinea'] !== (int) $aerolinea['id']) {
+            throw new HttpException('No tenés permisos para editar este vuelo.', 403);
+        }
+
+        if ($vuelo->asientosOcupados > 0 || $this->vueloRepository->hasConfirmedReservations($vueloId)) {
+            throw new HttpException('El vuelo no se puede editar porque ya tiene reservas confirmadas.', 409);
+        }
+
+        return $vuelo;
+    }
+
+    public function editar(int $vueloId, EditarVueloDto $dto, int $ceoId): void
+    {
+        $this->getEditableByCeoId($vueloId, $ceoId);
+
+        if ($this->vueloRepository->existsByCodigoExcludingId($dto->codigoVuelo, $vueloId)) {
+            throw new HttpException('Ya existe un vuelo con ese código.', 409, ['field' => 'codigoVuelo']);
+        }
+
+        if ($this->ciudadService->getPorId($dto->origenCiudadId) === null) {
+            throw new HttpException('La ciudad de origen no existe.', 400, ['field' => 'origenCiudadId']);
+        }
+
+        if ($this->ciudadService->getPorId($dto->destinoCiudadId) === null) {
+            throw new HttpException('La ciudad de destino no existe.', 400, ['field' => 'destinoCiudadId']);
+        }
+
+        $this->vueloRepository->editar($vueloId, $dto);
     }
 
     private function aerolineaDelCeo(int $ceoId): array

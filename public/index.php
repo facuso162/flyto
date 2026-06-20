@@ -58,6 +58,8 @@ use App\Shared\Services\EmailService;
 use App\Vuelos\Controllers\BuscarVuelosPageController;
 use App\Vuelos\Controllers\CrearVueloActionController;
 use App\Vuelos\Controllers\CrearVueloPageController;
+use App\Vuelos\Controllers\EditarVueloActionController;
+use App\Vuelos\Controllers\EditarVueloPageController;
 use App\Vuelos\Controllers\ListadoVuelosPageController;
 use App\Vuelos\Controllers\VueloController;
 use App\Vuelos\Repositories\VueloRepository;
@@ -141,6 +143,8 @@ require_once __DIR__ . '/../app/vuelos/controllers/vuelo.controller.php';
 require_once __DIR__ . '/../app/vuelos/controllers/buscar-vuelos-page.controller.php';
 require_once __DIR__ . '/../app/vuelos/controllers/crear-vuelo-action.controller.php';
 require_once __DIR__ . '/../app/vuelos/controllers/crear-vuelo-page.controller.php';
+require_once __DIR__ . '/../app/vuelos/controllers/editar-vuelo-action.controller.php';
+require_once __DIR__ . '/../app/vuelos/controllers/editar-vuelo-page.controller.php';
 require_once __DIR__ . '/../app/vuelos/controllers/listado-vuelos-page.controller.php';
 
 Env::load(__DIR__ . '/../.env.example');
@@ -459,6 +463,22 @@ $container->scoped(CrearVueloActionController::class, function ($c) {
     );
 });
 
+$container->scoped(EditarVueloPageController::class, function ($c) {
+    return new EditarVueloPageController(
+        $c->get(CiudadService::class),
+        $c->get(VueloService::class),
+        $c->get(SessionService::class),
+        $c->get(ViewResponse::class)
+    );
+});
+
+$container->scoped(EditarVueloActionController::class, function ($c) {
+    return new EditarVueloActionController(
+        $c->get(VueloService::class),
+        $c->get(SessionService::class)
+    );
+});
+
 $container->scoped(CeoDashboardPageController::class, function ($c) {
     return new CeoDashboardPageController(
         $c->get(VueloService::class),
@@ -704,6 +724,10 @@ $ceoRoutes = [
         'controller' => CrearVueloPageController::class,
         'action' => 'show',
     ],
+    '/ceo/vuelos/editar' => [
+        'controller' => EditarVueloPageController::class,
+        'action' => 'show',
+    ],
 ];
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
@@ -732,6 +756,7 @@ $router->registerModule(require __DIR__ . '/../app/novedades/routes.php');
 $router->registerModule(require __DIR__ . '/../app/reservas/routes.php');
 $router->registerModule(require __DIR__ . '/../app/vuelos/routes.php');
 $router->registerModule(require __DIR__ . '/../app/vuelos/crear-routes.php');
+$router->registerModule(require __DIR__ . '/../app/vuelos/editar-routes.php');
 
 $normalizedUri = $requestPath;
 
