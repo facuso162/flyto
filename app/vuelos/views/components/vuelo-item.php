@@ -2,6 +2,8 @@
 
 use App\Vuelos\Models\Vuelo;
 
+$basePath = $basePath ?? '';
+
 $vuelo = $vuelo ?? null;
 $vuelo = $vuelo instanceof Vuelo ? $vuelo : null;
 
@@ -22,6 +24,7 @@ $estadoClase = match ($estado) {
 };
 $capacidad = max(0, $vuelo->asientosDisponibles);
 $ocupados = min(max(0, $vuelo->asientosOcupados), $capacidad);
+$tieneAsientosOcupados = $vuelo->asientosOcupados > 0;
 $estadoVuelo = $vuelo->estado;
 $ocupacion = $capacidad > 0 ? (int) round(($ocupados / $capacidad) * 100) : 0;
 $e = static fn (string $valor): string => htmlspecialchars($valor, ENT_QUOTES, 'UTF-8');
@@ -58,17 +61,17 @@ $e = static fn (string $valor): string => htmlspecialchars($valor, ENT_QUOTES, '
         </div>
 
         <div class="flex shrink-0 items-center justify-end gap-2 sm:self-end">
-            <button type="button" disabled aria-label="Borrar <?= $e($vuelo->codigoVuelo) ?> (próximamente)" class="flex items-center gap-1.5 border border-red-700/30 px-3 py-1.5 text-xs font-medium text-red-700 opacity-70">
-                <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3m-8 0 1 13h8l1-13M10 11v5m4-5v5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                Borrar
-            </button>
-            <?php if ($ocupados > 0 || $estadoVuelo === 'completado' || $estadoVuelo === 'cancelado'): ?>
-                <button type="button" disabled aria-label="<?= $e($vuelo->codigoVuelo) ?> no se puede editar porque tiene asientos ocupados" class="flex cursor-not-allowed items-center gap-1.5 bg-flyto-navy/45 px-3 py-1.5 text-xs font-medium text-white">
-                    <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 16-1 4 4-1L19 8l-3-3L5 16Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
-                    No editable
-                </button>
-            <?php else: ?>
-                <a href="<?= $e($basePath ?? '') ?>/ceo/vuelos/editar?id=<?= $vuelo->id ?>" aria-label="Editar <?= $e($vuelo->codigoVuelo) ?>" class="flex items-center gap-1.5 bg-flyto-navy px-3 py-1.5 text-xs font-medium text-flyto-sand transition hover:bg-flyto-ink">
+            <?php if (!$tieneAsientosOcupados): ?>
+                <form method="post" action="<?= $e($basePath) ?>/ceo/vuelos/borrar">
+                    <input type="hidden" name="vueloId" value="<?= $vuelo->id ?>">
+                    <button type="submit" aria-label="Borrar <?= $e($vuelo->codigoVuelo) ?>" class="flex items-center gap-1.5 border border-red-700/30 px-3 py-1.5 text-xs font-medium text-red-700 transition hover:border-red-700 hover:bg-red-50">
+                        <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3m-8 0 1 13h8l1-13M10 11v5m4-5v5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        Borrar
+                    </button>
+                </form>
+            <?php endif; ?>
+            <?php if (!($ocupados > 0 || $estadoVuelo === 'completado' || $estadoVuelo === 'cancelado')): ?>
+                <a href="<?= $e($basePath) ?>/ceo/vuelos/editar?id=<?= $vuelo->id ?>" aria-label="Editar <?= $e($vuelo->codigoVuelo) ?>" class="flex items-center gap-1.5 bg-flyto-navy px-3 py-1.5 text-xs font-medium text-flyto-sand transition hover:bg-flyto-ink">
                     <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 16-1 4 4-1L19 8l-3-3L5 16Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
                     Editar
                 </a>

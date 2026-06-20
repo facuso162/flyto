@@ -56,6 +56,7 @@ use App\Shared\Http\RedirectResponse;
 use App\Shared\Http\ViewResponse;
 use App\Shared\Services\EmailService;
 use App\Vuelos\Controllers\BuscarVuelosPageController;
+use App\Vuelos\Controllers\BorrarVueloActionController;
 use App\Vuelos\Controllers\CrearVueloActionController;
 use App\Vuelos\Controllers\CrearVueloPageController;
 use App\Vuelos\Controllers\EditarVueloActionController;
@@ -141,6 +142,7 @@ require_once __DIR__ . '/../app/vuelos/repositories/vuelo.repository.php';
 require_once __DIR__ . '/../app/vuelos/services/vuelo.service.php';
 require_once __DIR__ . '/../app/vuelos/controllers/vuelo.controller.php';
 require_once __DIR__ . '/../app/vuelos/controllers/buscar-vuelos-page.controller.php';
+require_once __DIR__ . '/../app/vuelos/controllers/borrar-vuelo-action.controller.php';
 require_once __DIR__ . '/../app/vuelos/controllers/crear-vuelo-action.controller.php';
 require_once __DIR__ . '/../app/vuelos/controllers/crear-vuelo-page.controller.php';
 require_once __DIR__ . '/../app/vuelos/controllers/editar-vuelo-action.controller.php';
@@ -436,6 +438,13 @@ $container->scoped(BuscarVuelosPageController::class, function ($c) {
         $c->get(CiudadService::class),
         $c->get(VueloService::class),
         $c->get(ViewResponse::class)
+    );
+});
+
+$container->scoped(BorrarVueloActionController::class, function ($c) {
+    return new BorrarVueloActionController(
+        $c->get(VueloService::class),
+        $c->get(SessionService::class)
     );
 });
 
@@ -757,6 +766,7 @@ $router->registerModule(require __DIR__ . '/../app/reservas/routes.php');
 $router->registerModule(require __DIR__ . '/../app/vuelos/routes.php');
 $router->registerModule(require __DIR__ . '/../app/vuelos/crear-routes.php');
 $router->registerModule(require __DIR__ . '/../app/vuelos/editar-routes.php');
+$router->registerModule(require __DIR__ . '/../app/vuelos/borrar-routes.php');
 
 $normalizedUri = $requestPath;
 

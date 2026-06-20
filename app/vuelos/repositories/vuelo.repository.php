@@ -450,6 +450,18 @@ class VueloRepository
         ]);
     }
 
+    public function borrar(int $vueloId): void
+    {
+        $stmt = $this->pdo->prepare(
+            'DELETE FROM vuelos WHERE id = :id AND asientosOcupados = 0'
+        );
+        $stmt->execute([':id' => $vueloId]);
+
+        if ($stmt->rowCount() !== 1) {
+            throw new \RuntimeException('El vuelo no pudo ser borrado.');
+        }
+    }
+
     private function mapRow(array $row): Vuelo
     {
         $origenId = (int) $row['origen_ciudad_id'];

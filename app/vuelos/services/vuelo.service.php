@@ -140,6 +140,25 @@ class VueloService
         $this->vueloRepository->editar($vueloId, $dto);
     }
 
+    public function borrar(int $vueloId, int $ceoId): void
+    {
+        $vuelo = $this->vueloRepository->getById($vueloId);
+        if ($vuelo === null) {
+            throw new HttpException('El vuelo solicitado no existe.', 404);
+        }
+
+        $aerolinea = $this->aerolineaDelCeo($ceoId);
+        if ((int) $vuelo->aerolinea['idAerolinea'] !== (int) $aerolinea['id']) {
+            throw new HttpException('No tenés permisos para borrar este vuelo.', 403);
+        }
+
+        if ($vuelo->asientosOcupados > 0) {
+            throw new HttpException('El vuelo no se puede borrar porque tiene asientos ocupados.', 409);
+        }
+
+        $this->vueloRepository->borrar($vueloId);
+    }
+
     private function aerolineaDelCeo(int $ceoId): array
     {
         $aerolinea = $this->vueloRepository->getAerolineaByCeoId($ceoId);
