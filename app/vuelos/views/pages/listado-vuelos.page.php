@@ -8,6 +8,8 @@ $estadoSeleccionado = is_string($estadoSeleccionado) ? $estadoSeleccionado : nul
 $paginaActual = max(1, (int) ($paginaActual ?? 1));
 $totalPaginas = max(1, (int) ($totalPaginas ?? 1));
 $totalVuelos = max(0, (int) ($totalVuelos ?? 0));
+$flash = $flash ?? null;
+$flash = is_array($flash) ? $flash : [];
 $filtros = [
     null => 'Todos',
     'completado' => 'Completados',
@@ -30,6 +32,16 @@ $urlPagina = static function (int $pagina) use ($urlListado, $estadoSeleccionado
         <p class="font-mono text-xs uppercase tracking-[0.1em] text-flyto-muted">Administración</p>
         <h1 class="mt-1 font-display text-3xl font-medium tracking-tight">Vuelos</h1>
 
+        <?php if (!empty($flash['success'])): ?>
+            <div class="mt-5 border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800" role="status">
+                <?= htmlspecialchars((string) $flash['success'], ENT_QUOTES, 'UTF-8') ?>
+            </div>
+        <?php elseif (!empty($flash['error'])): ?>
+            <div class="mt-5 border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800" role="alert">
+                <?= htmlspecialchars((string) $flash['error'], ENT_QUOTES, 'UTF-8') ?>
+            </div>
+        <?php endif; ?>
+
         <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <nav class="flex w-fit max-w-full overflow-x-auto border border-flyto-ink/10" aria-label="Filtrar vuelos por estado">
                 <?php foreach ($filtros as $estado => $etiqueta): ?>
@@ -43,10 +55,10 @@ $urlPagina = static function (int $pagina) use ($urlListado, $estadoSeleccionado
                 <?php endforeach; ?>
             </nav>
 
-            <button type="button" disabled class="flex w-fit items-center gap-2 bg-flyto-navy px-4 py-2 text-xs font-medium text-flyto-sand opacity-70" aria-label="Agregar vuelo (próximamente)">
+            <a href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/ceo/vuelos/crear" class="flex w-fit items-center gap-2 bg-flyto-navy px-4 py-2 text-xs font-medium text-flyto-sand transition hover:bg-flyto-ink">
                 <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
                 Agregar vuelo
-            </button>
+            </a>
         </div>
 
         <div class="mt-5 border border-flyto-ink/10 bg-white">

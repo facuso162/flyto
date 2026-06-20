@@ -3,10 +3,12 @@
 namespace App\Vuelos\Controllers;
 
 use App\Auth\Services\SessionService;
+use App\Shared\Http\Flash;
 use App\Shared\Http\ViewResponse;
 use App\Vuelos\Services\VueloService;
 
 require_once __DIR__ . '/../../auth/services/session.service.php';
+require_once __DIR__ . '/../../shared/http/flash.php';
 require_once __DIR__ . '/../../shared/http/view-response.php';
 require_once __DIR__ . '/../services/vuelo.service.php';
 
@@ -34,6 +36,7 @@ class ListadoVuelosPageController
             $pagina,
             self::VUELOS_POR_PAGINA
         );
+        $flash = Flash::consume();
 
         $this->viewResponse->render(
             __DIR__ . '/../views/pages/listado-vuelos.page.php',
@@ -44,6 +47,7 @@ class ListadoVuelosPageController
                 'paginaActual' => $listado['pagina'],
                 'totalPaginas' => $listado['totalPaginas'],
                 'totalVuelos' => $listado['total'],
+                'flash' => $flash,
             ],
             200,
             $layoutPath

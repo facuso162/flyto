@@ -3,10 +3,12 @@
 namespace App\Vuelos\Repositories;
 
 use App\Vuelos\Dtos\BuscarVuelosDto;
+use App\Vuelos\Dtos\CrearVueloDto;
 use App\Vuelos\Models\Vuelo;
 use PDO;
 
 require_once __DIR__ . '/../dtos/buscar-vuelos.dto.php';
+require_once __DIR__ . '/../dtos/crear-vuelo.dto.php';
 require_once __DIR__ . '/../models/vuelo.model.php';
 
 class VueloRepository
@@ -283,6 +285,62 @@ class VueloRepository
             'pagina' => $pagina,
             'totalPaginas' => $totalPaginas,
         ];
+    }
+
+    public function existsByCodigo(string $codigo): bool
+    {
+        $stmt = $this->pdo->prepare('SELECT 1 FROM vuelos WHERE codigoVuelo = :codigo LIMIT 1');
+        $stmt->execute([':codigo' => $codigo]);
+
+        return $stmt->fetchColumn() !== false;
+    }
+
+    /** @return array{id: int, nombre: string}|null */
+    public function getAerolineaByCeoId(int $ceoId): ?array
+    {
+        $stmt = $this->pdo->prepare('SELECT id, nombre FROM aerolineas WHERE ceo_id = :ceo_id LIMIT 1');
+        $stmt->execute([':ceo_id' => $ceoId]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $row ? ['id' => (int) $row['id'], 'nombre' => (string) $row['nombre']] : null;
+    }
+
+    public function getEstadoIdByNombre(string $nombre): ?int
+    {
+        $stmt = $this->pdo->prepare('SELECT id FROM estados_vuelos WHERE LOWER(nombre) = :nombre LIMIT 1');
+        $stmt->execute([':nombre' => strtolower($nombre)]);
+        $id = $stmt->fetchColumn();
+
+        return $id === false ? null : (int) $id;
+    }
+
+    public function crear(CrearVueloDto $dto, int $aerolineaId, int $estadoId): int
+    {
+        $stmt = $this->pdo->prepare(
+            'INSERT INTO vuelos (
+                codigoVuelo, aerolinea_id, origen_ciudad_id, destino_ciudad_id,
+                precio, asientos_disponibles, fecha_salida, fecha_llegada,
+                distancia_km, duracion_horas, estado_id
+            ) VALUES (
+                :codigo, :aerolinea, :origen, :destino, :precio, :asientos,
+                :salida, :llegada, :distancia, :duracion, :estado
+            )'
+        );
+        $stmt->execute([
+            ':codigo' => $dto->codigoVuelo,
+            ':aerolinea' => $aerolineaId,
+            ':origen' => $dto->origenCiudadId,
+            ':destino' => $dto->destinoCiudadId,
+            ':precio' => $dto->precio,
+            ':asientos' => $dto->asientosDisponibles,
+            ':salida' => $dto->fechaSalida->format('Y-m-d H:i:s'),
+            ':llegada' => $dto->fechaLlegada->format('Y-m-d H:i:s'),
+            ':distancia' => $dto->distanciaKm,
+            ':duracion' => $dto->duracionHoras,
+            ':estado' => $estadoId,
+        ]);
+
+        return (int) $this->pdo->lastInsertId();
     }
 
     private function mapRow(array $row): Vuelo

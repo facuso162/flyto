@@ -2,21 +2,26 @@
 
 namespace App\Vuelos\Services;
 
+use App\Ciudades\Services\CiudadService;
 use App\Vuelos\Dtos\BuscarVuelosDto;
+use App\Vuelos\Dtos\CrearVueloDto;
 use App\Vuelos\Models\Vuelo;
 use App\Vuelos\Repositories\VueloRepository;
+use App\Shared\Http\HttpException;
 
+require_once __DIR__ . '/../../ciudades/services/ciudad.service.php';
+require_once __DIR__ . '/../../shared/http/http-exception.php';
 require_once __DIR__ . '/../dtos/buscar-vuelos.dto.php';
+require_once __DIR__ . '/../dtos/crear-vuelo.dto.php';
 require_once __DIR__ . '/../models/vuelo.model.php';
 require_once __DIR__ . '/../repositories/vuelo.repository.php';
 
 class VueloService
 {
-    private VueloRepository $vueloRepository;
-
-    public function __construct(VueloRepository $vueloRepository)
-    {
-        $this->vueloRepository = $vueloRepository;
+    public function __construct(
+        private VueloRepository $vueloRepository,
+        private CiudadService $ciudadService
+    ) {
     }
 
     public function buscar(BuscarVuelosDto $dto): array
@@ -52,6 +57,65 @@ class VueloService
         int $porPagina = 3
     ): array {
         return $this->vueloRepository->getPaginatedByCeoId($ceoId, $estado, $pagina, $porPagina);
+    }
+
+    public function proponerCodigoByCeoId(int $ceoId): string
+    {
+        $aerolinea = $this->aerolineaDelCeo($ceoId);
+        $prefijo = $this->iniciales((string) $aerolinea['nombre']);
+
+        $numeroInicial = random_int(0, 999);
+        for ($intento = 0; $intento < 1000; $intento++) {
+            $numero = ($numeroInicial + $intento) % 1000;
+            $codigo = $prefijo . str_pad((string) $numero, 3, '0', STR_PAD_LEFT);
+            if (!$this->vueloRepository->existsByCodigo($codigo)) {
+                return $codigo;
+            }
+        }
+
+        throw new HttpException('No se pudo proponer un código de vuelo disponible.', 500);
+    }
+
+    public function crear(CrearVueloDto $dto, int $ceoId): int
+    {
+        $aerolinea = $this->aerolineaDelCeo($ceoId);
+
+        if ($this->vueloRepository->existsByCodigo($dto->codigoVuelo)) {
+            throw new HttpException('Ya existe un vuelo con ese código.', 409, ['field' => 'codigoVuelo']);
+        }
+
+        if ($this->ciudadService->getPorId($dto->origenCiudadId) === null) {
+            throw new HttpException('La ciudad de origen no existe.', 400, ['field' => 'origenCiudadId']);
+        }
+
+        if ($this->ciudadService->getPorId($dto->destinoCiudadId) === null) {
+            throw new HttpException('La ciudad de destino no existe.', 400, ['field' => 'destinoCiudadId']);
+        }
+
+        $estadoId = $this->vueloRepository->getEstadoIdByNombre('pendiente');
+        if ($estadoId === null) {
+            throw new HttpException('El estado inicial de vuelo no está configurado.', 500);
+        }
+
+        return $this->vueloRepository->crear($dto, (int) $aerolinea['id'], $estadoId);
+    }
+
+    private function aerolineaDelCeo(int $ceoId): array
+    {
+        $aerolinea = $this->vueloRepository->getAerolineaByCeoId($ceoId);
+        if ($aerolinea === null) {
+            throw new HttpException('El CEO no tiene una aerolínea asignada.', 404);
+        }
+
+        return $aerolinea;
+    }
+
+    private function iniciales(string $nombre): string
+    {
+        $normalizado = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $nombre) ?: $nombre;
+        $iniciales = preg_replace('/[^A-Za-z0-9]/', '', $normalizado) ?? '';
+
+        return strtoupper(str_pad(substr($iniciales, 0, 3), 3, 'X'));
     }
 
     /**

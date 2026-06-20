@@ -56,6 +56,8 @@ use App\Shared\Http\RedirectResponse;
 use App\Shared\Http\ViewResponse;
 use App\Shared\Services\EmailService;
 use App\Vuelos\Controllers\BuscarVuelosPageController;
+use App\Vuelos\Controllers\CrearVueloActionController;
+use App\Vuelos\Controllers\CrearVueloPageController;
 use App\Vuelos\Controllers\ListadoVuelosPageController;
 use App\Vuelos\Controllers\VueloController;
 use App\Vuelos\Repositories\VueloRepository;
@@ -137,6 +139,8 @@ require_once __DIR__ . '/../app/vuelos/repositories/vuelo.repository.php';
 require_once __DIR__ . '/../app/vuelos/services/vuelo.service.php';
 require_once __DIR__ . '/../app/vuelos/controllers/vuelo.controller.php';
 require_once __DIR__ . '/../app/vuelos/controllers/buscar-vuelos-page.controller.php';
+require_once __DIR__ . '/../app/vuelos/controllers/crear-vuelo-action.controller.php';
+require_once __DIR__ . '/../app/vuelos/controllers/crear-vuelo-page.controller.php';
 require_once __DIR__ . '/../app/vuelos/controllers/listado-vuelos-page.controller.php';
 
 Env::load(__DIR__ . '/../.env.example');
@@ -413,7 +417,10 @@ $container->scoped(VueloRepository::class, function ($c) {
 });
 
 $container->scoped(VueloService::class, function ($c) {
-    return new VueloService($c->get(VueloRepository::class));
+    return new VueloService(
+        $c->get(VueloRepository::class),
+        $c->get(CiudadService::class)
+    );
 });
 
 $container->scoped(VueloController::class, function ($c) {
@@ -433,6 +440,22 @@ $container->scoped(ListadoVuelosPageController::class, function ($c) {
         $c->get(VueloService::class),
         $c->get(SessionService::class),
         $c->get(ViewResponse::class)
+    );
+});
+
+$container->scoped(CrearVueloPageController::class, function ($c) {
+    return new CrearVueloPageController(
+        $c->get(CiudadService::class),
+        $c->get(VueloService::class),
+        $c->get(SessionService::class),
+        $c->get(ViewResponse::class)
+    );
+});
+
+$container->scoped(CrearVueloActionController::class, function ($c) {
+    return new CrearVueloActionController(
+        $c->get(VueloService::class),
+        $c->get(SessionService::class)
     );
 });
 
@@ -677,6 +700,10 @@ $ceoRoutes = [
         'controller' => ListadoVuelosPageController::class,
         'action' => 'show',
     ],
+    '/ceo/vuelos/crear' => [
+        'controller' => CrearVueloPageController::class,
+        'action' => 'show',
+    ],
 ];
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
@@ -704,6 +731,7 @@ $router->registerModule(require __DIR__ . '/../app/contacto/routes.php');
 $router->registerModule(require __DIR__ . '/../app/novedades/routes.php');
 $router->registerModule(require __DIR__ . '/../app/reservas/routes.php');
 $router->registerModule(require __DIR__ . '/../app/vuelos/routes.php');
+$router->registerModule(require __DIR__ . '/../app/vuelos/crear-routes.php');
 
 $normalizedUri = $requestPath;
 
