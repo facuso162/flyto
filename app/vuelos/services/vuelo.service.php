@@ -45,6 +45,15 @@ class VueloService
         return $this->vueloRepository->getProximosByCeoId($ceoId, $limite);
     }
 
+    public function getPaginatedByCeoId(
+        int $ceoId,
+        ?string $estado,
+        int $pagina,
+        int $porPagina = 3
+    ): array {
+        return $this->vueloRepository->getPaginatedByCeoId($ceoId, $estado, $pagina, $porPagina);
+    }
+
     /**
      * @return Vuelo[]
      */

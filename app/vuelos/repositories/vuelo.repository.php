@@ -194,6 +194,97 @@ class VueloRepository
         return array_map(fn (array $row) => $this->mapRow($row), $stmt->fetchAll(PDO::FETCH_ASSOC));
     }
 
+    public function getPaginatedByCeoId(
+        int $ceoId,
+        ?string $estado,
+        int $pagina,
+        int $porPagina = 3
+    ): array {
+        $whereEstado = $estado !== null ? ' AND LOWER(ev.nombre) = :estado' : '';
+        $parametros = [':ceo_id' => $ceoId];
+
+        if ($estado !== null) {
+            $parametros[':estado'] = $estado;
+        }
+
+        $countSql = "
+            SELECT COUNT(*)
+            FROM vuelos v
+            INNER JOIN aerolineas a ON a.id = v.aerolinea_id
+            INNER JOIN estados_vuelos ev ON ev.id = v.estado_id
+            WHERE a.ceo_id = :ceo_id{$whereEstado}
+        ";
+        $countStmt = $this->pdo->prepare($countSql);
+        $countStmt->execute($parametros);
+        $total = (int) $countStmt->fetchColumn();
+
+        $porPagina = max(1, $porPagina);
+        $totalPaginas = max(1, (int) ceil($total / $porPagina));
+        $pagina = min(max(1, $pagina), $totalPaginas);
+        $offset = ($pagina - 1) * $porPagina;
+
+        $sql = "
+            SELECT
+                v.id,
+                v.codigoVuelo,
+                v.aerolinea_id,
+                a.nombre AS aerolinea_nombre,
+                a.codigo_iata AS aerolinea_codigo_iata,
+                NULL AS promocion_id,
+                NULL AS promocion_descripcion,
+                NULL AS promocion_descuento,
+                NULL AS promocion_fecha_creacion,
+                NULL AS promocion_fecha_aprobacion,
+                NULL AS promocion_fecha_fin,
+                NULL AS promocion_estado,
+                v.origen_ciudad_id,
+                origen.nombre AS origen_nombre,
+                origen.abreviacion AS origen_abreviacion,
+                origen_pais.id AS origen_pais_id,
+                origen_pais.nombre AS origen_pais_nombre,
+                v.destino_ciudad_id,
+                destino.nombre AS destino_nombre,
+                destino.abreviacion AS destino_abreviacion,
+                destino_pais.id AS destino_pais_id,
+                destino_pais.nombre AS destino_pais_nombre,
+                v.precio,
+                v.asientos_disponibles,
+                v.asientosOcupados AS asientos_ocupados,
+                v.fecha_salida,
+                v.fecha_llegada,
+                v.fecha_creacion,
+                v.distancia_km,
+                v.duracion_horas,
+                ev.nombre AS estado
+            FROM vuelos v
+            INNER JOIN aerolineas a ON a.id = v.aerolinea_id
+            INNER JOIN ciudades origen ON origen.id = v.origen_ciudad_id
+            INNER JOIN paises origen_pais ON origen_pais.id = origen.pais_id
+            INNER JOIN ciudades destino ON destino.id = v.destino_ciudad_id
+            INNER JOIN paises destino_pais ON destino_pais.id = destino.pais_id
+            INNER JOIN estados_vuelos ev ON ev.id = v.estado_id
+            WHERE a.ceo_id = :ceo_id{$whereEstado}
+            ORDER BY v.fecha_salida DESC, v.id DESC
+            LIMIT :limite OFFSET :offset
+        ";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':ceo_id', $ceoId, PDO::PARAM_INT);
+        if ($estado !== null) {
+            $stmt->bindValue(':estado', $estado);
+        }
+        $stmt->bindValue(':limite', $porPagina, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return [
+            'vuelos' => array_map(fn (array $row) => $this->mapRow($row), $stmt->fetchAll(PDO::FETCH_ASSOC)),
+            'total' => $total,
+            'pagina' => $pagina,
+            'totalPaginas' => $totalPaginas,
+        ];
+    }
+
     private function mapRow(array $row): Vuelo
     {
         $origenId = (int) $row['origen_ciudad_id'];

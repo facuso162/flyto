@@ -56,6 +56,7 @@ use App\Shared\Http\RedirectResponse;
 use App\Shared\Http\ViewResponse;
 use App\Shared\Services\EmailService;
 use App\Vuelos\Controllers\BuscarVuelosPageController;
+use App\Vuelos\Controllers\ListadoVuelosPageController;
 use App\Vuelos\Controllers\VueloController;
 use App\Vuelos\Repositories\VueloRepository;
 use App\Vuelos\Services\VueloService;
@@ -136,6 +137,7 @@ require_once __DIR__ . '/../app/vuelos/repositories/vuelo.repository.php';
 require_once __DIR__ . '/../app/vuelos/services/vuelo.service.php';
 require_once __DIR__ . '/../app/vuelos/controllers/vuelo.controller.php';
 require_once __DIR__ . '/../app/vuelos/controllers/buscar-vuelos-page.controller.php';
+require_once __DIR__ . '/../app/vuelos/controllers/listado-vuelos-page.controller.php';
 
 Env::load(__DIR__ . '/../.env.example');
 
@@ -426,6 +428,14 @@ $container->scoped(BuscarVuelosPageController::class, function ($c) {
     );
 });
 
+$container->scoped(ListadoVuelosPageController::class, function ($c) {
+    return new ListadoVuelosPageController(
+        $c->get(VueloService::class),
+        $c->get(SessionService::class),
+        $c->get(ViewResponse::class)
+    );
+});
+
 $container->scoped(CeoDashboardPageController::class, function ($c) {
     return new CeoDashboardPageController(
         $c->get(VueloService::class),
@@ -661,6 +671,10 @@ $adminRoutes = [
 $ceoRoutes = [
     '/ceo' => [
         'controller' => CeoDashboardPageController::class,
+        'action' => 'show',
+    ],
+    '/ceo/vuelos' => [
+        'controller' => ListadoVuelosPageController::class,
         'action' => 'show',
     ],
 ];
