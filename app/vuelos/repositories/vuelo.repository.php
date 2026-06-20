@@ -126,6 +126,74 @@ class VueloRepository
         return array_map(fn (array $row) => $this->mapRow($row), $stmt->fetchAll(PDO::FETCH_ASSOC));
     }
 
+    /**
+     * @return Vuelo[]
+     */
+    public function getProximosByCeoId(int $ceoId, int $limite = 2): array
+    {
+        $sql = "
+            SELECT
+                v.id,
+                v.codigoVuelo,
+                v.aerolinea_id,
+                a.nombre AS aerolinea_nombre,
+                a.codigo_iata AS aerolinea_codigo_iata,
+                promocion.id AS promocion_id,
+                promocion.descripcion AS promocion_descripcion,
+                promocion.descuento AS promocion_descuento,
+                promocion.fecha_creacion AS promocion_fecha_creacion,
+                promocion.fecha_aprobacion AS promocion_fecha_aprobacion,
+                promocion.fecha_fin AS promocion_fecha_fin,
+                promocion.estado AS promocion_estado,
+                v.origen_ciudad_id,
+                origen.nombre AS origen_nombre,
+                origen.abreviacion AS origen_abreviacion,
+                origen_pais.id AS origen_pais_id,
+                origen_pais.nombre AS origen_pais_nombre,
+                v.destino_ciudad_id,
+                destino.nombre AS destino_nombre,
+                destino.abreviacion AS destino_abreviacion,
+                destino_pais.id AS destino_pais_id,
+                destino_pais.nombre AS destino_pais_nombre,
+                v.precio,
+                v.asientos_disponibles,
+                v.asientosOcupados AS asientos_ocupados,
+                v.fecha_salida,
+                v.fecha_llegada,
+                v.fecha_creacion,
+                v.distancia_km,
+                v.duracion_horas,
+                ev.nombre AS estado
+            FROM vuelos v
+            INNER JOIN aerolineas a ON a.id = v.aerolinea_id
+            INNER JOIN ciudades origen ON origen.id = v.origen_ciudad_id
+            INNER JOIN paises origen_pais ON origen_pais.id = origen.pais_id
+            INNER JOIN ciudades destino ON destino.id = v.destino_ciudad_id
+            INNER JOIN paises destino_pais ON destino_pais.id = destino.pais_id
+            INNER JOIN estados_vuelos ev ON ev.id = v.estado_id
+            LEFT JOIN (
+                SELECT p.id, p.descripcion, p.descuento, p.fecha_creacion,
+                       p.fecha_aprobacion, p.fecha_fin, p.aerolinea_id,
+                       ep.nombre AS estado
+                FROM promociones p
+                INNER JOIN estados_promociones ep ON ep.id = p.estado_id
+                WHERE LOWER(ep.nombre) = 'activa' AND p.activa = 1
+            ) promocion ON promocion.aerolinea_id = a.id
+            WHERE a.ceo_id = :ceo_id
+                AND v.fecha_salida >= NOW()
+                AND LOWER(ev.nombre) = 'pendiente'
+            ORDER BY v.fecha_salida ASC
+            LIMIT :limite
+        ";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':ceo_id', $ceoId, PDO::PARAM_INT);
+        $stmt->bindValue(':limite', max(1, $limite), PDO::PARAM_INT);
+        $stmt->execute();
+
+        return array_map(fn (array $row) => $this->mapRow($row), $stmt->fetchAll(PDO::FETCH_ASSOC));
+    }
+
     private function mapRow(array $row): Vuelo
     {
         $origenId = (int) $row['origen_ciudad_id'];

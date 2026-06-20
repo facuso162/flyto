@@ -40,6 +40,14 @@ class VueloService
     /**
      * @return Vuelo[]
      */
+    public function getProximosByCeoId(int $ceoId, int $limite = 2): array
+    {
+        return $this->vueloRepository->getProximosByCeoId($ceoId, $limite);
+    }
+
+    /**
+     * @return Vuelo[]
+     */
     private function buscarBase(BuscarVuelosDto $dto): array
     {
         return $this->vueloRepository->buscarDisponibles($dto);

@@ -133,6 +133,11 @@ class PromocionService
         return $this->promocionRepository->getByCeoId($ceoId);
     }
 
+    public function getActivaByCeoId(int $ceoId): ?Promocion
+    {
+        return $this->promocionRepository->getActivaByCeoId($ceoId);
+    }
+
     private function promocion(int $id): Promocion
     {
         $promocion = $this->promocionRepository->getById($id);

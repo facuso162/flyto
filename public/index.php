@@ -24,6 +24,7 @@ use App\Contacto\Services\ContactoEmailService;
 use App\Contacto\Services\EnviarMensajeService;
 use App\Ciudades\Repositories\CiudadRepository;
 use App\Ciudades\Services\CiudadService;
+use App\Ceo\Controllers\CeoDashboardPageController;
 use App\Container;
 use App\Home\Controllers\HomePageController;
 use App\Novedades\Controllers\AdminNovedadesPageController;
@@ -34,6 +35,8 @@ use App\Novedades\Controllers\NovedadesPageController;
 use App\Novedades\Repositories\NovedadRepository;
 use App\Novedades\Services\NovedadService;
 use App\Perfil\Controllers\MiPerfilPageController;
+use App\Promociones\Repositories\PromocionRepository;
+use App\Promociones\Services\PromocionService;
 use App\Reservas\Controllers\CancelarReservaActionController;
 use App\Reservas\Controllers\CrearReservaActionController;
 use App\Reservas\Controllers\ConfirmacionPageController;
@@ -102,6 +105,11 @@ require_once __DIR__ . '/../app/ciudades/repositories/ciudad.repository.php';
 require_once __DIR__ . '/../app/ciudades/services/ciudad.service.php';
 
 require_once __DIR__ . '/../app/home/controllers/home-page.controller.php';
+
+require_once __DIR__ . '/../app/promociones/repositories/promocion.repository.php';
+require_once __DIR__ . '/../app/promociones/services/promocion.service.php';
+
+require_once __DIR__ . '/../app/ceo/controllers/ceo-dashboard-page.controller.php';
 
 require_once __DIR__ . '/../app/novedades/repositories/novedad.repository.php';
 require_once __DIR__ . '/../app/novedades/services/novedad.service.php';
@@ -282,6 +290,14 @@ $container->scoped(NovedadService::class, function ($c) {
     return new NovedadService($c->get(NovedadRepository::class));
 });
 
+$container->scoped(PromocionRepository::class, function ($c) {
+    return new PromocionRepository($c->get(Database::class));
+});
+
+$container->scoped(PromocionService::class, function ($c) {
+    return new PromocionService($c->get(PromocionRepository::class));
+});
+
 $container->scoped(NovedadesPageController::class, function ($c) {
     return new NovedadesPageController(
         $c->get(NovedadService::class),
@@ -406,6 +422,15 @@ $container->scoped(BuscarVuelosPageController::class, function ($c) {
     return new BuscarVuelosPageController(
         $c->get(CiudadService::class),
         $c->get(VueloService::class),
+        $c->get(ViewResponse::class)
+    );
+});
+
+$container->scoped(CeoDashboardPageController::class, function ($c) {
+    return new CeoDashboardPageController(
+        $c->get(VueloService::class),
+        $c->get(PromocionService::class),
+        $c->get(SessionService::class),
         $c->get(ViewResponse::class)
     );
 });
@@ -635,8 +660,8 @@ $adminRoutes = [
 
 $ceoRoutes = [
     '/ceo' => [
-        'view' => __DIR__ . '/../app/ceo/views/pages/ceo.page.php',
-        'title' => 'CEO - Flyto',
+        'controller' => CeoDashboardPageController::class,
+        'action' => 'show',
     ],
 ];
 

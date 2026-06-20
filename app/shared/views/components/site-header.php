@@ -14,6 +14,7 @@ $isAuthenticated = $isAuthenticated ?? false;
 $currentUser = $currentUser ?? null;
 $currentUser = is_array($currentUser) ? $currentUser : [];
 $userName = trim((string) (($currentUser['nombre'] ?? '') . ' ' . ($currentUser['apellido'] ?? '')));
+$isCeo = strtolower((string) ($currentUser['tipo_usuario']['nombre'] ?? '')) === 'ceo';
 
 if ($userName === '') {
     $userName = 'Mi perfil';
@@ -48,6 +49,11 @@ if ($userName === '') {
 
         <?php if ($isAuthenticated): ?>
             <div class="hidden items-center gap-3 md:flex">
+                <?php if ($isCeo): ?>
+                    <a href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/ceo" class="border border-flyto-navy px-3 py-1.5 text-sm font-medium text-flyto-navy transition hover:bg-flyto-navy hover:text-white">
+                        Panel CEO
+                    </a>
+                <?php endif; ?>
                 <a href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/mi-perfil/mis-reservas" class="text-sm font-medium text-flyto-muted hover:text-flyto-ink">
                     <?= htmlspecialchars($userName, ENT_QUOTES, 'UTF-8') ?>
                 </a>
@@ -72,6 +78,11 @@ if ($userName === '') {
                     </a>
                 <?php endforeach; ?>
                 <?php if ($isAuthenticated): ?>
+                    <?php if ($isCeo): ?>
+                        <a href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/ceo" class="mt-2 block border border-flyto-navy px-3 py-2 text-sm font-medium text-flyto-navy">
+                            Panel CEO
+                        </a>
+                    <?php endif; ?>
                     <a href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/mi-perfil/mis-reservas" class="mt-2 block bg-flyto-navy px-3 py-2 text-sm font-medium text-flyto-sand">
                         <?= htmlspecialchars($userName, ENT_QUOTES, 'UTF-8') ?>
                     </a>

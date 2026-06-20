@@ -89,6 +89,20 @@ class PromocionRepository
         return array_map(fn (array $row): Promocion => $this->mapRow($row), $stmt->fetchAll(PDO::FETCH_ASSOC));
     }
 
+    public function getActivaByCeoId(int $ceoId): ?Promocion
+    {
+        $stmt = $this->pdo->prepare(
+            $this->selectSql()
+            . " WHERE a.ceo_id = :ceo_id AND LOWER(ep.nombre) = 'activa' AND p.activa = 1"
+            . ' AND (p.fecha_fin IS NULL OR p.fecha_fin >= NOW())'
+            . ' ORDER BY p.fecha_aprobacion DESC, p.id DESC LIMIT 1'
+        );
+        $stmt->execute([':ceo_id' => $ceoId]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $row ? $this->mapRow($row) : null;
+    }
+
     /** @return array{id: int, descripcion: string}|null */
     public function getEstadoByDescripcion(string $descripcion): ?array
     {

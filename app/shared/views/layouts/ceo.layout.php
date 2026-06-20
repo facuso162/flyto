@@ -1,8 +1,11 @@
 <?php
 
-$pageTitle = $pageTitle ?? 'CEO - Flyto';
+$pageTitle = $pageTitle ?? 'Panel CEO - Flyto';
 $content = $content ?? '';
 $basePath = $basePath ?? '';
+$currentPath = $currentPath ?? '/ceo';
+$currentUser = $currentUser ?? null;
+$currentUser = is_array($currentUser) ? $currentUser : [];
 
 ?>
 <!doctype html>
@@ -13,14 +16,16 @@ $basePath = $basePath ?? '';
     <title><?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?></title>
     <link rel="stylesheet" href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/assets/css/app.css">
 </head>
-<body class="bg-flyto-sand text-flyto-ink">
-    <header class="bg-flyto-navy px-6 py-5 text-flyto-sand">
-        <div class="mx-auto max-w-7xl">
-            <h1 class="font-display text-3xl font-medium">CEO</h1>
-        </div>
-    </header>
-    <main id="contenido-principal">
-        <?= $content ?>
-    </main>
+<body class="min-h-screen bg-flyto-sand text-flyto-ink">
+    <?php require __DIR__ . '/../../../ceo/views/components/ceo-navbar.php'; ?>
+
+    <div class="flex min-h-[calc(100vh-56px-70px)]">
+        <?php require __DIR__ . '/../../../ceo/views/components/ceo-sidebar.php'; ?>
+        <main id="contenido-principal" class="min-w-0 flex-1">
+            <?= $content ?>
+        </main>
+    </div>
+
+    <?php require __DIR__ . '/../../../ceo/views/components/ceo-footer.php'; ?>
 </body>
 </html>
