@@ -44,7 +44,9 @@ class PromocionValidator
             throw new HttpException('La descripcion es obligatoria.', 400, ['field' => 'descripcion']);
         }
 
-        if (strlen($descripcion) > 200) {
+        $longitud = function_exists('mb_strlen') ? mb_strlen($descripcion) : strlen($descripcion);
+
+        if ($longitud > 200) {
             throw new HttpException('La descripcion no puede superar los 200 caracteres.', 400, ['field' => 'descripcion']);
         }
     }

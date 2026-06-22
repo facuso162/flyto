@@ -35,6 +35,8 @@ use App\Novedades\Controllers\NovedadesPageController;
 use App\Novedades\Repositories\NovedadRepository;
 use App\Novedades\Services\NovedadService;
 use App\Perfil\Controllers\MiPerfilPageController;
+use App\Promociones\Controllers\CrearPromocionActionController;
+use App\Promociones\Controllers\CrearPromocionPageController;
 use App\Promociones\Controllers\ListadoPromocionesPageController;
 use App\Promociones\Repositories\PromocionRepository;
 use App\Promociones\Services\PromocionService;
@@ -115,6 +117,8 @@ require_once __DIR__ . '/../app/home/controllers/home-page.controller.php';
 
 require_once __DIR__ . '/../app/promociones/repositories/promocion.repository.php';
 require_once __DIR__ . '/../app/promociones/services/promocion.service.php';
+require_once __DIR__ . '/../app/promociones/controllers/crear-promocion-action.controller.php';
+require_once __DIR__ . '/../app/promociones/controllers/crear-promocion-page.controller.php';
 require_once __DIR__ . '/../app/promociones/controllers/listado-promociones-page.controller.php';
 
 require_once __DIR__ . '/../app/ceo/controllers/ceo-dashboard-page.controller.php';
@@ -311,6 +315,18 @@ $container->scoped(PromocionRepository::class, function ($c) {
 $container->scoped(PromocionService::class, function ($c) {
     return new PromocionService($c->get(PromocionRepository::class));
 });
+
+$container->scoped(CrearPromocionPageController::class, function ($c) {
+    return new CrearPromocionPageController($c->get(ViewResponse::class));
+});
+
+$container->scoped(CrearPromocionActionController::class, function ($c) {
+    return new CrearPromocionActionController(
+        $c->get(PromocionService::class),
+        $c->get(SessionService::class)
+    );
+});
+
 $container->scoped(ListadoPromocionesPageController::class, function ($c) {
     return new ListadoPromocionesPageController(
         $c->get(PromocionService::class),
@@ -742,6 +758,10 @@ $ceoRoutes = [
         'controller' => ListadoPromocionesPageController::class,
         'action' => 'show',
     ],
+    '/ceo/promociones/crear' => [
+        'controller' => CrearPromocionPageController::class,
+        'action' => 'show',
+    ],
     '/ceo/vuelos/crear' => [
         'controller' => CrearVueloPageController::class,
         'action' => 'show',
@@ -775,6 +795,7 @@ $router = new Router();
 $router->registerModule(require __DIR__ . '/../app/auth/routes.php');
 $router->registerModule(require __DIR__ . '/../app/contacto/routes.php');
 $router->registerModule(require __DIR__ . '/../app/novedades/routes.php');
+$router->registerModule(require __DIR__ . '/../app/promociones/routes.php');
 $router->registerModule(require __DIR__ . '/../app/reservas/routes.php');
 $router->registerModule(require __DIR__ . '/../app/vuelos/routes.php');
 $router->registerModule(require __DIR__ . '/../app/vuelos/crear-routes.php');
