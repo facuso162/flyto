@@ -35,6 +35,7 @@ use App\Novedades\Controllers\NovedadesPageController;
 use App\Novedades\Repositories\NovedadRepository;
 use App\Novedades\Services\NovedadService;
 use App\Perfil\Controllers\MiPerfilPageController;
+use App\Promociones\Controllers\BorrarPromocionActionController;
 use App\Promociones\Controllers\CrearPromocionActionController;
 use App\Promociones\Controllers\CrearPromocionPageController;
 use App\Promociones\Controllers\EditarPromocionActionController;
@@ -119,6 +120,7 @@ require_once __DIR__ . '/../app/home/controllers/home-page.controller.php';
 
 require_once __DIR__ . '/../app/promociones/repositories/promocion.repository.php';
 require_once __DIR__ . '/../app/promociones/services/promocion.service.php';
+require_once __DIR__ . '/../app/promociones/controllers/borrar-promocion-action.controller.php';
 require_once __DIR__ . '/../app/promociones/controllers/crear-promocion-action.controller.php';
 require_once __DIR__ . '/../app/promociones/controllers/crear-promocion-page.controller.php';
 require_once __DIR__ . '/../app/promociones/controllers/editar-promocion-action.controller.php';
@@ -318,6 +320,13 @@ $container->scoped(PromocionRepository::class, function ($c) {
 
 $container->scoped(PromocionService::class, function ($c) {
     return new PromocionService($c->get(PromocionRepository::class));
+});
+
+$container->scoped(BorrarPromocionActionController::class, function ($c) {
+    return new BorrarPromocionActionController(
+        $c->get(PromocionService::class),
+        $c->get(SessionService::class)
+    );
 });
 
 $container->scoped(CrearPromocionPageController::class, function ($c) {

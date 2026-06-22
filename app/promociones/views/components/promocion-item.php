@@ -40,10 +40,13 @@ $e = static fn (string $valor): string => htmlspecialchars($valor, ENT_QUOTES, '
     <p class="mt-1.5 text-sm leading-6 text-flyto-ink"><?= $e($promocion->descripcion) ?></p>
 
     <div class="mt-3 flex flex-wrap items-center justify-end gap-2">
-        <button type="button" aria-disabled="true" title="Acción disponible próximamente" class="flex items-center gap-1.5 border border-red-700/30 px-3 py-1.5 text-xs font-medium text-red-700">
-            <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3m-8 0 1 13h8l1-13M10 11v5m4-5v5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Borrar
-        </button>
+        <form method="post" action="<?= $e($basePath) ?>/ceo/promociones/borrar">
+            <input type="hidden" name="id" value="<?= $promocion->id ?>">
+            <button type="submit" class="flex items-center gap-1.5 border border-red-700/30 px-3 py-1.5 text-xs font-medium text-red-700 transition hover:border-red-700 hover:bg-red-50">
+                <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3m-8 0 1 13h8l1-13M10 11v5m4-5v5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Borrar
+            </button>
+        </form>
         <?php if ($estadoEditable): ?>
         <a href="<?= $e($basePath . '/ceo/promociones/editar?' . http_build_query(['id' => $promocion->id])) ?>" class="flex items-center gap-1.5 border border-flyto-ink/10 px-3 py-1.5 text-xs font-medium text-flyto-ink">
             <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 16-1 4 4-1L19 8l-3-3L5 16Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
