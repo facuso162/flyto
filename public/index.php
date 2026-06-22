@@ -41,6 +41,8 @@ use App\Promociones\Controllers\CrearPromocionPageController;
 use App\Promociones\Controllers\EditarPromocionActionController;
 use App\Promociones\Controllers\EditarPromocionPageController;
 use App\Promociones\Controllers\ListadoPromocionesPageController;
+use App\Promociones\Controllers\SolicitarActivacionActionController;
+use App\Promociones\Controllers\SolicitarActivacionPageController;
 use App\Promociones\Repositories\PromocionRepository;
 use App\Promociones\Services\PromocionService;
 use App\Reservas\Controllers\CancelarReservaActionController;
@@ -126,6 +128,8 @@ require_once __DIR__ . '/../app/promociones/controllers/crear-promocion-page.con
 require_once __DIR__ . '/../app/promociones/controllers/editar-promocion-action.controller.php';
 require_once __DIR__ . '/../app/promociones/controllers/editar-promocion-page.controller.php';
 require_once __DIR__ . '/../app/promociones/controllers/listado-promociones-page.controller.php';
+require_once __DIR__ . '/../app/promociones/controllers/solicitar-activacion-action.controller.php';
+require_once __DIR__ . '/../app/promociones/controllers/solicitar-activacion-page.controller.php';
 
 require_once __DIR__ . '/../app/ceo/controllers/ceo-dashboard-page.controller.php';
 
@@ -360,6 +364,17 @@ $container->scoped(ListadoPromocionesPageController::class, function ($c) {
         $c->get(PromocionService::class),
         $c->get(SessionService::class),
         $c->get(ViewResponse::class)
+    );
+});
+
+$container->scoped(SolicitarActivacionPageController::class, function ($c) {
+    return new SolicitarActivacionPageController($c->get(ViewResponse::class));
+});
+
+$container->scoped(SolicitarActivacionActionController::class, function ($c) {
+    return new SolicitarActivacionActionController(
+        $c->get(PromocionService::class),
+        $c->get(SessionService::class)
     );
 });
 
@@ -792,6 +807,10 @@ $ceoRoutes = [
     ],
     '/ceo/promociones/editar' => [
         'controller' => EditarPromocionPageController::class,
+        'action' => 'show',
+    ],
+    '/ceo/promociones/solicitar-activacion' => [
+        'controller' => SolicitarActivacionPageController::class,
         'action' => 'show',
     ],
     '/ceo/vuelos/crear' => [

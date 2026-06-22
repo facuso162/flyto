@@ -49,6 +49,49 @@ class PromocionRepository
         $this->pdo->prepare($sql)->execute($parameters);
     }
 
+    /** @param int[] $estadosExclusivosIds */
+    public function requestActivation(
+        Promocion $promocion,
+        int $estadoInactivaId,
+        array $estadosExclusivosIds
+    ): void {
+        $estadosExclusivosIds = array_values(array_unique(array_map('intval', $estadosExclusivosIds)));
+        $placeholders = implode(', ', array_fill(0, count($estadosExclusivosIds), '?'));
+
+        $this->pdo->beginTransaction();
+
+        try {
+            $lock = $this->pdo->prepare(
+                'SELECT id FROM promociones WHERE aerolinea_id = ? FOR UPDATE'
+            );
+            $lock->execute([(int) $promocion->aerolinea['id']]);
+
+            $sql = 'UPDATE promociones
+                    SET fecha_fin = NULL,
+                        fecha_aprobacion = NULL,
+                        estado_id = ?
+                    WHERE aerolinea_id = ?
+                      AND id <> ?
+                      AND estado_id IN (' . $placeholders . ')';
+            $parameters = [
+                $estadoInactivaId,
+                (int) $promocion->aerolinea['id'],
+                (int) $promocion->id,
+                ...$estadosExclusivosIds,
+            ];
+
+            $this->pdo->prepare($sql)->execute($parameters);
+            $this->update($promocion);
+            $this->pdo->commit();
+        } catch (\Throwable $exception) {
+            if ($this->pdo->inTransaction()) {
+                $this->pdo->rollBack();
+            }
+
+            throw $exception;
+        }
+    }
+
     public function updateEditableFields(int $id, string $descripcion, float $descuento): void
     {
         $stmt = $this->pdo->prepare(
@@ -58,6 +101,25 @@ class PromocionRepository
             ':id' => $id,
             ':descripcion' => $descripcion,
             ':descuento' => $descuento,
+        ]);
+    }
+
+    public function updateEditableFieldsAndDeactivate(Promocion $promocion): void
+    {
+        $stmt = $this->pdo->prepare(
+            'UPDATE promociones
+             SET descripcion = :descripcion,
+                 descuento = :descuento,
+                 estado_id = :estado_id,
+                 fecha_fin = NULL,
+                 fecha_aprobacion = NULL
+             WHERE id = :id'
+        );
+        $stmt->execute([
+            ':id' => $promocion->id,
+            ':descripcion' => $promocion->descripcion,
+            ':descuento' => $promocion->descuento,
+            ':estado_id' => $promocion->estado['id'],
         ]);
     }
 
@@ -86,8 +148,8 @@ class PromocionRepository
     /** @return Promocion[] */
     public function getByEstado(string $estado): array
     {
-        $stmt = $this->pdo->prepare($this->selectSql() . ' WHERE LOWER(ep.nombre) = :estado ORDER BY p.fecha_creacion DESC');
-        $stmt->execute([':estado' => strtolower($estado)]);
+        $stmt = $this->pdo->prepare($this->selectSql() . ' WHERE ep.nombre = :estado ORDER BY p.fecha_creacion DESC');
+        $stmt->execute([':estado' => $estado]);
 
         return array_map(fn (array $row): Promocion => $this->mapRow($row), $stmt->fetchAll(PDO::FETCH_ASSOC));
     }
@@ -105,7 +167,7 @@ class PromocionRepository
     {
         $stmt = $this->pdo->prepare(
             $this->selectSql()
-            . " WHERE a.ceo_id = :ceo_id AND LOWER(ep.nombre) = 'activa' AND p.activa = 1"
+            . " WHERE a.ceo_id = :ceo_id AND ep.nombre = 'activa' AND p.activa = 1"
             . ' AND (p.fecha_fin IS NULL OR p.fecha_fin >= NOW())'
             . ' ORDER BY p.fecha_aprobacion DESC, p.id DESC LIMIT 1'
         );
@@ -118,8 +180,8 @@ class PromocionRepository
     /** @return array{id: int, descripcion: string}|null */
     public function getEstadoByDescripcion(string $descripcion): ?array
     {
-        $stmt = $this->pdo->prepare('SELECT id, nombre FROM estados_promociones WHERE LOWER(nombre) = :nombre LIMIT 1');
-        $stmt->execute([':nombre' => strtolower($descripcion)]);
+        $stmt = $this->pdo->prepare('SELECT id, nombre FROM estados_promociones WHERE nombre = :nombre LIMIT 1');
+        $stmt->execute([':nombre' => $descripcion]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
         return $row ? ['id' => (int) $row['id'], 'descripcion' => (string) $row['nombre']] : null;

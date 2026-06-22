@@ -30,15 +30,23 @@ class ListadoPromocionesPageController
         $ceoId = (int) ($usuario['id'] ?? 0);
         $promociones = $this->promocionService->getByCeoId($ceoId);
 
+        $promocionesPendientes = array_values(array_filter(
+            $promociones,
+            fn (Promocion $promocion): bool => $this->esPendiente($promocion)
+        ));
         $promocionesActivas = array_values(array_filter(
             $promociones,
             fn (Promocion $promocion): bool => $this->esActiva($promocion)
         ));
-        $promocionesInactivas = array_values(array_filter(
+        $otrasPromociones = array_values(array_filter(
             $promociones,
-            fn (Promocion $promocion): bool => !$this->esActiva($promocion)
+            fn (Promocion $promocion): bool => !$this->esPendiente($promocion) && !$this->esActiva($promocion)
         ));
-        $promocionesOrdenadas = array_merge($promocionesActivas, $promocionesInactivas);
+        $promocionesOrdenadas = array_merge(
+            $promocionesPendientes,
+            $promocionesActivas,
+            $otrasPromociones
+        );
 
         $total = count($promocionesOrdenadas);
         $totalPaginas = max(1, (int) ceil($total / self::PROMOCIONES_POR_PAGINA));
@@ -76,6 +84,11 @@ class ListadoPromocionesPageController
     private function esActiva(Promocion $promocion): bool
     {
         return $promocion->activa
-            && strtolower((string) ($promocion->estado['descripcion'] ?? '')) === 'activa';
+            && ($promocion->estado['descripcion'] ?? '') === 'activa';
+    }
+
+    private function esPendiente(Promocion $promocion): bool
+    {
+        return ($promocion->estado['descripcion'] ?? '') === 'pendiente_activacion';
     }
 }

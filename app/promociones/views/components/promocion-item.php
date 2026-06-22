@@ -10,24 +10,24 @@ if ($promocion === null) {
     return;
 }
 
-$estado = strtolower(trim((string) ($promocion->estado['descripcion'] ?? '')));
-$estadoNormalizado = str_replace([' ', '-'], '_', $estado);
-$esActiva = $promocion->activa && $estadoNormalizado === 'activa';
-$estadoTexto = match ($estadoNormalizado) {
+$estado = (string) ($promocion->estado['descripcion'] ?? '');
+$esActiva = $promocion->activa && $estado === 'activa';
+$estadoTexto = match ($estado) {
     'activa' => 'Activa',
-    'pendiente_activacion', 'pendiente_de_activacion' => 'Esperando aprobación',
+    'pendiente_activacion' => 'Esperando aprobación',
     default => 'Desactivada',
 };
-$estadoClase = match ($estadoNormalizado) {
+$estadoClase = match ($estado) {
     'activa' => 'bg-flyto-navy/10 text-flyto-navy',
-    'pendiente_activacion', 'pendiente_de_activacion' => 'bg-[#fef3c6] text-[#bb4d00]',
+    'pendiente_activacion' => 'bg-[#fef3c6] text-[#bb4d00]',
     default => 'bg-[#e5e4e0] text-flyto-muted',
 };
 $porcentaje = $promocion->descuento * 100;
 $porcentajeTexto = rtrim(rtrim(number_format($porcentaje, 2, '.', ''), '0'), '.');
 $descuentoTexto = number_format($promocion->descuento, 2, '.', '');
-$estadoEditable = in_array($estadoNormalizado, ['inactiva', 'pendiente_activacion', 'pendiente_de_activacion'], true)
-    && $promocion->fechaAprobacion === null;
+$muestraFechaFin = in_array($estado, ['activa', 'pendiente_activacion'], true);
+$fechaFinTexto = $promocion->fechaFin?->format('d/m/Y') ?? 'Sin definir';
+$estadoEditable = in_array($estado, ['inactiva', 'activa', 'pendiente_activacion'], true);
 $e = static fn (string $valor): string => htmlspecialchars($valor, ENT_QUOTES, 'UTF-8');
 
 ?>
@@ -35,6 +35,9 @@ $e = static fn (string $valor): string => htmlspecialchars($valor, ENT_QUOTES, '
     <div class="flex flex-wrap items-center gap-2">
         <span class="px-2.5 py-0.5 font-mono text-xs font-medium <?= $estadoClase ?>"><?= $estadoTexto ?></span>
         <span class="font-mono text-xs text-flyto-muted">Descuento: <?= $e($porcentajeTexto) ?>% (<?= $e($descuentoTexto) ?>)</span>
+        <?php if ($muestraFechaFin): ?>
+            <span class="font-mono text-xs text-flyto-muted">Fecha fin: <?= $e($fechaFinTexto) ?></span>
+        <?php endif; ?>
     </div>
 
     <p class="mt-1.5 text-sm leading-6 text-flyto-ink"><?= $e($promocion->descripcion) ?></p>
@@ -53,9 +56,16 @@ $e = static fn (string $valor): string => htmlspecialchars($valor, ENT_QUOTES, '
             Editar
         </a>
         <?php endif; ?>
+        <?php if ($esActiva): ?>
         <button type="button" aria-disabled="true" title="Acción disponible próximamente" class="flex items-center gap-1.5 bg-flyto-navy px-3 py-1.5 text-xs font-medium text-flyto-sand">
             <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v9m-5.5-7A8 8 0 1 0 17.5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-            <?= $esActiva ? 'Desactivar' : 'Activar' ?>
+            Desactivar
         </button>
+        <?php else: ?>
+        <a href="<?= $e($basePath . '/ceo/promociones/solicitar-activacion?' . http_build_query(['id' => $promocion->id])) ?>" class="flex items-center gap-1.5 bg-flyto-navy px-3 py-1.5 text-xs font-medium text-flyto-sand transition hover:bg-flyto-ink">
+            <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v9m-5.5-7A8 8 0 1 0 17.5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            Activar
+        </a>
+        <?php endif; ?>
     </div>
 </article>

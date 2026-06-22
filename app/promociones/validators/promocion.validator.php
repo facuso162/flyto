@@ -26,6 +26,11 @@ class PromocionValidator
         self::id($data);
     }
 
+    public static function activacionId(array $data): void
+    {
+        self::id($data);
+    }
+
     public static function activar(array $data): void
     {
         self::id($data);
@@ -72,21 +77,21 @@ class PromocionValidator
 
     private static function fechaFin(array $data): void
     {
-        $valor = self::stringValue($data, 'fechaFin');
+        $valor = self::stringValue($data, 'fecha_fin');
 
         if ($valor === '') {
-            throw new HttpException('La fecha de fin es obligatoria.', 400, ['field' => 'fechaFin']);
+            throw new HttpException('La fecha de fin es obligatoria.', 400, ['field' => 'fecha_fin']);
         }
 
         $fecha = \DateTime::createFromFormat('!Y-m-d', $valor);
         $errores = \DateTime::getLastErrors();
 
         if (!$fecha || ($errores !== false && ($errores['warning_count'] > 0 || $errores['error_count'] > 0))) {
-            throw new HttpException('La fecha de fin debe tener el formato YYYY-MM-DD.', 400, ['field' => 'fechaFin']);
+            throw new HttpException('La fecha de fin debe tener el formato YYYY-MM-DD.', 400, ['field' => 'fecha_fin']);
         }
 
         if ($fecha <= new \DateTime()) {
-            throw new HttpException('La fecha de fin debe ser futura.', 400, ['field' => 'fechaFin']);
+            throw new HttpException('La fecha de fin debe ser futura.', 400, ['field' => 'fecha_fin']);
         }
     }
 

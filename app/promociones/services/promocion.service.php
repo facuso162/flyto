@@ -51,15 +51,24 @@ class PromocionService
     public function editar(EditarPromocionDto $dto, int $ceoId): Promocion
     {
         $promocion = $this->getEditableByCeoId($dto->id, $ceoId);
+        $estadoAnterior = (string) ($promocion->estado['descripcion'] ?? '');
 
         $promocion->descripcion = $dto->descripcion;
         $promocion->descuento = $dto->descuento / 100;
 
-        $this->promocionRepository->updateEditableFields(
-            $dto->id,
-            $promocion->descripcion,
-            $promocion->descuento
-        );
+        if (in_array($estadoAnterior, [self::ACTIVA, self::PENDIENTE_ACTIVACION], true)) {
+            $promocion->estado = $this->estado(self::INACTIVA);
+            $promocion->fechaFin = null;
+            $promocion->fechaAprobacion = null;
+
+            $this->promocionRepository->updateEditableFieldsAndDeactivate($promocion);
+        } else {
+            $this->promocionRepository->updateEditableFields(
+                $dto->id,
+                $promocion->descripcion,
+                $promocion->descuento
+            );
+        }
 
         return $promocion;
     }
@@ -73,9 +82,19 @@ class PromocionService
     public function solicitarActivacion(ActivarPromocionDto $dto): Promocion
     {
         $promocion = $this->promocion($dto->id);
-        $promocion->estado = $this->estado(self::PENDIENTE_ACTIVACION);
+        $estadoActiva = $this->estado(self::ACTIVA);
+        $estadoInactiva = $this->estado(self::INACTIVA);
+        $estadoPendiente = $this->estado(self::PENDIENTE_ACTIVACION);
+
+        $promocion->estado = $estadoPendiente;
         $promocion->fechaFin = $dto->fechaFin;
-        $this->promocionRepository->update($promocion);
+        $estadosExclusivosIds = [(int) $estadoActiva['id'], (int) $estadoPendiente['id']];
+
+        $this->promocionRepository->requestActivation(
+            $promocion,
+            (int) $estadoInactiva['id'],
+            $estadosExclusivosIds
+        );
 
         return $promocion;
     }
@@ -128,13 +147,7 @@ class PromocionService
             throw new HttpException('No podés editar promociones de otra aerolínea.', 403);
         }
 
-        $estado = strtolower(trim((string) ($promocion->estado['descripcion'] ?? '')));
-        $estado = str_replace([' ', '-'], '_', $estado);
-        $estadosEditables = [self::INACTIVA, self::PENDIENTE_ACTIVACION, 'pendiente_de_activacion'];
-
-        if ($promocion->fechaAprobacion !== null || !in_array($estado, $estadosEditables, true)) {
-            throw new HttpException('La promoción ya fue aprobada o está activa y no puede editarse.', 409);
-        }
+        $estado = (string) ($promocion->estado['descripcion'] ?? '');
 
         return $promocion;
     }
