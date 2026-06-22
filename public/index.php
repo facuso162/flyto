@@ -35,6 +35,7 @@ use App\Novedades\Controllers\NovedadesPageController;
 use App\Novedades\Repositories\NovedadRepository;
 use App\Novedades\Services\NovedadService;
 use App\Perfil\Controllers\MiPerfilPageController;
+use App\Promociones\Controllers\ListadoPromocionesPageController;
 use App\Promociones\Repositories\PromocionRepository;
 use App\Promociones\Services\PromocionService;
 use App\Reservas\Controllers\CancelarReservaActionController;
@@ -114,6 +115,7 @@ require_once __DIR__ . '/../app/home/controllers/home-page.controller.php';
 
 require_once __DIR__ . '/../app/promociones/repositories/promocion.repository.php';
 require_once __DIR__ . '/../app/promociones/services/promocion.service.php';
+require_once __DIR__ . '/../app/promociones/controllers/listado-promociones-page.controller.php';
 
 require_once __DIR__ . '/../app/ceo/controllers/ceo-dashboard-page.controller.php';
 
@@ -308,6 +310,13 @@ $container->scoped(PromocionRepository::class, function ($c) {
 
 $container->scoped(PromocionService::class, function ($c) {
     return new PromocionService($c->get(PromocionRepository::class));
+});
+$container->scoped(ListadoPromocionesPageController::class, function ($c) {
+    return new ListadoPromocionesPageController(
+        $c->get(PromocionService::class),
+        $c->get(SessionService::class),
+        $c->get(ViewResponse::class)
+    );
 });
 
 $container->scoped(NovedadesPageController::class, function ($c) {
@@ -727,6 +736,10 @@ $ceoRoutes = [
     ],
     '/ceo/vuelos' => [
         'controller' => ListadoVuelosPageController::class,
+        'action' => 'show',
+    ],
+    '/ceo/promociones' => [
+        'controller' => ListadoPromocionesPageController::class,
         'action' => 'show',
     ],
     '/ceo/vuelos/crear' => [
