@@ -21,6 +21,11 @@ class PromocionValidator
         self::descuento($data);
     }
 
+    public static function edicionId(array $data): void
+    {
+        self::id($data);
+    }
+
     public static function activar(array $data): void
     {
         self::id($data);

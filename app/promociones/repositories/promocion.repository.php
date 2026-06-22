@@ -49,6 +49,18 @@ class PromocionRepository
         $this->pdo->prepare($sql)->execute($parameters);
     }
 
+    public function updateEditableFields(int $id, string $descripcion, float $descuento): void
+    {
+        $stmt = $this->pdo->prepare(
+            'UPDATE promociones SET descripcion = :descripcion, descuento = :descuento WHERE id = :id'
+        );
+        $stmt->execute([
+            ':id' => $id,
+            ':descripcion' => $descripcion,
+            ':descuento' => $descuento,
+        ]);
+    }
+
     public function delete(int $id): void
     {
         $this->pdo->prepare('DELETE FROM promociones WHERE id = :id')->execute([':id' => $id]);

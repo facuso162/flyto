@@ -50,20 +50,16 @@ class PromocionService
 
     public function editar(EditarPromocionDto $dto, int $ceoId): Promocion
     {
-        $promocion = $this->promocion($dto->id);
-
-        if ($promocion->estado['descripcion'] === self::PENDIENTE_ACTIVACION) {
-            $promocion->fechaFin = null;
-            $promocion->fechaAprobacion = null;
-        }
+        $promocion = $this->getEditableByCeoId($dto->id, $ceoId);
 
         $promocion->descripcion = $dto->descripcion;
         $promocion->descuento = $dto->descuento / 100;
-        $promocion->fechaCreacion = new \DateTime();
-        $promocion->estado = $this->estado(self::INACTIVA);
-        $promocion->aerolinea = $this->aerolineaDelCeo($ceoId);
 
-        $this->promocionRepository->update($promocion);
+        $this->promocionRepository->updateEditableFields(
+            $dto->id,
+            $promocion->descripcion,
+            $promocion->descuento
+        );
 
         return $promocion;
     }
@@ -121,6 +117,26 @@ class PromocionService
     public function getById(int $id): Promocion
     {
         return $this->promocion($id);
+    }
+
+    public function getEditableByCeoId(int $id, int $ceoId): Promocion
+    {
+        $promocion = $this->promocion($id);
+        $aerolinea = $this->aerolineaDelCeo($ceoId);
+
+        if ((int) ($promocion->aerolinea['id'] ?? 0) !== (int) $aerolinea['id']) {
+            throw new HttpException('No podés editar promociones de otra aerolínea.', 403);
+        }
+
+        $estado = strtolower(trim((string) ($promocion->estado['descripcion'] ?? '')));
+        $estado = str_replace([' ', '-'], '_', $estado);
+        $estadosEditables = [self::INACTIVA, self::PENDIENTE_ACTIVACION, 'pendiente_de_activacion'];
+
+        if ($promocion->fechaAprobacion !== null || !in_array($estado, $estadosEditables, true)) {
+            throw new HttpException('La promoción ya fue aprobada o está activa y no puede editarse.', 409);
+        }
+
+        return $promocion;
     }
 
     public function getByEstado(string $estado): array

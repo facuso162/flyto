@@ -37,6 +37,8 @@ use App\Novedades\Services\NovedadService;
 use App\Perfil\Controllers\MiPerfilPageController;
 use App\Promociones\Controllers\CrearPromocionActionController;
 use App\Promociones\Controllers\CrearPromocionPageController;
+use App\Promociones\Controllers\EditarPromocionActionController;
+use App\Promociones\Controllers\EditarPromocionPageController;
 use App\Promociones\Controllers\ListadoPromocionesPageController;
 use App\Promociones\Repositories\PromocionRepository;
 use App\Promociones\Services\PromocionService;
@@ -119,6 +121,8 @@ require_once __DIR__ . '/../app/promociones/repositories/promocion.repository.ph
 require_once __DIR__ . '/../app/promociones/services/promocion.service.php';
 require_once __DIR__ . '/../app/promociones/controllers/crear-promocion-action.controller.php';
 require_once __DIR__ . '/../app/promociones/controllers/crear-promocion-page.controller.php';
+require_once __DIR__ . '/../app/promociones/controllers/editar-promocion-action.controller.php';
+require_once __DIR__ . '/../app/promociones/controllers/editar-promocion-page.controller.php';
 require_once __DIR__ . '/../app/promociones/controllers/listado-promociones-page.controller.php';
 
 require_once __DIR__ . '/../app/ceo/controllers/ceo-dashboard-page.controller.php';
@@ -322,6 +326,21 @@ $container->scoped(CrearPromocionPageController::class, function ($c) {
 
 $container->scoped(CrearPromocionActionController::class, function ($c) {
     return new CrearPromocionActionController(
+        $c->get(PromocionService::class),
+        $c->get(SessionService::class)
+    );
+});
+
+$container->scoped(EditarPromocionPageController::class, function ($c) {
+    return new EditarPromocionPageController(
+        $c->get(PromocionService::class),
+        $c->get(SessionService::class),
+        $c->get(ViewResponse::class)
+    );
+});
+
+$container->scoped(EditarPromocionActionController::class, function ($c) {
+    return new EditarPromocionActionController(
         $c->get(PromocionService::class),
         $c->get(SessionService::class)
     );
@@ -760,6 +779,10 @@ $ceoRoutes = [
     ],
     '/ceo/promociones/crear' => [
         'controller' => CrearPromocionPageController::class,
+        'action' => 'show',
+    ],
+    '/ceo/promociones/editar' => [
+        'controller' => EditarPromocionPageController::class,
         'action' => 'show',
     ],
     '/ceo/vuelos/crear' => [
