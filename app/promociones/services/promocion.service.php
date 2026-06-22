@@ -103,6 +103,8 @@ class PromocionService
     {
         $promocion = $this->promocion($id);
         $promocion->estado = $this->estado(self::INACTIVA);
+        $promocion->fechaFin = null;
+        $promocion->fechaAprobacion = null;
         $this->promocionRepository->update($promocion);
 
         return $promocion;

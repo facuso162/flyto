@@ -57,10 +57,13 @@ $e = static fn (string $valor): string => htmlspecialchars($valor, ENT_QUOTES, '
         </a>
         <?php endif; ?>
         <?php if ($esActiva): ?>
-        <button type="button" aria-disabled="true" title="Acción disponible próximamente" class="flex items-center gap-1.5 bg-flyto-navy px-3 py-1.5 text-xs font-medium text-flyto-sand">
-            <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v9m-5.5-7A8 8 0 1 0 17.5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-            Desactivar
-        </button>
+        <form method="post" action="<?= $e($basePath) ?>/ceo/promociones/desactivar">
+            <input type="hidden" name="id" value="<?= $promocion->id ?>">
+            <button type="submit" class="flex items-center gap-1.5 bg-flyto-navy px-3 py-1.5 text-xs font-medium text-flyto-sand transition hover:bg-flyto-ink">
+                <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v9m-5.5-7A8 8 0 1 0 17.5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                Desactivar
+            </button>
+        </form>
         <?php else: ?>
         <a href="<?= $e($basePath . '/ceo/promociones/solicitar-activacion?' . http_build_query(['id' => $promocion->id])) ?>" class="flex items-center gap-1.5 bg-flyto-navy px-3 py-1.5 text-xs font-medium text-flyto-sand transition hover:bg-flyto-ink">
             <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v9m-5.5-7A8 8 0 1 0 17.5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>

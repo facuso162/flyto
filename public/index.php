@@ -38,6 +38,7 @@ use App\Perfil\Controllers\MiPerfilPageController;
 use App\Promociones\Controllers\BorrarPromocionActionController;
 use App\Promociones\Controllers\CrearPromocionActionController;
 use App\Promociones\Controllers\CrearPromocionPageController;
+use App\Promociones\Controllers\DesactivarPromocionActionController;
 use App\Promociones\Controllers\EditarPromocionActionController;
 use App\Promociones\Controllers\EditarPromocionPageController;
 use App\Promociones\Controllers\ListadoPromocionesPageController;
@@ -125,6 +126,7 @@ require_once __DIR__ . '/../app/promociones/services/promocion.service.php';
 require_once __DIR__ . '/../app/promociones/controllers/borrar-promocion-action.controller.php';
 require_once __DIR__ . '/../app/promociones/controllers/crear-promocion-action.controller.php';
 require_once __DIR__ . '/../app/promociones/controllers/crear-promocion-page.controller.php';
+require_once __DIR__ . '/../app/promociones/controllers/desactivar-promocion-action.controller.php';
 require_once __DIR__ . '/../app/promociones/controllers/editar-promocion-action.controller.php';
 require_once __DIR__ . '/../app/promociones/controllers/editar-promocion-page.controller.php';
 require_once __DIR__ . '/../app/promociones/controllers/listado-promociones-page.controller.php';
@@ -339,6 +341,13 @@ $container->scoped(CrearPromocionPageController::class, function ($c) {
 
 $container->scoped(CrearPromocionActionController::class, function ($c) {
     return new CrearPromocionActionController(
+        $c->get(PromocionService::class),
+        $c->get(SessionService::class)
+    );
+});
+
+$container->scoped(DesactivarPromocionActionController::class, function ($c) {
+    return new DesactivarPromocionActionController(
         $c->get(PromocionService::class),
         $c->get(SessionService::class)
     );
