@@ -35,7 +35,7 @@ class CrearPromocionActionController
             $middleware = new CeoMiddleware($this->sessionService);
             $middleware->handle();
         } catch (HttpException $exception) {
-            Flash::error('Necesitás permisos de CEO para crear un vuelo.');
+            Flash::error('Necesitás permisos de CEO para crear una promocion.');
             RedirectResponse::to($exception->getStatusCode() === 401 ? '/auth/login' : '/', [], 303);
             return;
         }
