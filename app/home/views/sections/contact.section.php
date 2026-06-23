@@ -82,10 +82,11 @@
                 <label class="mt-4 block">
                     <span class="font-mono text-[10.4px] font-medium uppercase tracking-[0.26px] text-flyto-muted">Asunto</span>
                     <select required name="asunto" class="mt-1 h-10 w-full border border-flyto-ink/10 bg-white px-3 text-sm outline-none focus:border-flyto-navy">
-                        <option<?= $contactSelected('Consulta sobre vuelos') ?>>Consulta sobre vuelos</option>
-                        <option<?= $contactSelected('Reserva existente') ?>>Reserva existente</option>
-                        <option<?= $contactSelected('Soporte de cuenta') ?>>Soporte de cuenta</option>
-                        <option<?= $contactSelected('Otros') ?>>Otros</option>
+                        <option value="">Seleccioná un asunto</option>
+                        <option value="Consulta sobre vuelos"<?= $contactSelected('Consulta sobre vuelos') ?>>Consulta sobre vuelos</option>
+                        <option value="Reserva existente"<?= $contactSelected('Reserva existente') ?>>Reserva existente</option>
+                        <option value="Soporte de cuenta"<?= $contactSelected('Soporte de cuenta') ?>>Soporte de cuenta</option>
+                        <option value="Otros"<?= $contactSelected('Otros') ?>>Otros</option>
                     </select>
                     <?php if ($contactError('asunto') !== ''): ?>
                         <p class="mt-1 text-xs leading-5 text-flyto-ink"><?= $contactError('asunto') ?></p>
