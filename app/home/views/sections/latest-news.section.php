@@ -6,7 +6,7 @@
     <div class="mx-auto max-w-7xl px-6">
         <div class="grid border border-flyto-ink/10 md:grid-cols-[282px_1fr]">
             <div class="border-b border-flyto-ink/10 p-6 md:border-b-0 md:border-r md:p-8">
-                <p id="ultimas-novedades" class="font-mono text-xs uppercase tracking-[1.2px] text-flyto-muted">Últimas Novedades</p>
+                <h2 id="ultimas-novedades" class="font-mono text-xs uppercase tracking-[1.2px] text-flyto-muted">Últimas Novedades</h2>
                 <div class="mt-4 h-px w-8 bg-flyto-gold"></div>
                 <p class="mt-6 text-xs leading-[19.5px] text-flyto-muted">
                     Noticias, actualizaciones y novedades de la plataforma y el sector aerocomercial.
