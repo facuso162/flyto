@@ -167,7 +167,7 @@ require_once __DIR__ . '/../app/vuelos/controllers/editar-vuelo-action.controlle
 require_once __DIR__ . '/../app/vuelos/controllers/editar-vuelo-page.controller.php';
 require_once __DIR__ . '/../app/vuelos/controllers/listado-vuelos-page.controller.php';
 
-Env::load(__DIR__ . '/../.env.example');
+Env::load(__DIR__ . '/../.env');
 
 $container = new Container();
 
