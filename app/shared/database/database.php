@@ -3,14 +3,17 @@
 namespace App\Shared\Database;
 
 use PDO;
+use App\Shared\Config\Env;
+
+require_once __DIR__ . '/../config/env.php';
 
 class Database
 {
     public static function getConnection(): PDO {
-        $host = 'localhost';
-        $db = 'flyto';
-        $user = 'root';
-        $pass = '';
+        $host = Env::env('DB_HOST', 'localhost');
+        $db = Env::env('DB_NAME', 'flyto');
+        $user = Env::env('DB_USER', 'root');
+        $pass = Env::env('DB_PASS', '');
         $charset = 'utf8mb4';
 
         $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
