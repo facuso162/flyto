@@ -63,7 +63,9 @@ $renderFilterForm = static function (string $id) use ($basePath, $criterios, $ae
         <fieldset>
             <legend class="font-mono text-xs uppercase tracking-[0.3px] text-flyto-muted">Precio maximo</legend>
             <div class="mt-3">
+                <label for="precioMaximo" class="sr-only">Rango de precio máximo</label>
                 <input
+                    id="precioMaximo"
                     type="range"
                     name="precioMaximo"
                     min="0"
@@ -73,7 +75,7 @@ $renderFilterForm = static function (string $id) use ($basePath, $criterios, $ae
                     class="w-full accent-flyto-navy"
                     <?= $precioMaximoDisponible <= 0 ? 'disabled' : '' ?>
                 >
-                <div class="mt-2 flex items-center justify-between text-xs text-flyto-muted">
+                <div class="mt-2 flex items-center justify-between text-xs text-flyto-muted" aria-hidden="true">
                     <span>$0</span>
                     <span>Hasta <?= htmlspecialchars($formatMoney($precioMaximoSeleccionado), ENT_QUOTES, 'UTF-8') ?></span>
                 </div>
@@ -86,10 +88,14 @@ $renderFilterForm = static function (string $id) use ($basePath, $criterios, $ae
                 <?php if ($aerolineas === []): ?>
                     <p class="text-sm leading-6 text-flyto-muted">No hay aerolineas para estos criterios.</p>
                 <?php endif; ?>
-                <?php foreach ($aerolineas as $aerolinea): ?>
-                    <?php $codigoIata = (string) $aerolinea['codigoIata']; ?>
-                    <label class="flex cursor-pointer items-center gap-3 text-sm text-flyto-ink">
+                <?php foreach ($aerolineas as $index => $aerolinea): ?>
+                    <?php 
+                        $codigoIata = (string) $aerolinea['codigoIata']; 
+                        $inputId = 'aerolinea_' . $codigoIata . '_' . $index; // Genera un ID único para cada checkbox
+                    ?>
+                    <label for="<?= htmlspecialchars($inputId, ENT_QUOTES, 'UTF-8') ?>" class="flex cursor-pointer items-center gap-3 text-sm text-flyto-ink">
                         <input
+                            id="<?= htmlspecialchars($inputId, ENT_QUOTES, 'UTF-8') ?>"
                             type="checkbox"
                             name="aerolineas[]"
                             value="<?= htmlspecialchars($codigoIata, ENT_QUOTES, 'UTF-8') ?>"

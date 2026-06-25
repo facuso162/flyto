@@ -44,7 +44,7 @@
                 </div>
             </div>
 
-            <form action="<?= htmlspecialchars($basePath ?? '', ENT_QUOTES, 'UTF-8') ?>/contacto/enviar" method="post" class="p-8">
+<form id="formularioContacto" action="<?= htmlspecialchars($basePath ?? '', ENT_QUOTES, 'UTF-8') ?>/contacto/enviar" method="post" class="p-8">
                 <input type="hidden" name="redirectTo" value="<?= $contactRedirectTo ?>">
                 <p class="font-mono text-xs uppercase tracking-[1.2px] text-flyto-muted">Formulario de consulta</p>
                 <?php if (!empty($contactFlash['success'])): ?>
@@ -57,31 +57,31 @@
                     </p>
                 <?php endif; ?>
                 <div class="mt-6 grid gap-4 md:grid-cols-2">
-                    <label class="block">
+                    <label for="nombre" class="block">
                         <span class="font-mono text-[10.4px] font-medium uppercase tracking-[0.26px] text-flyto-muted">Nombre</span>
-                        <input required name="nombre" value="<?= $contactValue('nombre') ?>" class="mt-1 h-10 w-full border border-flyto-ink/10 bg-white px-3 text-sm outline-none focus:border-flyto-navy" placeholder="Tu nombre">
+                        <input id="nombre" tabindex="1" required name="nombre" value="<?= $contactValue('nombre') ?>" class="mt-1 h-10 w-full border border-flyto-ink/10 bg-white px-3 text-sm outline-none focus:border-flyto-navy" placeholder="Tu nombre">
                         <?php if ($contactError('nombre') !== ''): ?>
                             <p class="mt-1 text-xs leading-5 text-flyto-ink"><?= $contactError('nombre') ?></p>
                         <?php endif; ?>
                     </label>
-                    <label class="block">
+                    <label for="apellido" class="block">
                         <span class="font-mono text-[10.4px] font-medium uppercase tracking-[0.26px] text-flyto-muted">Apellido</span>
-                        <input required name="apellido" value="<?= $contactValue('apellido') ?>" class="mt-1 h-10 w-full border border-flyto-ink/10 bg-white px-3 text-sm outline-none focus:border-flyto-navy" placeholder="Tu apellido">
+                        <input id="apellido" tabindex="2" required name="apellido" value="<?= $contactValue('apellido') ?>" class="mt-1 h-10 w-full border border-flyto-ink/10 bg-white px-3 text-sm outline-none focus:border-flyto-navy" placeholder="Tu apellido">
                         <?php if ($contactError('apellido') !== ''): ?>
                             <p class="mt-1 text-xs leading-5 text-flyto-ink"><?= $contactError('apellido') ?></p>
                         <?php endif; ?>
                     </label>
                 </div>
-                <label class="mt-4 block">
+                <label for="email" class="mt-4 block">
                     <span class="font-mono text-[10.4px] font-medium uppercase tracking-[0.26px] text-flyto-muted">Correo electrónico</span>
-                    <input required name="email" type="email" value="<?= $contactValue('email') ?>" class="mt-1 h-10 w-full border border-flyto-ink/10 bg-white px-3 text-sm outline-none focus:border-flyto-navy" placeholder="nombre@ejemplo.com">
+                    <input id="email" tabindex="3" required name="email" type="email" value="<?= $contactValue('email') ?>" class="mt-1 h-10 w-full border border-flyto-ink/10 bg-white px-3 text-sm outline-none focus:border-flyto-navy" placeholder="nombre@ejemplo.com">
                     <?php if ($contactError('email') !== ''): ?>
                         <p class="mt-1 text-xs leading-5 text-flyto-ink"><?= $contactError('email') ?></p>
                     <?php endif; ?>
                 </label>
-                <label class="mt-4 block">
+                <label for="asunto" class="mt-4 block">
                     <span class="font-mono text-[10.4px] font-medium uppercase tracking-[0.26px] text-flyto-muted">Asunto</span>
-                    <select required name="asunto" class="mt-1 h-10 w-full border border-flyto-ink/10 bg-white px-3 text-sm outline-none focus:border-flyto-navy">
+                    <select id="asunto" tabindex="4" required name="asunto" class="mt-1 h-10 w-full border border-flyto-ink/10 bg-white px-3 text-sm outline-none focus:border-flyto-navy">
                         <option value="">Seleccioná un asunto</option>
                         <option value="Consulta sobre vuelos"<?= $contactSelected('Consulta sobre vuelos') ?>>Consulta sobre vuelos</option>
                         <option value="Reserva existente"<?= $contactSelected('Reserva existente') ?>>Reserva existente</option>
@@ -92,14 +92,14 @@
                         <p class="mt-1 text-xs leading-5 text-flyto-ink"><?= $contactError('asunto') ?></p>
                     <?php endif; ?>
                 </label>
-                <label class="mt-4 block">
+                <label for="mensaje" class="mt-4 block">
                     <span class="font-mono text-[10.4px] font-medium uppercase tracking-[0.26px] text-flyto-muted">Mensaje</span>
-                    <textarea required name="mensaje" rows="5" class="mt-1 w-full border border-flyto-ink/10 bg-white px-3 py-2 text-sm outline-none focus:border-flyto-navy" placeholder="Describí tu consulta con el mayor detalle posible..."><?= $contactValue('mensaje') ?></textarea>
+                    <textarea id="mensaje" tabindex="5" required name="mensaje" rows="5" class="mt-1 w-full border border-flyto-ink/10 bg-white px-3 py-2 text-sm outline-none focus:border-flyto-navy" placeholder="Describí tu consulta con el mayor detalle posible..."><?= $contactValue('mensaje') ?></textarea>
                     <?php if ($contactError('mensaje') !== ''): ?>
                         <p class="mt-1 text-xs leading-5 text-flyto-ink"><?= $contactError('mensaje') ?></p>
                     <?php endif; ?>
                 </label>
-                <button class="mt-6 inline-flex h-11 items-center gap-2 bg-flyto-navy px-7 text-sm font-medium text-flyto-sand" type="submit">
+                <button id="btnSubmitContacto" tabindex="6" disabled class="mt-6 inline-flex h-11 items-center gap-2 bg-flyto-navy px-7 text-sm font-medium text-flyto-sand disabled:opacity-50 disabled:cursor-not-allowed transition-opacity" type="submit">
                     <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                         <path d="M4 12L20 4L15 20L11 13L4 12Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
                     </svg>
