@@ -21,14 +21,14 @@ class ListadoReportesPageController
             [
                 'reportes' => [
                     [
+                        'titulo' => 'Reporte de ventas',
+                        'descripcion' => 'Resumen mensual de reservas, ingresos, cancelaciones y vuelos con mayor demanda.',
+                        'slug' => 'ventas',
+                    ],
+                    [
                         'titulo' => 'Reporte de vuelos',
                         'descripcion' => 'Analisis de vuelos, ocupacion, rutas y disponibilidad operativa de la aerolinea.',
                         'slug' => 'vuelos',
-                    ],
-                    [
-                        'titulo' => 'Reporte de usuarios',
-                        'descripcion' => 'Resumen de usuarios registrados, actividad y crecimiento de la plataforma.',
-                        'slug' => 'usuarios',
                     ],
                 ],
             ],
