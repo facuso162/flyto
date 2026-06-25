@@ -26,8 +26,8 @@ class ListadoReportesPageController
                         'slug' => 'ventas',
                     ],
                     [
-                        'titulo' => 'Reporte de vuelos',
-                        'descripcion' => 'Analisis de vuelos, ocupacion, rutas y disponibilidad operativa de la aerolinea.',
+                        'titulo' => 'Reporte de ocupacion de vuelos',
+                        'descripcion' => 'Analisis mensual de vuelos, ocupacion, asientos ofrecidos y rutas con mayor demanda.',
                         'slug' => 'vuelos',
                     ],
                 ],

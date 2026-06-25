@@ -47,6 +47,7 @@ use App\Promociones\Controllers\SolicitarActivacionPageController;
 use App\Promociones\Repositories\PromocionRepository;
 use App\Promociones\Services\PromocionService;
 use App\Reportes\Controllers\ListadoReportesPageController;
+use App\Reportes\Controllers\ReporteOcupacionPageController;
 use App\Reportes\Controllers\ReporteVentasPageController;
 use App\Reportes\Repositories\ReporteRepository;
 use App\Reportes\Services\ReporteService;
@@ -142,6 +143,7 @@ require_once __DIR__ . '/../app/reportes/repositories/reporte.repository.php';
 require_once __DIR__ . '/../app/reportes/services/reporte.service.php';
 require_once __DIR__ . '/../app/reportes/controllers/listado-reportes-page.controller.php';
 require_once __DIR__ . '/../app/reportes/controllers/reporte-ventas-page.controller.php';
+require_once __DIR__ . '/../app/reportes/controllers/reporte-ocupacion-page.controller.php';
 
 require_once __DIR__ . '/../app/novedades/repositories/novedad.repository.php';
 require_once __DIR__ . '/../app/novedades/services/novedad.service.php';
@@ -604,6 +606,14 @@ $container->scoped(ReporteVentasPageController::class, function ($c) {
     );
 });
 
+$container->scoped(ReporteOcupacionPageController::class, function ($c) {
+    return new ReporteOcupacionPageController(
+        $c->get(ReporteService::class),
+        $c->get(SessionService::class),
+        $c->get(ViewResponse::class)
+    );
+});
+
 function resolvePage(
     array $route,
     Container $container,
@@ -846,6 +856,10 @@ $ceoRoutes = [
     ],
     '/ceo/reportes/ventas' => [
         'controller' => ReporteVentasPageController::class,
+        'action' => 'show',
+    ],
+    '/ceo/reportes/vuelos' => [
+        'controller' => ReporteOcupacionPageController::class,
         'action' => 'show',
     ],
     '/ceo/promociones/crear' => [
