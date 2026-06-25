@@ -46,6 +46,7 @@ use App\Promociones\Controllers\SolicitarActivacionActionController;
 use App\Promociones\Controllers\SolicitarActivacionPageController;
 use App\Promociones\Repositories\PromocionRepository;
 use App\Promociones\Services\PromocionService;
+use App\Reportes\Controllers\ListadoReportesPageController;
 use App\Reservas\Controllers\CancelarReservaActionController;
 use App\Reservas\Controllers\CrearReservaActionController;
 use App\Reservas\Controllers\ConfirmacionPageController;
@@ -134,6 +135,7 @@ require_once __DIR__ . '/../app/promociones/controllers/solicitar-activacion-act
 require_once __DIR__ . '/../app/promociones/controllers/solicitar-activacion-page.controller.php';
 
 require_once __DIR__ . '/../app/ceo/controllers/ceo-dashboard-page.controller.php';
+require_once __DIR__ . '/../app/reportes/controllers/listado-reportes-page.controller.php';
 
 require_once __DIR__ . '/../app/novedades/repositories/novedad.repository.php';
 require_once __DIR__ . '/../app/novedades/services/novedad.service.php';
@@ -574,6 +576,12 @@ $container->scoped(CeoDashboardPageController::class, function ($c) {
     );
 });
 
+$container->scoped(ListadoReportesPageController::class, function ($c) {
+    return new ListadoReportesPageController(
+        $c->get(ViewResponse::class)
+    );
+});
+
 function resolvePage(
     array $route,
     Container $container,
@@ -808,6 +816,10 @@ $ceoRoutes = [
     ],
     '/ceo/promociones' => [
         'controller' => ListadoPromocionesPageController::class,
+        'action' => 'show',
+    ],
+    '/ceo/reportes' => [
+        'controller' => ListadoReportesPageController::class,
         'action' => 'show',
     ],
     '/ceo/promociones/crear' => [
