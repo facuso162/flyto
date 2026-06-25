@@ -7,8 +7,6 @@ $items = [
     ['/ceo/vuelos', 'Vuelos', '<path d="m4 13 16-8-6 15-3-6-7-1Z"/>'],
     ['/ceo/promociones', 'Promociones', '<path d="M20 13 13 20 4 11V4h7l9 9Z"/><circle cx="8" cy="8" r="1" fill="currentColor" stroke="none"/>'],
     ['/ceo/reportes', 'Reportes', '<path d="M5 20v-7m7 7V4m7 16V9"/>'],
-    ['/faq', 'FAQ', '<path d="M4 5.5c3-1.5 5.7-1.2 8 .7 2.3-1.9 5-2.2 8-.7v13c-3-1.5-5.7-1.2-8 .7-2.3-1.9-5-2.2-8-.7v-13Z"/><path d="M12 6v14"/>'],
-    ['/contacto', 'Contacto', '<rect x="3" y="5" width="18" height="14" rx="1"/><path d="m4 7 8 6 8-6"/>'],
 ];
 
 ?>
