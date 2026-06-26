@@ -7,6 +7,7 @@ use App\Auth\Controllers\LogoutUsuarioActionController;
 use App\Auth\Controllers\RegisterUsuarioActionController;
 use App\Auth\Controllers\RegistroPageController;
 use App\Admin\Controllers\AdminDashboardPageController;
+use App\Aerolineas\Controllers\ListadoAerolineasPageController;
 use App\Aerolineas\Repositories\AerolineaRepository;
 use App\Aerolineas\Services\AerolineaService;
 use App\Auth\Middlewares\AdminMiddleware;
@@ -128,6 +129,7 @@ require_once __DIR__ . '/../app/contacto/controllers/enviar-mensaje-action.contr
 
 require_once __DIR__ . '/../app/aerolineas/repositories/aerolinea.repository.php';
 require_once __DIR__ . '/../app/aerolineas/services/aerolinea.service.php';
+require_once __DIR__ . '/../app/aerolineas/controllers/listado-aerolineas-page.controller.php';
 
 require_once __DIR__ . '/../app/ciudades/repositories/ciudad.repository.php';
 require_once __DIR__ . '/../app/ciudades/services/ciudad.service.php';
@@ -325,6 +327,13 @@ $container->scoped(AerolineaRepository::class, function ($c) {
 
 $container->scoped(AerolineaService::class, function ($c) {
     return new AerolineaService($c->get(AerolineaRepository::class));
+});
+
+$container->scoped(ListadoAerolineasPageController::class, function ($c) {
+    return new ListadoAerolineasPageController(
+        $c->get(AerolineaService::class),
+        $c->get(ViewResponse::class)
+    );
 });
 
 $container->scoped(CiudadRepository::class, function ($c) {
@@ -870,6 +879,10 @@ $protectedPublicRoutes = [
 $adminRoutes = [
     '/admin' => [
         'controller' => AdminDashboardPageController::class,
+        'action' => 'show',
+    ],
+    '/admin/aerolineas' => [
+        'controller' => ListadoAerolineasPageController::class,
         'action' => 'show',
     ],
     '/admin/novedades' => [
