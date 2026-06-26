@@ -2,6 +2,8 @@
 
 namespace App\Vuelos\Services;
 
+use App\Aerolineas\Models\Aerolinea;
+use App\Aerolineas\Services\AerolineaService;
 use App\Ciudades\Services\CiudadService;
 use App\Vuelos\Dtos\BuscarVuelosDto;
 use App\Vuelos\Dtos\CrearVueloDto;
@@ -10,6 +12,7 @@ use App\Vuelos\Models\Vuelo;
 use App\Vuelos\Repositories\VueloRepository;
 use App\Shared\Http\HttpException;
 
+require_once __DIR__ . '/../../aerolineas/services/aerolinea.service.php';
 require_once __DIR__ . '/../../ciudades/services/ciudad.service.php';
 require_once __DIR__ . '/../../shared/http/http-exception.php';
 require_once __DIR__ . '/../dtos/buscar-vuelos.dto.php';
@@ -22,7 +25,8 @@ class VueloService
 {
     public function __construct(
         private VueloRepository $vueloRepository,
-        private CiudadService $ciudadService
+        private CiudadService $ciudadService,
+        private AerolineaService $aerolineaService
     ) {
     }
 
@@ -64,7 +68,7 @@ class VueloService
     public function proponerCodigoByCeoId(int $ceoId): string
     {
         $aerolinea = $this->aerolineaDelCeo($ceoId);
-        $prefijo = $this->iniciales((string) $aerolinea['nombre']);
+        $prefijo = $this->iniciales($aerolinea->nombre);
 
         $numeroInicial = random_int(0, 999);
         for ($intento = 0; $intento < 1000; $intento++) {
@@ -99,7 +103,7 @@ class VueloService
             throw new HttpException('El estado inicial de vuelo no está configurado.', 500);
         }
 
-        return $this->vueloRepository->crear($dto, (int) $aerolinea['id'], $estadoId);
+        return $this->vueloRepository->crear($dto, $aerolinea->id, $estadoId);
     }
 
     public function getEditableByCeoId(int $vueloId, int $ceoId): Vuelo
@@ -110,7 +114,7 @@ class VueloService
         }
 
         $aerolinea = $this->aerolineaDelCeo($ceoId);
-        if ((int) $vuelo->aerolinea['idAerolinea'] !== (int) $aerolinea['id']) {
+        if ($vuelo->aerolinea->id !== $aerolinea->id) {
             throw new HttpException('No tenés permisos para editar este vuelo.', 403);
         }
 
@@ -148,7 +152,7 @@ class VueloService
         }
 
         $aerolinea = $this->aerolineaDelCeo($ceoId);
-        if ((int) $vuelo->aerolinea['idAerolinea'] !== (int) $aerolinea['id']) {
+        if ($vuelo->aerolinea->id !== $aerolinea->id) {
             throw new HttpException('No tenés permisos para borrar este vuelo.', 403);
         }
 
@@ -159,9 +163,9 @@ class VueloService
         $this->vueloRepository->borrar($vueloId);
     }
 
-    private function aerolineaDelCeo(int $ceoId): array
+    private function aerolineaDelCeo(int $ceoId): Aerolinea
     {
-        $aerolinea = $this->vueloRepository->getAerolineaByCeoId($ceoId);
+        $aerolinea = $this->aerolineaService->getPorCeoId($ceoId);
         if ($aerolinea === null) {
             throw new HttpException('El CEO no tiene una aerolínea asignada.', 404);
         }
@@ -196,7 +200,7 @@ class VueloService
                 return false;
             }
 
-            if ($aerolineas !== [] && !in_array($vuelo->aerolinea['codigoIataAerolinea'], $aerolineas, true)) {
+            if ($aerolineas !== [] && !in_array($vuelo->aerolinea->codigoIata, $aerolineas, true)) {
                 return false;
             }
 
@@ -238,15 +242,11 @@ class VueloService
         $aerolineas = [];
 
         foreach ($vuelos as $vuelo) {
-            $codigoIata = $vuelo->aerolinea['codigoIataAerolinea'];
-            $aerolineas[$codigoIata] = [
-                'id' => $vuelo->aerolinea['idAerolinea'],
-                'nombre' => $vuelo->aerolinea['nombreAerolinea'],
-                'codigoIata' => $codigoIata,
-            ];
+            $codigoIata = $vuelo->aerolinea->codigoIata;
+            $aerolineas[$codigoIata] = $vuelo->aerolinea;
         }
 
-        uasort($aerolineas, fn (array $a, array $b) => $a['nombre'] <=> $b['nombre']);
+        uasort($aerolineas, fn (Aerolinea $a, Aerolinea $b) => $a->nombre <=> $b->nombre);
 
         return array_values($aerolineas);
     }

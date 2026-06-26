@@ -101,7 +101,7 @@ if ($reserva !== null) {
                             </div>
                             <div>
                                 <dt class="font-mono text-[10.4px] uppercase tracking-[0.26px] text-flyto-muted">Aerolínea</dt>
-                                <dd class="mt-0.5 text-sm leading-5"><?= $html($vuelo->aerolinea['nombreAerolinea'] ?? '') ?></dd>
+                                <dd class="mt-0.5 text-sm leading-5"><?= $html($vuelo->aerolinea->nombre) ?></dd>
                             </div>
                             <div>
                                 <dt class="font-mono text-[10.4px] uppercase tracking-[0.26px] text-flyto-muted">Pasajeros</dt>

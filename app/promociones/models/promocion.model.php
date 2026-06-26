@@ -2,6 +2,10 @@
 
 namespace App\Promociones\Models;
 
+use App\Aerolineas\Models\Aerolinea;
+
+require_once __DIR__ . '/../../aerolineas/models/aerolinea.model.php';
+
 class Promocion
 {
     public ?int $id;
@@ -12,8 +16,7 @@ class Promocion
     public ?\DateTime $fechaFin;
     /** @var array{id: int, descripcion: string} */
     public array $estado;
-    /** @var array{id: int, codigoIata: string, nombre: string} */
-    public array $aerolinea;
+    public Aerolinea $aerolinea;
     /** @var array{id: int, nombre: string, apellido: string} */
     public array $ceo;
     public bool $activa;
@@ -26,7 +29,7 @@ class Promocion
         ?\DateTime $fechaAprobacion,
         ?\DateTime $fechaFin,
         array $estado,
-        array $aerolinea,
+        Aerolinea $aerolinea,
         array $ceo,
         bool $activa
     ) {
@@ -52,7 +55,7 @@ class Promocion
             'fechaAprobacion' => $this->fechaAprobacion?->format('Y-m-d H:i:s'),
             'fechaFin' => $this->fechaFin?->format('Y-m-d H:i:s'),
             'estado' => $this->estado,
-            'aerolinea' => $this->aerolinea,
+            'aerolinea' => $this->aerolinea->toArray(),
             'ceo' => $this->ceo,
             'activa' => $this->activa,
         ];

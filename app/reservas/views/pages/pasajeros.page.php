@@ -101,8 +101,8 @@ $total = $vuelo->precioConPromocion() * $cantidadPasajeros;
                     </div>
                     <div class="p-5">
                         <div class="flex items-center gap-3">
-                            <span class="flex h-8 w-8 items-center justify-center bg-flyto-gold font-mono text-xs font-medium"><?= $html($vuelo->aerolinea['codigoIataAerolinea']) ?></span>
-                            <div><p class="text-xs font-medium"><?= $html($vuelo->aerolinea['nombreAerolinea']) ?></p><p class="font-mono text-xs text-flyto-muted"><?= $html($vuelo->codigoVuelo) ?></p></div>
+                            <span class="flex h-8 w-8 items-center justify-center bg-flyto-gold font-mono text-xs font-medium"><?= $html($vuelo->aerolinea->codigoIata) ?></span>
+                            <div><p class="text-xs font-medium"><?= $html($vuelo->aerolinea->nombre) ?></p><p class="font-mono text-xs text-flyto-muted"><?= $html($vuelo->codigoVuelo) ?></p></div>
                         </div>
                         <div class="mt-5 grid grid-cols-[auto_1fr_auto] items-center gap-2">
                             <strong class="font-display text-xl font-medium"><?= $html($vuelo->fechaSalida->format('H:i')) ?></strong>

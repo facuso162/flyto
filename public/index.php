@@ -7,6 +7,8 @@ use App\Auth\Controllers\LogoutUsuarioActionController;
 use App\Auth\Controllers\RegisterUsuarioActionController;
 use App\Auth\Controllers\RegistroPageController;
 use App\Admin\Controllers\AdminDashboardPageController;
+use App\Aerolineas\Repositories\AerolineaRepository;
+use App\Aerolineas\Services\AerolineaService;
 use App\Auth\Middlewares\AdminMiddleware;
 use App\Auth\Middlewares\AuthMiddleware;
 use App\Auth\Middlewares\CeoMiddleware;
@@ -123,6 +125,9 @@ require_once __DIR__ . '/../app/contacto/services/contacto-email.service.php';
 require_once __DIR__ . '/../app/contacto/services/enviar-mensaje.service.php';
 require_once __DIR__ . '/../app/contacto/controllers/contacto-page.controller.php';
 require_once __DIR__ . '/../app/contacto/controllers/enviar-mensaje-action.controller.php';
+
+require_once __DIR__ . '/../app/aerolineas/repositories/aerolinea.repository.php';
+require_once __DIR__ . '/../app/aerolineas/services/aerolinea.service.php';
 
 require_once __DIR__ . '/../app/ciudades/repositories/ciudad.repository.php';
 require_once __DIR__ . '/../app/ciudades/services/ciudad.service.php';
@@ -314,6 +319,14 @@ $container->scoped(EnviarMensajeActionController::class, function ($c) {
     return new EnviarMensajeActionController($c->get(EnviarMensajeService::class));
 });
 
+$container->scoped(AerolineaRepository::class, function ($c) {
+    return new AerolineaRepository($c->get(Database::class));
+});
+
+$container->scoped(AerolineaService::class, function ($c) {
+    return new AerolineaService($c->get(AerolineaRepository::class));
+});
+
 $container->scoped(CiudadRepository::class, function ($c) {
     return new CiudadRepository($c->get(Database::class));
 });
@@ -343,7 +356,10 @@ $container->scoped(PromocionRepository::class, function ($c) {
 });
 
 $container->scoped(PromocionService::class, function ($c) {
-    return new PromocionService($c->get(PromocionRepository::class));
+    return new PromocionService(
+        $c->get(PromocionRepository::class),
+        $c->get(AerolineaService::class)
+    );
 });
 
 $container->scoped(PanelUsuarioRepository::class, function ($c) {
@@ -536,7 +552,8 @@ $container->scoped(VueloRepository::class, function ($c) {
 $container->scoped(VueloService::class, function ($c) {
     return new VueloService(
         $c->get(VueloRepository::class),
-        $c->get(CiudadService::class)
+        $c->get(CiudadService::class),
+        $c->get(AerolineaService::class)
     );
 });
 

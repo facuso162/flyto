@@ -90,7 +90,7 @@ $filtros = [
                             <p class="mt-1.5 text-xs leading-4 text-flyto-muted"><?= $html($fechaCorta($vuelo->fechaSalida)) ?> &rarr; <?= $html($fechaCorta($vuelo->fechaLlegada)) ?></p>
                         </div>
                         <div class="text-xs leading-4">
-                            <p class="text-flyto-ink"><?= $html($vuelo->aerolinea['nombreAerolinea'] ?? '') ?></p>
+                            <p class="text-flyto-ink"><?= $html($vuelo->aerolinea->nombre) ?></p>
                             <p class="mt-0.5 text-flyto-muted"><?= $html($vuelo->codigoVuelo) ?></p>
                         </div>
                         <div class="text-xs leading-4">

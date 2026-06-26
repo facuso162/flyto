@@ -2,6 +2,8 @@
 
 namespace App\Promociones\Services;
 
+use App\Aerolineas\Models\Aerolinea;
+use App\Aerolineas\Services\AerolineaService;
 use App\Promociones\Dtos\ActivarPromocionDto;
 use App\Promociones\Dtos\CrearPromocionDto;
 use App\Promociones\Dtos\EditarPromocionDto;
@@ -14,6 +16,7 @@ require_once __DIR__ . '/../dtos/crear-promocion.dto.php';
 require_once __DIR__ . '/../dtos/editar-promocion.dto.php';
 require_once __DIR__ . '/../models/promocion.model.php';
 require_once __DIR__ . '/../repositories/promocion.repository.php';
+require_once __DIR__ . '/../../aerolineas/services/aerolinea.service.php';
 require_once __DIR__ . '/../../shared/http/http-exception.php';
 
 class PromocionService
@@ -22,11 +25,10 @@ class PromocionService
     private const INACTIVA = 'inactiva';
     private const PENDIENTE_ACTIVACION = 'pendiente_activacion';
 
-    private PromocionRepository $promocionRepository;
-
-    public function __construct(PromocionRepository $promocionRepository)
-    {
-        $this->promocionRepository = $promocionRepository;
+    public function __construct(
+        private PromocionRepository $promocionRepository,
+        private AerolineaService $aerolineaService
+    ) {
     }
 
     public function crear(CrearPromocionDto $dto, int $ceoId): Promocion
@@ -149,7 +151,7 @@ class PromocionService
         $promocion = $this->promocion($id);
         $aerolinea = $this->aerolineaDelCeo($ceoId);
 
-        if ((int) ($promocion->aerolinea['id'] ?? 0) !== (int) $aerolinea['id']) {
+        if ($promocion->aerolinea->id !== $aerolinea->id) {
             throw new HttpException('No podés editar promociones de otra aerolínea.', 403);
         }
 
@@ -195,9 +197,9 @@ class PromocionService
         return $estado;
     }
 
-    private function aerolineaDelCeo(int $ceoId): array
+    private function aerolineaDelCeo(int $ceoId): Aerolinea
     {
-        $aerolinea = $this->promocionRepository->getAerolineaByCeoId($ceoId);
+        $aerolinea = $this->aerolineaService->getPorCeoId($ceoId);
 
         if (!$aerolinea) {
             throw new HttpException('El CEO no tiene una aerolinea asignada.', 404);

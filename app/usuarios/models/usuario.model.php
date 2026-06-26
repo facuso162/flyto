@@ -2,6 +2,10 @@
 
 namespace App\Usuarios\Models;
 
+use App\Aerolineas\Models\Aerolinea;
+
+require_once __DIR__ . '/../../aerolineas/models/aerolinea.model.php';
+
 class Usuario
 {
     public function __construct(
@@ -13,7 +17,7 @@ class Usuario
         public bool $activo,
         public \DateTime $fechaRegistro,
         public bool $emailVerificado,
-        public ?array $aerolinea = null
+        public ?Aerolinea $aerolinea = null
     ) {
     }
 

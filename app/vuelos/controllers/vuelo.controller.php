@@ -42,7 +42,7 @@ class VueloController
                     'orden' => $resultado['criterios']->orden,
                 ],
                 'vuelos' => array_map(fn ($vuelo) => $vuelo->toArray(), $resultado['vuelos']),
-                'aerolineas' => $resultado['aerolineas'],
+                'aerolineas' => array_map(fn ($aerolinea) => $aerolinea->toArray(), $resultado['aerolineas']),
                 'precioMaximoDisponible' => $resultado['precioMaximoDisponible'],
                 'precioMaximoSeleccionado' => $resultado['precioMaximoSeleccionado'],
                 'total' => $resultado['total'],

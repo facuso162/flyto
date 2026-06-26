@@ -2,6 +2,7 @@
 
 namespace App\Reservas\Repositories;
 
+use App\Aerolineas\Models\Aerolinea;
 use App\Reservas\Models\MetodoPago;
 use App\Reservas\Models\Pasajero;
 use App\Reservas\Models\Reserva;
@@ -11,6 +12,7 @@ use PDO;
 use Throwable;
 
 require_once __DIR__ . '/../models/reserva.model.php';
+require_once __DIR__ . '/../../aerolineas/models/aerolinea.model.php';
 require_once __DIR__ . '/../../shared/http/http-exception.php';
 
 class ReservaRepository
@@ -65,6 +67,14 @@ class ReservaRepository
                 a.id AS aerolinea_id,
                 a.nombre AS aerolinea_nombre,
                 a.codigo_iata AS aerolinea_codigo_iata,
+                a.descripcion AS aerolinea_descripcion,
+                a.pais_id AS aerolinea_pais_id,
+                aerolinea_pais.nombre AS aerolinea_pais_nombre,
+                aerolinea_pais.codigo AS aerolinea_pais_codigo,
+                a.ceo_id AS aerolinea_ceo_id,
+                aerolinea_ceo.nombre AS aerolinea_ceo_nombre,
+                aerolinea_ceo.apellido AS aerolinea_ceo_apellido,
+                a.activa AS aerolinea_activa,
                 origen.id AS origen_id,
                 origen.nombre AS origen_nombre,
                 origen.abreviacion AS origen_abreviacion,
@@ -87,6 +97,8 @@ class ReservaRepository
             FROM vuelos v
             INNER JOIN estados_vuelos ev ON ev.id = v.estado_id
             INNER JOIN aerolineas a ON a.id = v.aerolinea_id
+            INNER JOIN paises aerolinea_pais ON aerolinea_pais.id = a.pais_id
+            LEFT JOIN usuarios aerolinea_ceo ON aerolinea_ceo.id = a.ceo_id
             INNER JOIN ciudades origen ON origen.id = v.origen_ciudad_id
             INNER JOIN paises origen_pais ON origen_pais.id = origen.pais_id
             INNER JOIN ciudades destino ON destino.id = v.destino_ciudad_id
@@ -340,6 +352,14 @@ class ReservaRepository
                 a.id AS aerolinea_id,
                 a.nombre AS aerolinea_nombre,
                 a.codigo_iata AS aerolinea_codigo_iata,
+                a.descripcion AS aerolinea_descripcion,
+                a.pais_id AS aerolinea_pais_id,
+                aerolinea_pais.nombre AS aerolinea_pais_nombre,
+                aerolinea_pais.codigo AS aerolinea_pais_codigo,
+                a.ceo_id AS aerolinea_ceo_id,
+                aerolinea_ceo.nombre AS aerolinea_ceo_nombre,
+                aerolinea_ceo.apellido AS aerolinea_ceo_apellido,
+                a.activa AS aerolinea_activa,
                 origen.id AS origen_id,
                 origen.nombre AS origen_nombre,
                 origen.abreviacion AS origen_abreviacion,
@@ -364,6 +384,8 @@ class ReservaRepository
             INNER JOIN vuelos v ON v.id = r.vuelo_id
             INNER JOIN estados_vuelos ev ON ev.id = v.estado_id
             INNER JOIN aerolineas a ON a.id = v.aerolinea_id
+            INNER JOIN paises aerolinea_pais ON aerolinea_pais.id = a.pais_id
+            LEFT JOIN usuarios aerolinea_ceo ON aerolinea_ceo.id = a.ceo_id
             INNER JOIN ciudades origen ON origen.id = v.origen_ciudad_id
             INNER JOIN paises origen_pais ON origen_pais.id = origen.pais_id
             INNER JOIN ciudades destino ON destino.id = v.destino_ciudad_id
@@ -478,11 +500,23 @@ class ReservaRepository
                     'codigoPais' => (string) $row['destino_pais_codigo'],
                 ],
             ],
-            aerolinea: [
-                'idAerolinea' => (int) $row['aerolinea_id'],
-                'nombreAerolinea' => (string) $row['aerolinea_nombre'],
-                'codigoIataAerolinea' => strtoupper((string) $row['aerolinea_codigo_iata']),
-            ],
+            aerolinea: new Aerolinea(
+                id: (int) $row['aerolinea_id'],
+                nombre: (string) $row['aerolinea_nombre'],
+                descripcion: (string) $row['aerolinea_descripcion'],
+                codigoIata: (string) $row['aerolinea_codigo_iata'],
+                pais: [
+                    'id' => (int) $row['aerolinea_pais_id'],
+                    'nombre' => (string) $row['aerolinea_pais_nombre'],
+                    'codigo' => (string) $row['aerolinea_pais_codigo'],
+                ],
+                ceo: $row['aerolinea_ceo_id'] === null ? null : [
+                    'id' => (int) $row['aerolinea_ceo_id'],
+                    'nombre' => (string) $row['aerolinea_ceo_nombre'],
+                    'apellido' => (string) $row['aerolinea_ceo_apellido'],
+                ],
+                activa: (bool) $row['aerolinea_activa']
+            ),
             promocion: $promocion
         );
     }

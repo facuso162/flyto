@@ -42,7 +42,7 @@ $desde = static fn (\DateTimeInterface $fecha): string => 'desde ' . $meses[(int
                         ?>
                         <article class="px-6 py-4">
                             <div class="flex flex-wrap items-center gap-2">
-                                <h3 class="text-xs font-medium text-flyto-ink"><?= htmlspecialchars((string) ($promocion->aerolinea['nombre'] ?? 'Aerolinea'), ENT_QUOTES, 'UTF-8') ?></h3>
+                                <h3 class="text-xs font-medium text-flyto-ink"><?= htmlspecialchars($promocion->aerolinea->nombre, ENT_QUOTES, 'UTF-8') ?></h3>
                                 <span class="bg-[#fef3c6] px-2 py-1 font-mono text-[11px] leading-none text-[#c05a00]">-<?= (int) round($promocion->descuento * 100) ?>%</span>
                             </div>
                             <p class="mt-2 text-xs leading-5 text-flyto-muted"><?= htmlspecialchars($promocion->descripcion, ENT_QUOTES, 'UTF-8') ?></p>
@@ -76,7 +76,7 @@ $desde = static fn (\DateTimeInterface $fecha): string => 'desde ' . $meses[(int
                             continue;
                         }
 
-                        $aerolinea = is_array($ceo->aerolinea) ? (string) ($ceo->aerolinea['nombre'] ?? 'Sin aerolinea') : 'Sin aerolinea';
+                        $aerolinea = $ceo->aerolinea?->nombre ?? 'Sin aerolinea';
                         ?>
                         <article class="grid gap-4 px-6 py-4 sm:grid-cols-[32px_minmax(0,1fr)_108px] sm:items-center">
                             <span class="flex h-8 w-8 items-center justify-center bg-flyto-navy/10 text-flyto-navy" aria-hidden="true">

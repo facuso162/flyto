@@ -2,6 +2,10 @@
 
 namespace App\Vuelos\Models;
 
+use App\Aerolineas\Models\Aerolinea;
+
+require_once __DIR__ . '/../../aerolineas/models/aerolinea.model.php';
+
 class Vuelo
 {
     public int $id;
@@ -17,7 +21,7 @@ class Vuelo
     public int $asientosOcupados;
     public array $ciudadOrigen;
     public array $ciudadDestino;
-    public array $aerolinea;
+    public Aerolinea $aerolinea;
     public ?array $promocion;
 
     public function __construct(
@@ -34,7 +38,7 @@ class Vuelo
         int $asientosOcupados,
         array $ciudadOrigen,
         array $ciudadDestino,
-        array $aerolinea,
+        Aerolinea $aerolinea,
         ?array $promocion
     ) {
         $this->id = $id;
@@ -102,7 +106,7 @@ class Vuelo
             'asientosLibres' => $this->asientosLibres(),
             'ciudadOrigen' => $this->ciudadOrigen,
             'ciudadDestino' => $this->ciudadDestino,
-            'aerolinea' => $this->aerolinea,
+            'aerolinea' => $this->aerolinea->toArray(),
             'promocion' => $this->promocion
         ];
     }

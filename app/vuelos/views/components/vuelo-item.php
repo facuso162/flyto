@@ -47,7 +47,7 @@ $e = static fn (string $valor): string => htmlspecialchars($valor, ENT_QUOTES, '
                 <span aria-hidden="true">→</span>
                 <?= $e($vuelo->ciudadDestino['nombreCiudad']) ?>
                 <span aria-hidden="true">·</span>
-                <?= $e($vuelo->aerolinea['nombreAerolinea']) ?>
+                <?= $e($vuelo->aerolinea->nombre) ?>
             </p>
             <p class="mt-1.5 font-mono text-xs text-flyto-muted">
                 <?= $e($vuelo->fechaSalida->format('Y-m-d H:i')) ?>

@@ -49,7 +49,7 @@ $fechaCorta = static fn (\DateTimeInterface $fecha): string => $fecha->format('j
                                     </h3>
                                     <span class="bg-flyto-navy/10 px-2 py-1 font-mono text-[11px] text-flyto-navy"><?= htmlspecialchars($vuelo->codigoVuelo, ENT_QUOTES, 'UTF-8') ?></span>
                                 </div>
-                                <p class="mt-1 text-xs text-flyto-muted"><?= htmlspecialchars($vuelo->aerolinea['nombreAerolinea'], ENT_QUOTES, 'UTF-8') ?> · <?= htmlspecialchars($fechaCorta($vuelo->fechaSalida), ENT_QUOTES, 'UTF-8') ?></p>
+                                <p class="mt-1 text-xs text-flyto-muted"><?= htmlspecialchars($vuelo->aerolinea->nombre, ENT_QUOTES, 'UTF-8') ?> · <?= htmlspecialchars($fechaCorta($vuelo->fechaSalida), ENT_QUOTES, 'UTF-8') ?></p>
                             </div>
                             <div>
                                 <div class="flex justify-between text-[11px] text-flyto-muted"><span>Ocupación</span><span><?= $ocupacion ?>%</span></div>

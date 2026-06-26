@@ -2,6 +2,7 @@
 
 namespace App\Vuelos\Repositories;
 
+use App\Aerolineas\Models\Aerolinea;
 use App\Vuelos\Dtos\BuscarVuelosDto;
 use App\Vuelos\Dtos\CrearVueloDto;
 use App\Vuelos\Dtos\EditarVueloDto;
@@ -12,6 +13,7 @@ require_once __DIR__ . '/../dtos/buscar-vuelos.dto.php';
 require_once __DIR__ . '/../dtos/crear-vuelo.dto.php';
 require_once __DIR__ . '/../dtos/editar-vuelo.dto.php';
 require_once __DIR__ . '/../models/vuelo.model.php';
+require_once __DIR__ . '/../../aerolineas/models/aerolinea.model.php';
 
 class VueloRepository
 {
@@ -34,6 +36,14 @@ class VueloRepository
                 v.aerolinea_id,
                 a.nombre AS aerolinea_nombre,
                 a.codigo_iata AS aerolinea_codigo_iata,
+                a.descripcion AS aerolinea_descripcion,
+                a.pais_id AS aerolinea_pais_id,
+                aerolinea_pais.nombre AS aerolinea_pais_nombre,
+                aerolinea_pais.codigo AS aerolinea_pais_codigo,
+                a.ceo_id AS aerolinea_ceo_id,
+                aerolinea_ceo.nombre AS aerolinea_ceo_nombre,
+                aerolinea_ceo.apellido AS aerolinea_ceo_apellido,
+                a.activa AS aerolinea_activa,
                 promocion.id AS promocion_id,
                 promocion.descripcion AS promocion_descripcion,
                 promocion.descuento AS promocion_descuento,
@@ -62,6 +72,8 @@ class VueloRepository
                 v.asientosOcupados AS asientos_ocupados
             FROM vuelos v
             INNER JOIN aerolineas a ON a.id = v.aerolinea_id
+            INNER JOIN paises aerolinea_pais ON aerolinea_pais.id = a.pais_id
+            LEFT JOIN usuarios aerolinea_ceo ON aerolinea_ceo.id = a.ceo_id
             LEFT JOIN (
                 SELECT
                     p.id,
@@ -91,6 +103,14 @@ class VueloRepository
                 v.aerolinea_id,
                 a.nombre,
                 a.codigo_iata,
+                a.descripcion,
+                a.pais_id,
+                aerolinea_pais.nombre,
+                aerolinea_pais.codigo,
+                a.ceo_id,
+                aerolinea_ceo.nombre,
+                aerolinea_ceo.apellido,
+                a.activa,
                 promocion.id,
                 promocion.descripcion,
                 promocion.descuento,
@@ -142,6 +162,14 @@ class VueloRepository
                 v.aerolinea_id,
                 a.nombre AS aerolinea_nombre,
                 a.codigo_iata AS aerolinea_codigo_iata,
+                a.descripcion AS aerolinea_descripcion,
+                a.pais_id AS aerolinea_pais_id,
+                aerolinea_pais.nombre AS aerolinea_pais_nombre,
+                aerolinea_pais.codigo AS aerolinea_pais_codigo,
+                a.ceo_id AS aerolinea_ceo_id,
+                aerolinea_ceo.nombre AS aerolinea_ceo_nombre,
+                aerolinea_ceo.apellido AS aerolinea_ceo_apellido,
+                a.activa AS aerolinea_activa,
                 promocion.id AS promocion_id,
                 promocion.descripcion AS promocion_descripcion,
                 promocion.descuento AS promocion_descuento,
@@ -170,6 +198,8 @@ class VueloRepository
                 ev.nombre AS estado
             FROM vuelos v
             INNER JOIN aerolineas a ON a.id = v.aerolinea_id
+            INNER JOIN paises aerolinea_pais ON aerolinea_pais.id = a.pais_id
+            LEFT JOIN usuarios aerolinea_ceo ON aerolinea_ceo.id = a.ceo_id
             INNER JOIN ciudades origen ON origen.id = v.origen_ciudad_id
             INNER JOIN paises origen_pais ON origen_pais.id = origen.pais_id
             INNER JOIN ciudades destino ON destino.id = v.destino_ciudad_id
@@ -234,6 +264,14 @@ class VueloRepository
                 v.aerolinea_id,
                 a.nombre AS aerolinea_nombre,
                 a.codigo_iata AS aerolinea_codigo_iata,
+                a.descripcion AS aerolinea_descripcion,
+                a.pais_id AS aerolinea_pais_id,
+                aerolinea_pais.nombre AS aerolinea_pais_nombre,
+                aerolinea_pais.codigo AS aerolinea_pais_codigo,
+                a.ceo_id AS aerolinea_ceo_id,
+                aerolinea_ceo.nombre AS aerolinea_ceo_nombre,
+                aerolinea_ceo.apellido AS aerolinea_ceo_apellido,
+                a.activa AS aerolinea_activa,
                 NULL AS promocion_id,
                 NULL AS promocion_descripcion,
                 NULL AS promocion_descuento,
@@ -262,6 +300,8 @@ class VueloRepository
                 ev.nombre AS estado
             FROM vuelos v
             INNER JOIN aerolineas a ON a.id = v.aerolinea_id
+            INNER JOIN paises aerolinea_pais ON aerolinea_pais.id = a.pais_id
+            LEFT JOIN usuarios aerolinea_ceo ON aerolinea_ceo.id = a.ceo_id
             INNER JOIN ciudades origen ON origen.id = v.origen_ciudad_id
             INNER JOIN paises origen_pais ON origen_pais.id = origen.pais_id
             INNER JOIN ciudades destino ON destino.id = v.destino_ciudad_id
@@ -316,6 +356,14 @@ class VueloRepository
                 v.aerolinea_id,
                 a.nombre AS aerolinea_nombre,
                 a.codigo_iata AS aerolinea_codigo_iata,
+                a.descripcion AS aerolinea_descripcion,
+                a.pais_id AS aerolinea_pais_id,
+                aerolinea_pais.nombre AS aerolinea_pais_nombre,
+                aerolinea_pais.codigo AS aerolinea_pais_codigo,
+                a.ceo_id AS aerolinea_ceo_id,
+                aerolinea_ceo.nombre AS aerolinea_ceo_nombre,
+                aerolinea_ceo.apellido AS aerolinea_ceo_apellido,
+                a.activa AS aerolinea_activa,
                 NULL AS promocion_id,
                 NULL AS promocion_descripcion,
                 NULL AS promocion_descuento,
@@ -344,6 +392,8 @@ class VueloRepository
                 ev.nombre AS estado
             FROM vuelos v
             INNER JOIN aerolineas a ON a.id = v.aerolinea_id
+            INNER JOIN paises aerolinea_pais ON aerolinea_pais.id = a.pais_id
+            LEFT JOIN usuarios aerolinea_ceo ON aerolinea_ceo.id = a.ceo_id
             INNER JOIN ciudades origen ON origen.id = v.origen_ciudad_id
             INNER JOIN paises origen_pais ON origen_pais.id = origen.pais_id
             INNER JOIN ciudades destino ON destino.id = v.destino_ciudad_id
@@ -371,16 +421,6 @@ class VueloRepository
         $stmt->execute([':vuelo_id' => $vueloId]);
 
         return $stmt->fetchColumn() !== false;
-    }
-
-    /** @return array{id: int, nombre: string}|null */
-    public function getAerolineaByCeoId(int $ceoId): ?array
-    {
-        $stmt = $this->pdo->prepare('SELECT id, nombre FROM aerolineas WHERE ceo_id = :ceo_id LIMIT 1');
-        $stmt->execute([':ceo_id' => $ceoId]);
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        return $row ? ['id' => (int) $row['id'], 'nombre' => (string) $row['nombre']] : null;
     }
 
     public function getEstadoIdByNombre(string $nombre): ?int
@@ -498,11 +538,23 @@ class VueloRepository
                     'nombrePais' => (string) $row['destino_pais_nombre'],
                 ],
             ],
-            aerolinea: [
-                'idAerolinea' => (int) $row['aerolinea_id'],
-                'codigoIataAerolinea' => $codigoIata,
-                'nombreAerolinea' => (string) $row['aerolinea_nombre'],
-            ],
+            aerolinea: new Aerolinea(
+                id: (int) $row['aerolinea_id'],
+                nombre: (string) $row['aerolinea_nombre'],
+                descripcion: (string) $row['aerolinea_descripcion'],
+                codigoIata: $codigoIata,
+                pais: [
+                    'id' => (int) $row['aerolinea_pais_id'],
+                    'nombre' => (string) $row['aerolinea_pais_nombre'],
+                    'codigo' => (string) $row['aerolinea_pais_codigo'],
+                ],
+                ceo: $row['aerolinea_ceo_id'] === null ? null : [
+                    'id' => (int) $row['aerolinea_ceo_id'],
+                    'nombre' => (string) $row['aerolinea_ceo_nombre'],
+                    'apellido' => (string) $row['aerolinea_ceo_apellido'],
+                ],
+                activa: (bool) $row['aerolinea_activa']
+            ),
             promocion: $row['promocion_id'] === null ? null : [
                 'idPromocion' => (int) $row['promocion_id'],
                 'descripcion' => (string) $row['promocion_descripcion'],

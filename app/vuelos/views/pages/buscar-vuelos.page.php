@@ -87,7 +87,7 @@ $renderFilterForm = static function (string $id) use ($basePath, $criterios, $ae
                     <p class="text-sm leading-6 text-flyto-muted">No hay aerolineas para estos criterios.</p>
                 <?php endif; ?>
                 <?php foreach ($aerolineas as $aerolinea): ?>
-                    <?php $codigoIata = (string) $aerolinea['codigoIata']; ?>
+                    <?php $codigoIata = $aerolinea->codigoIata; ?>
                     <label class="flex cursor-pointer items-center gap-3 text-sm text-flyto-ink">
                         <input
                             type="checkbox"
@@ -96,7 +96,7 @@ $renderFilterForm = static function (string $id) use ($basePath, $criterios, $ae
                             class="h-4 w-4 shrink-0 accent-flyto-navy"
                             <?= in_array($codigoIata, $criterios->aerolineas, true) ? 'checked' : '' ?>
                         >
-                        <span><?= htmlspecialchars($aerolinea['nombre'], ENT_QUOTES, 'UTF-8') ?></span>
+                        <span><?= htmlspecialchars($aerolinea->nombre, ENT_QUOTES, 'UTF-8') ?></span>
                     </label>
                 <?php endforeach; ?>
             </div>

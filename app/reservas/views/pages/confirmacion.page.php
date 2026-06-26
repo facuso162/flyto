@@ -62,10 +62,10 @@ $steps = ['Selección', 'Pasajeros', 'Pago', 'Confirmación'];
 
                     <div class="mt-3 flex items-center gap-3">
                         <span class="flex h-8 w-8 shrink-0 items-center justify-center bg-[#005b99] font-mono text-xs font-medium text-white">
-                            <?= $html($vuelo->aerolinea['codigoIataAerolinea']) ?>
+                            <?= $html($vuelo->aerolinea->codigoIata) ?>
                         </span>
                         <div>
-                            <p class="text-xs font-medium leading-4"><?= $html($vuelo->aerolinea['nombreAerolinea']) ?></p>
+                            <p class="text-xs font-medium leading-4"><?= $html($vuelo->aerolinea->nombre) ?></p>
                             <p class="font-mono text-xs leading-4 text-flyto-muted"><?= $html($vuelo->codigoVuelo) ?></p>
                         </div>
                     </div>

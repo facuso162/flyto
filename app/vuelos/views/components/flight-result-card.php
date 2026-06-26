@@ -20,11 +20,11 @@ $seleccionarQuery = http_build_query([
         <div class="min-w-0">
             <div class="flex items-start gap-4">
                 <div class="flex h-11 w-11 shrink-0 items-center justify-center bg-flyto-gold font-mono text-sm font-medium text-flyto-ink">
-                    <?= htmlspecialchars($vuelo->aerolinea['codigoIataAerolinea'], ENT_QUOTES, 'UTF-8') ?>
+                    <?= htmlspecialchars($vuelo->aerolinea->codigoIata, ENT_QUOTES, 'UTF-8') ?>
                 </div>
                 <div class="min-w-0">
                     <h2 class="text-base font-semibold leading-6 text-flyto-ink">
-                        <?= htmlspecialchars($vuelo->aerolinea['nombreAerolinea'], ENT_QUOTES, 'UTF-8') ?>
+                        <?= htmlspecialchars($vuelo->aerolinea->nombre, ENT_QUOTES, 'UTF-8') ?>
                     </h2>
                     <p class="mt-1 font-mono text-xs uppercase tracking-[0.3px] text-flyto-muted">
                         Vuelo <?= htmlspecialchars($vuelo->codigoVuelo, ENT_QUOTES, 'UTF-8') ?>
