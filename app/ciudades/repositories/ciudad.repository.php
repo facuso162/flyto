@@ -3,9 +3,11 @@
 namespace App\Ciudades\Repositories;
 
 use App\Ciudades\Models\Ciudad;
+use App\Paises\Models\Pais;
 use PDO;
 
 require_once __DIR__ . '/../models/ciudad.model.php';
+require_once __DIR__ . '/../../paises/models/pais.model.php';
 
 class CiudadRepository
 {
@@ -47,7 +49,8 @@ class CiudadRepository
                 c.nombre,
                 c.abreviacion,
                 c.pais_id,
-                p.nombre AS pais_nombre
+                p.nombre AS pais_nombre,
+                p.codigo AS pais_codigo
             FROM ciudades c
             INNER JOIN paises p ON p.id = c.pais_id
         ';
@@ -59,8 +62,11 @@ class CiudadRepository
             id: (int) $row['id'],
             nombre: (string) $row['nombre'],
             abreviacion: (string) $row['abreviacion'],
-            paisId: (int) $row['pais_id'],
-            nombrePais: (string) $row['pais_nombre']
+            pais: new Pais(
+                id: (int) $row['pais_id'],
+                nombre: (string) $row['pais_nombre'],
+                codigo: (string) $row['pais_codigo']
+            )
         );
     }
 }

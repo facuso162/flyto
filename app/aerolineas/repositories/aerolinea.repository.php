@@ -3,9 +3,11 @@
 namespace App\Aerolineas\Repositories;
 
 use App\Aerolineas\Models\Aerolinea;
+use App\Paises\Models\Pais;
 use PDO;
 
 require_once __DIR__ . '/../models/aerolinea.model.php';
+require_once __DIR__ . '/../../paises/models/pais.model.php';
 
 class AerolineaRepository
 {
@@ -64,11 +66,11 @@ class AerolineaRepository
             nombre: (string) $row['nombre'],
             descripcion: (string) $row['descripcion'],
             codigoIata: (string) $row['codigo_iata'],
-            pais: [
-                'id' => (int) $row['pais_id'],
-                'nombre' => (string) $row['pais_nombre'],
-                'codigo' => (string) $row['pais_codigo'],
-            ],
+            pais: new Pais(
+                id: (int) $row['pais_id'],
+                nombre: (string) $row['pais_nombre'],
+                codigo: (string) $row['pais_codigo']
+            ),
             ceo: $row['ceo_id'] === null ? null : [
                 'id' => (int) $row['ceo_id'],
                 'nombre' => (string) $row['ceo_nombre'],

@@ -3,11 +3,13 @@
 namespace App\Promociones\Repositories;
 
 use App\Aerolineas\Models\Aerolinea;
+use App\Paises\Models\Pais;
 use App\Promociones\Models\Promocion;
 use PDO;
 
 require_once __DIR__ . '/../models/promocion.model.php';
 require_once __DIR__ . '/../../aerolineas/models/aerolinea.model.php';
+require_once __DIR__ . '/../../paises/models/pais.model.php';
 
 class PromocionRepository
 {
@@ -265,11 +267,11 @@ class PromocionRepository
                 nombre: (string) $row['aerolinea_nombre'],
                 descripcion: (string) $row['aerolinea_descripcion'],
                 codigoIata: (string) $row['codigo_iata'],
-                pais: [
-                    'id' => (int) $row['aerolinea_pais_id'],
-                    'nombre' => (string) $row['aerolinea_pais_nombre'],
-                    'codigo' => (string) $row['aerolinea_pais_codigo'],
-                ],
+                pais: new Pais(
+                    id: (int) $row['aerolinea_pais_id'],
+                    nombre: (string) $row['aerolinea_pais_nombre'],
+                    codigo: (string) $row['aerolinea_pais_codigo']
+                ),
                 ceo: $row['aerolinea_ceo_id'] === null ? null : [
                     'id' => (int) $row['aerolinea_ceo_id'],
                     'nombre' => (string) $row['aerolinea_ceo_nombre'],

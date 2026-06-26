@@ -3,6 +3,7 @@
 namespace App\Reservas\Repositories;
 
 use App\Aerolineas\Models\Aerolinea;
+use App\Paises\Models\Pais;
 use App\Reservas\Models\MetodoPago;
 use App\Reservas\Models\Pasajero;
 use App\Reservas\Models\Reserva;
@@ -13,6 +14,7 @@ use Throwable;
 
 require_once __DIR__ . '/../models/reserva.model.php';
 require_once __DIR__ . '/../../aerolineas/models/aerolinea.model.php';
+require_once __DIR__ . '/../../paises/models/pais.model.php';
 require_once __DIR__ . '/../../shared/http/http-exception.php';
 
 class ReservaRepository
@@ -505,11 +507,11 @@ class ReservaRepository
                 nombre: (string) $row['aerolinea_nombre'],
                 descripcion: (string) $row['aerolinea_descripcion'],
                 codigoIata: (string) $row['aerolinea_codigo_iata'],
-                pais: [
-                    'id' => (int) $row['aerolinea_pais_id'],
-                    'nombre' => (string) $row['aerolinea_pais_nombre'],
-                    'codigo' => (string) $row['aerolinea_pais_codigo'],
-                ],
+                pais: new Pais(
+                    id: (int) $row['aerolinea_pais_id'],
+                    nombre: (string) $row['aerolinea_pais_nombre'],
+                    codigo: (string) $row['aerolinea_pais_codigo']
+                ),
                 ceo: $row['aerolinea_ceo_id'] === null ? null : [
                     'id' => (int) $row['aerolinea_ceo_id'],
                     'nombre' => (string) $row['aerolinea_ceo_nombre'],

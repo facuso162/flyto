@@ -38,6 +38,8 @@ use App\Novedades\Controllers\EditarNovedadActionController;
 use App\Novedades\Controllers\NovedadesPageController;
 use App\Novedades\Repositories\NovedadRepository;
 use App\Novedades\Services\NovedadService;
+use App\Paises\Repositories\PaisRepository;
+use App\Paises\Services\PaisService;
 use App\Perfil\Controllers\MiPerfilPageController;
 use App\Promociones\Controllers\BorrarPromocionActionController;
 use App\Promociones\Controllers\CrearPromocionActionController;
@@ -126,6 +128,9 @@ require_once __DIR__ . '/../app/contacto/services/contacto-email.service.php';
 require_once __DIR__ . '/../app/contacto/services/enviar-mensaje.service.php';
 require_once __DIR__ . '/../app/contacto/controllers/contacto-page.controller.php';
 require_once __DIR__ . '/../app/contacto/controllers/enviar-mensaje-action.controller.php';
+
+require_once __DIR__ . '/../app/paises/repositories/pais.repository.php';
+require_once __DIR__ . '/../app/paises/services/pais.service.php';
 
 require_once __DIR__ . '/../app/aerolineas/repositories/aerolinea.repository.php';
 require_once __DIR__ . '/../app/aerolineas/services/aerolinea.service.php';
@@ -319,6 +324,14 @@ $container->scoped(ContactoPageController::class, function ($c) {
 
 $container->scoped(EnviarMensajeActionController::class, function ($c) {
     return new EnviarMensajeActionController($c->get(EnviarMensajeService::class));
+});
+
+$container->scoped(PaisRepository::class, function ($c) {
+    return new PaisRepository($c->get(Database::class));
+});
+
+$container->scoped(PaisService::class, function ($c) {
+    return new PaisService($c->get(PaisRepository::class));
 });
 
 $container->scoped(AerolineaRepository::class, function ($c) {

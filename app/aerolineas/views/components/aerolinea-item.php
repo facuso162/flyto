@@ -7,7 +7,7 @@ if (!isset($aerolinea) || !$aerolinea instanceof Aerolinea) {
 }
 
 $nombre = $aerolinea->nombre;
-$pais = (string) ($aerolinea->pais['nombre'] ?? '');
+$pais = $aerolinea->pais->nombre;
 $descripcion = $aerolinea->descripcion;
 $codigoIata = $aerolinea->codigoIata;
 
