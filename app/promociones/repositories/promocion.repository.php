@@ -201,16 +201,39 @@ class PromocionRepository
         ] : null;
     }
 
+    /** @return array{id: int, nombre: string, apellido: string}|null */
+    public function getCeoById(int $ceoId): ?array
+    {
+        $stmt = $this->pdo->prepare(
+            "SELECT u.id, u.nombre, u.apellido
+             FROM usuarios u
+             INNER JOIN tipos_usuarios tu ON tu.id = u.tipo_usuario_id
+             WHERE u.id = :id
+               AND tu.nombre = 'ceo'
+             LIMIT 1"
+        );
+        $stmt->execute([':id' => $ceoId]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $row ? [
+            'id' => (int) $row['id'],
+            'nombre' => (string) $row['nombre'],
+            'apellido' => (string) $row['apellido'],
+        ] : null;
+    }
+
     private function selectSql(): string
     {
         return 'SELECT
                     p.id, p.descripcion, p.descuento, p.fecha_creacion,
                     p.fecha_aprobacion, p.fecha_fin, p.activa,
                     ep.id AS estado_id, ep.nombre AS estado_descripcion,
-                    a.id AS aerolinea_id, a.codigo_iata, a.nombre AS aerolinea_nombre
+                    a.id AS aerolinea_id, a.codigo_iata, a.nombre AS aerolinea_nombre,
+                    u.id AS ceo_id, u.nombre AS ceo_nombre, u.apellido AS ceo_apellido
                 FROM promociones p
                 INNER JOIN estados_promociones ep ON ep.id = p.estado_id
-                INNER JOIN aerolineas a ON a.id = p.aerolinea_id';
+                INNER JOIN aerolineas a ON a.id = p.aerolinea_id
+                LEFT JOIN usuarios u ON u.id = a.ceo_id';
     }
 
     private function parameters(Promocion $promocion): array
@@ -229,6 +252,10 @@ class PromocionRepository
 
     private function mapRow(array $row): Promocion
     {
+        if (!$row['ceo_id']) {
+            throw new \RuntimeException('La promocion no tiene un CEO asociado.');
+        }
+
         return new Promocion(
             id: (int) $row['id'],
             descripcion: (string) $row['descripcion'],
@@ -241,6 +268,11 @@ class PromocionRepository
                 'id' => (int) $row['aerolinea_id'],
                 'codigoIata' => (string) $row['codigo_iata'],
                 'nombre' => (string) $row['aerolinea_nombre'],
+            ],
+            ceo: [
+                'id' => (int) $row['ceo_id'],
+                'nombre' => (string) $row['ceo_nombre'],
+                'apellido' => (string) $row['ceo_apellido'],
             ],
             activa: (bool) $row['activa']
         );

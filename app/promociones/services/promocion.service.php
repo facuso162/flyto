@@ -31,6 +31,9 @@ class PromocionService
 
     public function crear(CrearPromocionDto $dto, int $ceoId): Promocion
     {
+        $aerolinea = $this->aerolineaDelCeo($ceoId);
+        $ceo = $this->ceo($ceoId);
+
         $promocion = new Promocion(
             id: null,
             descripcion: $dto->descripcion,
@@ -39,7 +42,8 @@ class PromocionService
             fechaAprobacion: null,
             fechaFin: null,
             estado: $this->estado(self::INACTIVA),
-            aerolinea: $this->aerolineaDelCeo($ceoId),
+            aerolinea: $aerolinea,
+            ceo: $ceo,
             activa: true
         );
 
@@ -200,5 +204,16 @@ class PromocionService
         }
 
         return $aerolinea;
+    }
+
+    private function ceo(int $ceoId): array
+    {
+        $ceo = $this->promocionRepository->getCeoById($ceoId);
+
+        if (!$ceo) {
+            throw new HttpException('El usuario no es un CEO valido.', 404);
+        }
+
+        return $ceo;
     }
 }

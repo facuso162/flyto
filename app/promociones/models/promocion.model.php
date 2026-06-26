@@ -14,6 +14,8 @@ class Promocion
     public array $estado;
     /** @var array{id: int, codigoIata: string, nombre: string} */
     public array $aerolinea;
+    /** @var array{id: int, nombre: string, apellido: string} */
+    public array $ceo;
     public bool $activa;
 
     public function __construct(
@@ -25,6 +27,7 @@ class Promocion
         ?\DateTime $fechaFin,
         array $estado,
         array $aerolinea,
+        array $ceo,
         bool $activa
     ) {
         $this->id = $id;
@@ -35,6 +38,7 @@ class Promocion
         $this->fechaFin = $fechaFin;
         $this->estado = $estado;
         $this->aerolinea = $aerolinea;
+        $this->ceo = $ceo;
         $this->activa = $activa;
     }
 
@@ -49,6 +53,7 @@ class Promocion
             'fechaFin' => $this->fechaFin?->format('Y-m-d H:i:s'),
             'estado' => $this->estado,
             'aerolinea' => $this->aerolinea,
+            'ceo' => $this->ceo,
             'activa' => $this->activa,
         ];
     }

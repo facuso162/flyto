@@ -6,6 +6,7 @@ use App\Auth\Controllers\LoginUsuarioActionController;
 use App\Auth\Controllers\LogoutUsuarioActionController;
 use App\Auth\Controllers\RegisterUsuarioActionController;
 use App\Auth\Controllers\RegistroPageController;
+use App\Admin\Controllers\AdminDashboardPageController;
 use App\Auth\Middlewares\AdminMiddleware;
 use App\Auth\Middlewares\AuthMiddleware;
 use App\Auth\Middlewares\CeoMiddleware;
@@ -69,6 +70,8 @@ use App\Shared\Http\HttpException;
 use App\Shared\Http\RedirectResponse;
 use App\Shared\Http\ViewResponse;
 use App\Shared\Services\EmailService;
+use App\Usuarios\Repositories\UsuarioRepository as PanelUsuarioRepository;
+use App\Usuarios\Services\UsuarioService as PanelUsuarioService;
 use App\Vuelos\Controllers\BuscarVuelosPageController;
 use App\Vuelos\Controllers\BorrarVueloActionController;
 use App\Vuelos\Controllers\CrearVueloActionController;
@@ -137,6 +140,11 @@ require_once __DIR__ . '/../app/promociones/controllers/editar-promocion-page.co
 require_once __DIR__ . '/../app/promociones/controllers/listado-promociones-page.controller.php';
 require_once __DIR__ . '/../app/promociones/controllers/solicitar-activacion-action.controller.php';
 require_once __DIR__ . '/../app/promociones/controllers/solicitar-activacion-page.controller.php';
+
+require_once __DIR__ . '/../app/usuarios/repositories/usuario.repository.php';
+require_once __DIR__ . '/../app/usuarios/services/usuario.service.php';
+
+require_once __DIR__ . '/../app/admin/controllers/admin-dashboard-page.controller.php';
 
 require_once __DIR__ . '/../app/ceo/controllers/ceo-dashboard-page.controller.php';
 require_once __DIR__ . '/../app/reportes/repositories/reporte.repository.php';
@@ -336,6 +344,22 @@ $container->scoped(PromocionRepository::class, function ($c) {
 
 $container->scoped(PromocionService::class, function ($c) {
     return new PromocionService($c->get(PromocionRepository::class));
+});
+
+$container->scoped(PanelUsuarioRepository::class, function ($c) {
+    return new PanelUsuarioRepository($c->get(Database::class));
+});
+
+$container->scoped(PanelUsuarioService::class, function ($c) {
+    return new PanelUsuarioService($c->get(PanelUsuarioRepository::class));
+});
+
+$container->scoped(AdminDashboardPageController::class, function ($c) {
+    return new AdminDashboardPageController(
+        $c->get(PromocionService::class),
+        $c->get(PanelUsuarioService::class),
+        $c->get(ViewResponse::class)
+    );
 });
 
 $container->scoped(BorrarPromocionActionController::class, function ($c) {
@@ -828,8 +852,8 @@ $protectedPublicRoutes = [
 
 $adminRoutes = [
     '/admin' => [
-        'view' => __DIR__ . '/../app/admin/views/pages/admin.page.php',
-        'title' => 'Admin - Flyto',
+        'controller' => AdminDashboardPageController::class,
+        'action' => 'show',
     ],
     '/admin/novedades' => [
         'controller' => AdminNovedadesPageController::class,
