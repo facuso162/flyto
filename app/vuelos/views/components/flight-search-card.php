@@ -11,7 +11,7 @@ $selectedPasajeros = (string) ($flight['cantidadPasajeros'] ?? '');
 $cityDescription = static function (array $ciudades, string $selectedId, string $fallback = ''): string {
     foreach ($ciudades as $ciudad) {
         if ((string) $ciudad['id'] === $selectedId) {
-            return sprintf('%s, %s', $ciudad['nombre'], $ciudad['nombrePais']);
+            return sprintf('%s, %s', $ciudad['nombre'], $ciudad['pais']['nombre'] ?? '');
         }
     }
 
@@ -29,7 +29,7 @@ $renderCityOptions = static function (array $ciudades, string $selectedId): void
     foreach ($ciudades as $ciudad) {
         $id = (string) $ciudad['id'];
         $label = sprintf('%s', $ciudad['nombre']);
-        $description = sprintf('%s, %s', $ciudad['nombre'], $ciudad['nombrePais']);
+        $description = sprintf('%s, %s', $ciudad['nombre'], $ciudad['pais']['nombre'] ?? '');
         ?>
         <option
             value="<?= htmlspecialchars($id, ENT_QUOTES, 'UTF-8') ?>"

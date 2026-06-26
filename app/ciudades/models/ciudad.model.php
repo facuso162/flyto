@@ -12,9 +12,6 @@ class Ciudad
     public string $nombre;
     public string $abreviacion;
     public Pais $pais;
-    public int $paisId;
-    public string $nombrePais;
-    public string $codigoPais;
 
     public function __construct(
         int $id,
@@ -26,9 +23,6 @@ class Ciudad
         $this->nombre = $nombre;
         $this->abreviacion = $abreviacion;
         $this->pais = $pais;
-        $this->paisId = $pais->id;
-        $this->nombrePais = $pais->nombre;
-        $this->codigoPais = $pais->codigo;
     }
 
     public function toArray(): array
@@ -37,9 +31,6 @@ class Ciudad
             'id' => $this->id,
             'nombre' => $this->nombre,
             'abreviacion' => $this->abreviacion,
-            'paisId' => $this->paisId,
-            'nombrePais' => $this->nombrePais,
-            'codigoPais' => $this->codigoPais,
             'pais' => $this->pais->toArray(),
         ];
     }
