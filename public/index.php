@@ -39,6 +39,7 @@ use App\Home\Controllers\HomePageController;
 use App\Novedades\Controllers\AdminNovedadesPageController;
 use App\Novedades\Controllers\BorrarNovedadActionController;
 use App\Novedades\Controllers\CrearNovedadActionController;
+use App\Novedades\Controllers\CrearNovedadPageController;
 use App\Novedades\Controllers\EditarNovedadActionController;
 use App\Novedades\Controllers\NovedadesPageController;
 use App\Novedades\Repositories\NovedadRepository;
@@ -179,6 +180,7 @@ require_once __DIR__ . '/../app/novedades/repositories/novedad.repository.php';
 require_once __DIR__ . '/../app/novedades/services/novedad.service.php';
 require_once __DIR__ . '/../app/novedades/controllers/novedades-page.controller.php';
 require_once __DIR__ . '/../app/novedades/controllers/admin-novedades-page.controller.php';
+require_once __DIR__ . '/../app/novedades/controllers/crear-novedad-page.controller.php';
 require_once __DIR__ . '/../app/novedades/controllers/crear-novedad-action.controller.php';
 require_once __DIR__ . '/../app/novedades/controllers/editar-novedad-action.controller.php';
 require_once __DIR__ . '/../app/novedades/controllers/borrar-novedad-action.controller.php';
@@ -520,6 +522,10 @@ $container->scoped(AdminNovedadesPageController::class, function ($c) {
         $c->get(NovedadService::class),
         $c->get(ViewResponse::class)
     );
+});
+
+$container->scoped(CrearNovedadPageController::class, function ($c) {
+    return new CrearNovedadPageController($c->get(ViewResponse::class));
 });
 
 $container->scoped(CrearNovedadActionController::class, function ($c) {
@@ -957,6 +963,10 @@ $adminRoutes = [
     ],
     '/admin/novedades' => [
         'controller' => AdminNovedadesPageController::class,
+        'action' => 'show',
+    ],
+    '/admin/novedades/crear' => [
+        'controller' => CrearNovedadPageController::class,
         'action' => 'show',
     ],
 ];

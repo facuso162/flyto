@@ -49,10 +49,10 @@ $urlPagina = static fn (int $pagina): string => $basePath . '/admin/novedades?' 
                 <h1 class="mt-1 font-display text-3xl font-medium tracking-tight text-flyto-ink">Novedades</h1>
             </div>
 
-            <button type="button" class="flex w-fit items-center gap-2 bg-flyto-navy px-4 py-2 text-xs font-medium text-flyto-sand transition hover:bg-flyto-ink">
+            <a href="<?= $html($basePath) ?>/admin/novedades/crear" class="flex w-fit items-center gap-2 bg-flyto-navy px-4 py-2 text-xs font-medium text-flyto-sand transition hover:bg-flyto-ink">
                 <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
                 Agregar novedad
-            </button>
+            </a>
         </div>
 
         <?php if (!empty($flash['success'])): ?>

@@ -4,6 +4,7 @@ namespace App\Novedades\Controllers;
 
 use App\Auth\Middlewares\AdminMiddleware;
 use App\Auth\Services\SessionService;
+use App\Novedades\Dtos\EditarNovedadDto;
 use App\Novedades\Services\NovedadService;
 use App\Novedades\Validators\NovedadValidator;
 use App\Shared\Http\Flash;
@@ -13,6 +14,7 @@ use Throwable;
 
 require_once __DIR__ . '/../../auth/middlewares/admin.middleware.php';
 require_once __DIR__ . '/../../auth/services/session.service.php';
+require_once __DIR__ . '/../dtos/editar-novedad.dto.php';
 require_once __DIR__ . '/../services/novedad.service.php';
 require_once __DIR__ . '/../validators/novedad.validator.php';
 require_once __DIR__ . '/../../shared/http/flash.php';
@@ -39,7 +41,15 @@ class EditarNovedadActionController
         }
 
         try {
-            $dto = NovedadValidator::editar($_POST);
+            NovedadValidator::editar($_POST);
+            $dto = new EditarNovedadDto(
+                id: (int) $this->stringInput($_POST, 'id'),
+                titulo: $this->stringInput($_POST, 'titulo'),
+                texto: $this->stringInput($_POST, 'texto'),
+                categoria: $this->stringInput($_POST, 'categoria'),
+                fechaExpiracion: $this->fechaExpiracion($_POST)
+            );
+
             $this->novedadService->editar($dto);
 
             Flash::success('Novedad actualizada correctamente.');
@@ -88,5 +98,17 @@ class EditarNovedadActionController
         }
 
         return [$field => $exception->getMessage()];
+    }
+
+    private function stringInput(array $data, string $field): string
+    {
+        return isset($data[$field]) && is_scalar($data[$field])
+            ? trim((string) $data[$field])
+            : '';
+    }
+
+    private function fechaExpiracion(array $data): \DateTime
+    {
+        return \DateTime::createFromFormat('!Y-m-d', $this->stringInput($data, 'fechaExpiracion')) ?: new \DateTime();
     }
 }

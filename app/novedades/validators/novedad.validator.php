@@ -2,47 +2,29 @@
 
 namespace App\Novedades\Validators;
 
-use App\Novedades\Dtos\CrearNovedadDto;
-use App\Novedades\Dtos\EditarNovedadDto;
 use App\Shared\Http\HttpException;
 
-require_once __DIR__ . '/../dtos/crear-novedad.dto.php';
-require_once __DIR__ . '/../dtos/editar-novedad.dto.php';
 require_once __DIR__ . '/../../shared/http/http-exception.php';
 
 class NovedadValidator
 {
-    public static function crear(array $data): CrearNovedadDto
+    public static function crear(array $data): void
     {
-        $payload = self::payload($data);
-
-        return new CrearNovedadDto(
-            $payload['titulo'],
-            $payload['texto'],
-            $payload['categoria'],
-            $payload['fechaExpiracion']
-        );
+        self::payload($data);
     }
 
-    public static function editar(array $data): EditarNovedadDto
+    public static function editar(array $data): void
     {
-        $payload = self::payload($data);
-
-        return new EditarNovedadDto(
-            self::id($data),
-            $payload['titulo'],
-            $payload['texto'],
-            $payload['categoria'],
-            $payload['fechaExpiracion']
-        );
+        self::id($data);
+        self::payload($data);
     }
 
-    public static function borrar(array $data): int
+    public static function borrar(array $data): void
     {
-        return self::id($data);
+        self::id($data);
     }
 
-    private static function payload(array $data): array
+    private static function payload(array $data): void
     {
         $titulo = self::stringValue($data, 'titulo');
         $texto = self::stringValue($data, 'texto');
@@ -53,47 +35,38 @@ class NovedadValidator
             throw new HttpException('El titulo es obligatorio.', 400, ['field' => 'titulo']);
         }
 
-        if (strlen($titulo) > 160) {
-            throw new HttpException('El titulo no puede superar los 160 caracteres.', 400, ['field' => 'titulo']);
+        if (self::length($titulo) > 100) {
+            throw new HttpException('El titulo no puede superar los 100 caracteres.', 400, ['field' => 'titulo']);
         }
 
         if ($texto === '') {
             throw new HttpException('El texto es obligatorio.', 400, ['field' => 'texto']);
         }
 
-        if (strlen($texto) > 2000) {
-            throw new HttpException('El texto no puede superar los 2000 caracteres.', 400, ['field' => 'texto']);
+        if (self::length($texto) > 200) {
+            throw new HttpException('El texto no puede superar los 200 caracteres.', 400, ['field' => 'texto']);
         }
 
         if ($categoria === '') {
             throw new HttpException('La categoria es obligatoria.', 400, ['field' => 'categoria']);
         }
 
-        if (strlen($categoria) > 120) {
-            throw new HttpException('La categoria no puede superar los 120 caracteres.', 400, ['field' => 'categoria']);
+        if (self::length($categoria) > 50) {
+            throw new HttpException('La categoria no puede superar los 50 caracteres.', 400, ['field' => 'categoria']);
         }
 
-        if ($fechaExpiracion <= new \DateTime()) {
+        if ($fechaExpiracion <= new \DateTime('today')) {
             throw new HttpException('La fecha de expiracion debe ser futura.', 400, ['field' => 'fechaExpiracion']);
         }
-
-        return [
-            'titulo' => $titulo,
-            'texto' => $texto,
-            'categoria' => $categoria,
-            'fechaExpiracion' => $fechaExpiracion,
-        ];
     }
 
-    private static function id(array $data): int
+    private static function id(array $data): void
     {
         $id = self::stringValue($data, 'id');
 
         if ($id === '' || filter_var($id, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]) === false) {
             throw new HttpException('El id de la novedad es obligatorio y debe ser numerico.', 400, ['field' => 'id']);
         }
-
-        return (int) $id;
     }
 
     private static function dateValue(array $data, string $key): \DateTime
@@ -104,19 +77,27 @@ class NovedadValidator
             throw new HttpException('La fecha de expiracion es obligatoria.', 400, ['field' => 'fechaExpiracion']);
         }
 
-        try {
-            return new \DateTime($value);
-        } catch (\Throwable) {
-            throw new HttpException('La fecha de expiracion no tiene un formato valido.', 400, ['field' => 'fechaExpiracion']);
+        $fecha = \DateTime::createFromFormat('!Y-m-d', $value);
+        $errores = \DateTime::getLastErrors();
+
+        if (!$fecha || ($errores !== false && ($errores['warning_count'] > 0 || $errores['error_count'] > 0))) {
+            throw new HttpException('La fecha de expiracion debe tener el formato YYYY-MM-DD.', 400, ['field' => 'fechaExpiracion']);
         }
+
+        return $fecha;
     }
 
     private static function stringValue(array $data, string $key): string
     {
-        if (!array_key_exists($key, $data) || $data[$key] === null) {
+        if (!array_key_exists($key, $data) || $data[$key] === null || is_array($data[$key])) {
             return '';
         }
 
         return trim((string) $data[$key]);
+    }
+
+    private static function length(string $value): int
+    {
+        return function_exists('mb_strlen') ? mb_strlen($value) : strlen($value);
     }
 }
