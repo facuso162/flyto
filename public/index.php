@@ -64,6 +64,7 @@ use App\Promociones\Repositories\PromocionRepository;
 use App\Promociones\Services\PromocionService;
 use App\Reportes\Controllers\AdminListadoReportesPageController;
 use App\Reportes\Controllers\AdminReporteVentasPageController;
+use App\Reportes\Controllers\AdminReporteVuelosPageController;
 use App\Reportes\Controllers\ListadoReportesPageController;
 use App\Reportes\Controllers\ReporteOcupacionPageController;
 use App\Reportes\Controllers\ReporteVentasPageController;
@@ -189,6 +190,7 @@ require_once __DIR__ . '/../app/reportes/repositories/reporte.repository.php';
 require_once __DIR__ . '/../app/reportes/services/reporte.service.php';
 require_once __DIR__ . '/../app/reportes/controllers/admin-listado-reportes-page.controller.php';
 require_once __DIR__ . '/../app/reportes/controllers/admin-reporte-ventas-page.controller.php';
+require_once __DIR__ . '/../app/reportes/controllers/admin-reporte-vuelos-page.controller.php';
 require_once __DIR__ . '/../app/reportes/controllers/listado-reportes-page.controller.php';
 require_once __DIR__ . '/../app/reportes/controllers/reporte-ventas-page.controller.php';
 require_once __DIR__ . '/../app/reportes/controllers/reporte-ocupacion-page.controller.php';
@@ -788,6 +790,13 @@ $container->scoped(AdminReporteVentasPageController::class, function ($c) {
     );
 });
 
+$container->scoped(AdminReporteVuelosPageController::class, function ($c) {
+    return new AdminReporteVuelosPageController(
+        $c->get(ReporteService::class),
+        $c->get(ViewResponse::class)
+    );
+});
+
 $container->scoped(ReporteRepository::class, function ($c) {
     return new ReporteRepository($c->get(Database::class));
 });
@@ -1059,6 +1068,10 @@ $adminRoutes = [
     ],
     '/admin/reportes/ventas' => [
         'controller' => AdminReporteVentasPageController::class,
+        'action' => 'show',
+    ],
+    '/admin/reportes/vuelos' => [
+        'controller' => AdminReporteVuelosPageController::class,
         'action' => 'show',
     ],
     '/admin/novedades' => [

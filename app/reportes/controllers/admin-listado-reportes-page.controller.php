@@ -27,7 +27,7 @@ class AdminListadoReportesPageController
                     ],
                     [
                         'titulo' => 'Reporte de vuelos',
-                        'descripcion' => 'Cantidad de vuelos operados, ocupacion promedio y rutas mas activas en el periodo seleccionado.',
+                        'descripcion' => 'Cantidad de vuelos operados, ocupacion promedio y aerolineas mas activas en el periodo seleccionado.',
                         'slug' => 'vuelos',
                     ],
                     [

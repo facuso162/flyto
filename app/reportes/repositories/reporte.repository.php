@@ -4,14 +4,17 @@ namespace App\Reportes\Repositories;
 
 use App\Reportes\Models\ReporteVentas;
 use App\Reportes\Models\ReporteVentasAdmin;
+use App\Reportes\Models\ReporteVuelosAdmin;
 use App\Reportes\Models\ReporteOcupacion;
 use App\Reportes\Models\AerolineaReporteVentas;
+use App\Reportes\Models\AerolineaReporteVuelos;
 use App\Reportes\Models\VueloReporteVentas;
 use App\Reportes\Models\VueloReporteOcupacion;
 use PDO;
 
 require_once __DIR__ . '/../models/reporte-ventas.model.php';
 require_once __DIR__ . '/../models/reporte-ventas-admin.model.php';
+require_once __DIR__ . '/../models/reporte-vuelos-admin.model.php';
 require_once __DIR__ . '/../models/reporte-ocupacion.model.php';
 
 class ReporteRepository
@@ -154,6 +157,87 @@ class ReporteRepository
                     nombre: (string) $row['aerolinea'],
                     reservas: (int) $row['reservas'],
                     ingresos: (float) $row['ingresos']
+                ),
+                $topStmt->fetchAll(PDO::FETCH_ASSOC)
+            )
+        );
+    }
+
+    public function generarReporteVuelosAdmin(
+        \DateTimeImmutable $inicioPeriodo,
+        \DateTimeImmutable $finPeriodo
+    ): ReporteVuelosAdmin {
+        $params = [
+            ':inicio' => $inicioPeriodo->format('Y-m-d H:i:s'),
+            ':fin' => $finPeriodo->format('Y-m-d H:i:s'),
+        ];
+
+        $resumenStmt = $this->pdo->prepare("
+            SELECT
+                COUNT(v.id) AS total_vuelos,
+                COALESCE(AVG(CASE
+                    WHEN v.asientos_disponibles > 0
+                    THEN (v.asientosOcupados / v.asientos_disponibles) * 100
+                    ELSE 0
+                END), 0) AS ocupacion_promedio,
+                SUM(CASE
+                    WHEN v.asientos_disponibles > 0
+                        AND (v.asientosOcupados / v.asientos_disponibles) * 100 > 90
+                    THEN 1 ELSE 0
+                END) AS vuelos_ocupacion_alta,
+                SUM(CASE
+                    WHEN v.asientos_disponibles > 0
+                        AND (v.asientosOcupados / v.asientos_disponibles) * 100 < 50
+                    THEN 1 ELSE 0
+                END) AS vuelos_ocupacion_baja,
+                COALESCE(SUM(v.asientos_disponibles), 0) AS total_asientos_disponibles,
+                COALESCE(SUM(v.asientosOcupados), 0) AS total_asientos_vendidos
+            FROM vuelos v
+            WHERE v.fecha_salida >= :inicio
+                AND v.fecha_salida < :fin
+        ");
+        $resumenStmt->execute($params);
+        $resumen = $resumenStmt->fetch(PDO::FETCH_ASSOC) ?: [];
+
+        $topStmt = $this->pdo->prepare("
+            SELECT
+                a.nombre AS aerolinea,
+                COUNT(v.id) AS total_vuelos,
+                COALESCE(AVG(CASE
+                    WHEN v.asientos_disponibles > 0
+                    THEN (v.asientosOcupados / v.asientos_disponibles) * 100
+                    ELSE 0
+                END), 0) AS ocupacion_promedio
+            FROM vuelos v
+            INNER JOIN aerolineas a ON a.id = v.aerolinea_id
+            WHERE v.fecha_salida >= :inicio
+                AND v.fecha_salida < :fin
+            GROUP BY a.id, a.nombre
+            ORDER BY total_vuelos DESC, ocupacion_promedio DESC, a.nombre ASC
+            LIMIT 5
+        ");
+        $topStmt->execute($params);
+
+        $totalVuelos = (int) ($resumen['total_vuelos'] ?? 0);
+        $ocupacionAlta = (int) ($resumen['vuelos_ocupacion_alta'] ?? 0);
+        $ocupacionBaja = (int) ($resumen['vuelos_ocupacion_baja'] ?? 0);
+
+        return new ReporteVuelosAdmin(
+            periodo: $inicioPeriodo,
+            generadoEn: new \DateTimeImmutable(),
+            totalVuelos: $totalVuelos,
+            ocupacionPromedioGlobal: round((float) ($resumen['ocupacion_promedio'] ?? 0), 1),
+            vuelosOcupacionAlta: $ocupacionAlta,
+            porcentajeVuelosOcupacionAlta: $totalVuelos > 0 ? round(($ocupacionAlta / $totalVuelos) * 100, 1) : 0.0,
+            vuelosOcupacionBaja: $ocupacionBaja,
+            porcentajeVuelosOcupacionBaja: $totalVuelos > 0 ? round(($ocupacionBaja / $totalVuelos) * 100, 1) : 0.0,
+            totalAsientosDisponibles: (int) ($resumen['total_asientos_disponibles'] ?? 0),
+            totalAsientosVendidos: (int) ($resumen['total_asientos_vendidos'] ?? 0),
+            topAerolineas: array_map(
+                fn (array $row) => new AerolineaReporteVuelos(
+                    nombre: (string) $row['aerolinea'],
+                    totalVuelos: (int) $row['total_vuelos'],
+                    ocupacionPromedio: round((float) $row['ocupacion_promedio'], 1)
                 ),
                 $topStmt->fetchAll(PDO::FETCH_ASSOC)
             )
