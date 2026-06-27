@@ -57,14 +57,14 @@ class EditarNovedadActionController
         } catch (HttpException $exception) {
             Flash::error('No pudimos actualizar la novedad. Revisa los datos e intentalo nuevamente.');
             Flash::validationErrors($this->validationErrorsFromException($exception));
-            Flash::old($_POST);
+            Flash::old($this->safeOldInput($_POST));
 
-            RedirectResponse::to('/admin/novedades', [], 303);
+            RedirectResponse::to($this->editUrl($_POST), [], 303);
         } catch (Throwable) {
             Flash::error('No pudimos actualizar la novedad. Intentalo nuevamente en unos minutos.');
-            Flash::old($_POST);
+            Flash::old($this->safeOldInput($_POST));
 
-            RedirectResponse::to('/admin/novedades', [], 303);
+            RedirectResponse::to($this->editUrl($_POST), [], 303);
         }
     }
 
@@ -105,6 +105,31 @@ class EditarNovedadActionController
         return isset($data[$field]) && is_scalar($data[$field])
             ? trim((string) $data[$field])
             : '';
+    }
+
+    private function safeOldInput(array $data): array
+    {
+        $oldInput = [];
+
+        foreach (['titulo', 'categoria', 'texto', 'fechaExpiracion'] as $field) {
+            if (isset($data[$field]) && is_scalar($data[$field])) {
+                $oldInput[$field] = (string) $data[$field];
+            }
+        }
+
+        return $oldInput;
+    }
+
+    private function editUrl(array $data): string
+    {
+        $id = $data['id'] ?? null;
+        $id = is_scalar($id)
+            ? filter_var($id, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]])
+            : false;
+
+        return $id === false
+            ? '/admin/novedades'
+            : '/admin/novedades/editar?' . http_build_query(['id' => $id]);
     }
 
     private function fechaExpiracion(array $data): \DateTime

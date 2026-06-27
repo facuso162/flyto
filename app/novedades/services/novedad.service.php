@@ -41,11 +41,7 @@ class NovedadService
 
     public function editar(EditarNovedadDto $dto): Novedad
     {
-        $novedad = $this->novedadRepository->findById($dto->id);
-
-        if (!$novedad) {
-            throw new HttpException('Novedad no encontrada.', 404);
-        }
+        $novedad = $this->getById($dto->id);
 
         $novedad->titulo = $dto->titulo;
         $novedad->texto = $dto->texto;
@@ -57,12 +53,20 @@ class NovedadService
         return $novedad;
     }
 
-    public function borrar(int $id): void
+    public function getById(int $id): Novedad
     {
-        if (!$this->novedadRepository->findById($id)) {
+        $novedad = $this->novedadRepository->findById($id);
+
+        if (!$novedad) {
             throw new HttpException('Novedad no encontrada.', 404);
         }
 
+        return $novedad;
+    }
+
+    public function borrar(int $id): void
+    {
+        $this->getById($id);
         $this->novedadRepository->delete($id);
     }
 
