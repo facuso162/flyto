@@ -35,6 +35,17 @@ class AerolineaService
         return $this->aerolineaRepository->getPorCeoId($ceoId);
     }
 
+    public function getPorId(int $id): Aerolinea
+    {
+        $aerolinea = $this->aerolineaRepository->getPorId($id);
+
+        if ($aerolinea === null) {
+            throw new HttpException('La aerolinea solicitada no existe.', 404);
+        }
+
+        return $aerolinea;
+    }
+
     public function crear(CrearAerolineaDto $dto): int
     {
         if ($this->aerolineaRepository->existsByCodigoIata($dto->codigoIata)) {
@@ -46,5 +57,20 @@ class AerolineaService
         }
 
         return $this->aerolineaRepository->crear($dto);
+    }
+
+    public function editar(int $id, CrearAerolineaDto $dto): void
+    {
+        $this->getPorId($id);
+
+        if ($this->aerolineaRepository->existsByCodigoIataExcludingId($dto->codigoIata, $id)) {
+            throw new HttpException('Ya existe una aerolinea con ese codigo IATA.', 409, ['field' => 'codigoIata']);
+        }
+
+        if ($this->paisService === null || $this->paisService->getPorId($dto->paisId) === null) {
+            throw new HttpException('El pais seleccionado no existe.', 400, ['field' => 'paisId']);
+        }
+
+        $this->aerolineaRepository->editar($id, $dto);
     }
 }

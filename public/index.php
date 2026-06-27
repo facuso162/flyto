@@ -9,6 +9,8 @@ use App\Auth\Controllers\RegistroPageController;
 use App\Admin\Controllers\AdminDashboardPageController;
 use App\Aerolineas\Controllers\CrearAerolineaActionController;
 use App\Aerolineas\Controllers\CrearAerolineaPageController;
+use App\Aerolineas\Controllers\EditarAerolineaActionController;
+use App\Aerolineas\Controllers\EditarAerolineaPageController;
 use App\Aerolineas\Controllers\ListadoAerolineasPageController;
 use App\Aerolineas\Repositories\AerolineaRepository;
 use App\Aerolineas\Services\AerolineaService;
@@ -138,6 +140,8 @@ require_once __DIR__ . '/../app/aerolineas/repositories/aerolinea.repository.php
 require_once __DIR__ . '/../app/aerolineas/services/aerolinea.service.php';
 require_once __DIR__ . '/../app/aerolineas/controllers/crear-aerolinea-action.controller.php';
 require_once __DIR__ . '/../app/aerolineas/controllers/crear-aerolinea-page.controller.php';
+require_once __DIR__ . '/../app/aerolineas/controllers/editar-aerolinea-action.controller.php';
+require_once __DIR__ . '/../app/aerolineas/controllers/editar-aerolinea-page.controller.php';
 require_once __DIR__ . '/../app/aerolineas/controllers/listado-aerolineas-page.controller.php';
 
 require_once __DIR__ . '/../app/ciudades/repositories/ciudad.repository.php';
@@ -358,6 +362,21 @@ $container->scoped(CrearAerolineaPageController::class, function ($c) {
 
 $container->scoped(CrearAerolineaActionController::class, function ($c) {
     return new CrearAerolineaActionController(
+        $c->get(AerolineaService::class),
+        $c->get(SessionService::class)
+    );
+});
+
+$container->scoped(EditarAerolineaPageController::class, function ($c) {
+    return new EditarAerolineaPageController(
+        $c->get(AerolineaService::class),
+        $c->get(PaisService::class),
+        $c->get(ViewResponse::class)
+    );
+});
+
+$container->scoped(EditarAerolineaActionController::class, function ($c) {
+    return new EditarAerolineaActionController(
         $c->get(AerolineaService::class),
         $c->get(SessionService::class)
     );
@@ -921,6 +940,10 @@ $adminRoutes = [
     ],
     '/admin/aerolineas/crear' => [
         'controller' => CrearAerolineaPageController::class,
+        'action' => 'show',
+    ],
+    '/admin/aerolineas/editar' => [
+        'controller' => EditarAerolineaPageController::class,
         'action' => 'show',
     ],
     '/admin/novedades' => [

@@ -40,10 +40,33 @@ class AerolineaRepository
         return $row ? $this->mapRow($row) : null;
     }
 
+    public function getPorId(int $id): ?Aerolinea
+    {
+        $stmt = $this->pdo->prepare($this->selectBase() . ' WHERE a.id = :id LIMIT 1');
+        $stmt->execute([':id' => $id]);
+
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $row ? $this->mapRow($row) : null;
+    }
+
     public function existsByCodigoIata(string $codigoIata): bool
     {
         $stmt = $this->pdo->prepare('SELECT COUNT(*) FROM aerolineas WHERE codigo_iata = :codigo_iata');
         $stmt->execute([':codigo_iata' => strtoupper($codigoIata)]);
+
+        return (int) $stmt->fetchColumn() > 0;
+    }
+
+    public function existsByCodigoIataExcludingId(string $codigoIata, int $id): bool
+    {
+        $stmt = $this->pdo->prepare(
+            'SELECT COUNT(*) FROM aerolineas WHERE codigo_iata = :codigo_iata AND id <> :id'
+        );
+        $stmt->execute([
+            ':codigo_iata' => strtoupper($codigoIata),
+            ':id' => $id,
+        ]);
 
         return (int) $stmt->fetchColumn() > 0;
     }
@@ -63,6 +86,26 @@ class AerolineaRepository
         ]);
 
         return (int) $this->pdo->lastInsertId();
+    }
+
+    public function editar(int $id, CrearAerolineaDto $dto): void
+    {
+        $stmt = $this->pdo->prepare(
+            'UPDATE aerolineas
+             SET nombre = :nombre,
+                 descripcion = :descripcion,
+                 codigo_iata = :codigo_iata,
+                 pais_id = :pais_id
+             WHERE id = :id'
+        );
+
+        $stmt->execute([
+            ':id' => $id,
+            ':nombre' => $dto->nombre,
+            ':descripcion' => $dto->descripcion,
+            ':codigo_iata' => strtoupper($dto->codigoIata),
+            ':pais_id' => $dto->paisId,
+        ]);
     }
 
     private function selectBase(): string
