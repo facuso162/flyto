@@ -48,9 +48,11 @@ use App\Novedades\Services\NovedadService;
 use App\Paises\Repositories\PaisRepository;
 use App\Paises\Services\PaisService;
 use App\Perfil\Controllers\MiPerfilPageController;
+use App\Promociones\Controllers\AprobarPromocionActionController;
 use App\Promociones\Controllers\BorrarPromocionActionController;
 use App\Promociones\Controllers\CrearPromocionActionController;
 use App\Promociones\Controllers\CrearPromocionPageController;
+use App\Promociones\Controllers\DenegarPromocionActionController;
 use App\Promociones\Controllers\DesactivarPromocionActionController;
 use App\Promociones\Controllers\EditarPromocionActionController;
 use App\Promociones\Controllers\EditarPromocionPageController;
@@ -169,6 +171,8 @@ require_once __DIR__ . '/../app/promociones/controllers/listado-promociones-page
 require_once __DIR__ . '/../app/promociones/controllers/solicitar-activacion-action.controller.php';
 require_once __DIR__ . '/../app/promociones/controllers/solicitar-activacion-page.controller.php';
 require_once __DIR__ . '/../app/promociones/controllers/solicitudes-promociones-page.controller.php';
+require_once __DIR__ . '/../app/promociones/controllers/aprobar-promocion-action.controller.php';
+require_once __DIR__ . '/../app/promociones/controllers/denegar-promocion-action.controller.php';
 
 require_once __DIR__ . '/../app/usuarios/repositories/usuario.repository.php';
 require_once __DIR__ . '/../app/usuarios/services/usuario.service.php';
@@ -538,6 +542,20 @@ $container->scoped(SolicitudesPromocionesPageController::class, function ($c) {
     return new SolicitudesPromocionesPageController(
         $c->get(PromocionService::class),
         $c->get(ViewResponse::class)
+    );
+});
+
+$container->scoped(AprobarPromocionActionController::class, function ($c) {
+    return new AprobarPromocionActionController(
+        $c->get(PromocionService::class),
+        $c->get(SessionService::class)
+    );
+});
+
+$container->scoped(DenegarPromocionActionController::class, function ($c) {
+    return new DenegarPromocionActionController(
+        $c->get(PromocionService::class),
+        $c->get(SessionService::class)
     );
 });
 
@@ -1104,6 +1122,7 @@ $router->registerModule(require __DIR__ . '/../app/aerolineas/routes.php');
 $router->registerModule(require __DIR__ . '/../app/contacto/routes.php');
 $router->registerModule(require __DIR__ . '/../app/novedades/routes.php');
 $router->registerModule(require __DIR__ . '/../app/promociones/routes.php');
+$router->registerModule(require __DIR__ . '/../app/promociones/admin-routes.php');
 $router->registerModule(require __DIR__ . '/../app/reservas/routes.php');
 $router->registerModule(require __DIR__ . '/../app/usuarios/routes.php');
 $router->registerModule(require __DIR__ . '/../app/vuelos/routes.php');
