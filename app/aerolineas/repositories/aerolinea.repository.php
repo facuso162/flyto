@@ -108,6 +108,16 @@ class AerolineaRepository
         ]);
     }
 
+    public function borrar(int $id): void
+    {
+        $stmt = $this->pdo->prepare('DELETE FROM aerolineas WHERE id = :id AND ceo_id IS NULL');
+        $stmt->execute([':id' => $id]);
+
+        if ($stmt->rowCount() !== 1) {
+            throw new \RuntimeException('La aerolinea no pudo ser borrada.');
+        }
+    }
+
     private function selectBase(): string
     {
         return '

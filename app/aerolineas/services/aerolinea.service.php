@@ -73,4 +73,13 @@ class AerolineaService
 
         $this->aerolineaRepository->editar($id, $dto);
     }
+
+    public function borrar(Aerolinea $aerolinea): void
+    {
+        if ($aerolinea->ceo !== null) {
+            throw new HttpException('La aerolinea no se puede borrar porque tiene un CEO asignado.', 409);
+        }
+
+        $this->aerolineaRepository->borrar($aerolinea->id);
+    }
 }

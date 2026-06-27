@@ -7,6 +7,7 @@ use App\Auth\Controllers\LogoutUsuarioActionController;
 use App\Auth\Controllers\RegisterUsuarioActionController;
 use App\Auth\Controllers\RegistroPageController;
 use App\Admin\Controllers\AdminDashboardPageController;
+use App\Aerolineas\Controllers\BorrarAerolineaActionController;
 use App\Aerolineas\Controllers\CrearAerolineaActionController;
 use App\Aerolineas\Controllers\CrearAerolineaPageController;
 use App\Aerolineas\Controllers\EditarAerolineaActionController;
@@ -138,6 +139,7 @@ require_once __DIR__ . '/../app/paises/services/pais.service.php';
 
 require_once __DIR__ . '/../app/aerolineas/repositories/aerolinea.repository.php';
 require_once __DIR__ . '/../app/aerolineas/services/aerolinea.service.php';
+require_once __DIR__ . '/../app/aerolineas/controllers/borrar-aerolinea-action.controller.php';
 require_once __DIR__ . '/../app/aerolineas/controllers/crear-aerolinea-action.controller.php';
 require_once __DIR__ . '/../app/aerolineas/controllers/crear-aerolinea-page.controller.php';
 require_once __DIR__ . '/../app/aerolineas/controllers/editar-aerolinea-action.controller.php';
@@ -362,6 +364,13 @@ $container->scoped(CrearAerolineaPageController::class, function ($c) {
 
 $container->scoped(CrearAerolineaActionController::class, function ($c) {
     return new CrearAerolineaActionController(
+        $c->get(AerolineaService::class),
+        $c->get(SessionService::class)
+    );
+});
+
+$container->scoped(BorrarAerolineaActionController::class, function ($c) {
+    return new BorrarAerolineaActionController(
         $c->get(AerolineaService::class),
         $c->get(SessionService::class)
     );
