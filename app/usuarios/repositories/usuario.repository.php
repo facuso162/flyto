@@ -4,11 +4,14 @@ namespace App\Usuarios\Repositories;
 
 use App\Aerolineas\Models\Aerolinea;
 use App\Paises\Models\Pais;
+use App\Usuarios\Dtos\CrearCeoDto;
 use App\Usuarios\Models\Usuario;
 use PDO;
+use Throwable;
 
 require_once __DIR__ . '/../../aerolineas/models/aerolinea.model.php';
 require_once __DIR__ . '/../../paises/models/pais.model.php';
+require_once __DIR__ . '/../dtos/crear-ceo.dto.php';
 require_once __DIR__ . '/../models/usuario.model.php';
 
 class UsuarioRepository
@@ -27,6 +30,54 @@ class UsuarioRepository
     public function getByTipo(string $tipo): array
     {
         return $this->fetchByTipo($tipo, false);
+    }
+
+    public function existsByEmail(string $email): bool
+    {
+        $stmt = $this->pdo->prepare('SELECT 1 FROM usuarios WHERE email = :email LIMIT 1');
+        $stmt->execute([':email' => $email]);
+
+        return $stmt->fetchColumn() !== false;
+    }
+
+    public function aerolineaDisponibleParaCeo(int $aerolineaId): bool
+    {
+        $stmt = $this->pdo->prepare(
+            'SELECT 1 FROM aerolineas WHERE id = :id AND ceo_id IS NULL LIMIT 1'
+        );
+        $stmt->execute([':id' => $aerolineaId]);
+
+        return $stmt->fetchColumn() !== false;
+    }
+
+    public function getTipoUsuarioIdPorNombre(string $nombre): ?int
+    {
+        $stmt = $this->pdo->prepare('SELECT id FROM tipos_usuarios WHERE nombre = :nombre LIMIT 1');
+        $stmt->execute([':nombre' => $nombre]);
+
+        $id = $stmt->fetchColumn();
+
+        return $id === false ? null : (int) $id;
+    }
+
+    public function crearCeo(CrearCeoDto $dto, int $tipoUsuarioId): int
+    {
+        try {
+            $this->pdo->beginTransaction();
+
+            $usuarioId = $this->insertarCeo($dto, $tipoUsuarioId);
+            $this->asignarCeoAAerolinea($dto->aerolineaId, $usuarioId);
+
+            $this->pdo->commit();
+
+            return $usuarioId;
+        } catch (Throwable $exception) {
+            if ($this->pdo->inTransaction()) {
+                $this->pdo->rollBack();
+            }
+
+            throw $exception;
+        }
     }
 
     /** @return Usuario[] */
@@ -59,6 +110,48 @@ class UsuarioRepository
             fn (array $row): Usuario => $this->mapRow($row),
             $stmt->fetchAll(PDO::FETCH_ASSOC)
         );
+    }
+
+    private function insertarCeo(CrearCeoDto $dto, int $tipoUsuarioId): int
+    {
+        $stmt = $this->pdo->prepare(
+            'INSERT INTO usuarios (
+                nombre, apellido, email, telefono, clave_hash,
+                tipo_usuario_id, activo, fecha_registro, email_verificado,
+                token_verificacion, token_recupero, token_expiracion
+             ) VALUES (
+                :nombre, :apellido, :email, NULL, :clave_hash,
+                :tipo_usuario_id, TRUE, NOW(), TRUE,
+                NULL, NULL, NULL
+             )'
+        );
+
+        $stmt->execute([
+            ':nombre' => $dto->nombre,
+            ':apellido' => $dto->apellido,
+            ':email' => $dto->email,
+            ':clave_hash' => password_hash($dto->password, PASSWORD_DEFAULT),
+            ':tipo_usuario_id' => $tipoUsuarioId,
+        ]);
+
+        return (int) $this->pdo->lastInsertId();
+    }
+
+    private function asignarCeoAAerolinea(int $aerolineaId, int $usuarioId): void
+    {
+        $stmt = $this->pdo->prepare(
+            'UPDATE aerolineas
+             SET ceo_id = :ceo_id
+             WHERE id = :id AND ceo_id IS NULL'
+        );
+        $stmt->execute([
+            ':id' => $aerolineaId,
+            ':ceo_id' => $usuarioId,
+        ]);
+
+        if ($stmt->rowCount() !== 1) {
+            throw new \RuntimeException('La aerolinea no pudo ser asignada al CEO.');
+        }
     }
 
     private function mapRow(array $row): Usuario

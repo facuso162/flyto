@@ -82,6 +82,8 @@ use App\Shared\Http\HttpException;
 use App\Shared\Http\RedirectResponse;
 use App\Shared\Http\ViewResponse;
 use App\Shared\Services\EmailService;
+use App\Usuarios\Controllers\CrearCeoActionController;
+use App\Usuarios\Controllers\CrearCeoPageController;
 use App\Usuarios\Controllers\ListadoCeosPageController;
 use App\Usuarios\Repositories\UsuarioRepository as PanelUsuarioRepository;
 use App\Usuarios\Services\UsuarioService as PanelUsuarioService;
@@ -168,6 +170,8 @@ require_once __DIR__ . '/../app/promociones/controllers/solicitar-activacion-pag
 
 require_once __DIR__ . '/../app/usuarios/repositories/usuario.repository.php';
 require_once __DIR__ . '/../app/usuarios/services/usuario.service.php';
+require_once __DIR__ . '/../app/usuarios/controllers/crear-ceo-action.controller.php';
+require_once __DIR__ . '/../app/usuarios/controllers/crear-ceo-page.controller.php';
 require_once __DIR__ . '/../app/usuarios/controllers/listado-ceos-page.controller.php';
 
 require_once __DIR__ . '/../app/admin/controllers/admin-dashboard-page.controller.php';
@@ -459,6 +463,20 @@ $container->scoped(ListadoCeosPageController::class, function ($c) {
     return new ListadoCeosPageController(
         $c->get(PanelUsuarioService::class),
         $c->get(ViewResponse::class)
+    );
+});
+
+$container->scoped(CrearCeoPageController::class, function ($c) {
+    return new CrearCeoPageController(
+        $c->get(AerolineaService::class),
+        $c->get(ViewResponse::class)
+    );
+});
+
+$container->scoped(CrearCeoActionController::class, function ($c) {
+    return new CrearCeoActionController(
+        $c->get(PanelUsuarioService::class),
+        $c->get(SessionService::class)
     );
 });
 
@@ -983,6 +1001,10 @@ $adminRoutes = [
         'controller' => ListadoCeosPageController::class,
         'action' => 'show',
     ],
+    '/admin/ceos/crear' => [
+        'controller' => CrearCeoPageController::class,
+        'action' => 'show',
+    ],
     '/admin/novedades' => [
         'controller' => AdminNovedadesPageController::class,
         'action' => 'show',
@@ -1070,6 +1092,7 @@ $router->registerModule(require __DIR__ . '/../app/contacto/routes.php');
 $router->registerModule(require __DIR__ . '/../app/novedades/routes.php');
 $router->registerModule(require __DIR__ . '/../app/promociones/routes.php');
 $router->registerModule(require __DIR__ . '/../app/reservas/routes.php');
+$router->registerModule(require __DIR__ . '/../app/usuarios/routes.php');
 $router->registerModule(require __DIR__ . '/../app/vuelos/routes.php');
 $router->registerModule(require __DIR__ . '/../app/vuelos/crear-routes.php');
 $router->registerModule(require __DIR__ . '/../app/vuelos/editar-routes.php');

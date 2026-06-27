@@ -3,8 +3,10 @@
 namespace App\Usuarios\Controllers;
 
 use App\Shared\Http\ViewResponse;
+use App\Shared\Http\Flash;
 use App\Usuarios\Services\UsuarioService;
 
+require_once __DIR__ . '/../../shared/http/flash.php';
 require_once __DIR__ . '/../../shared/http/view-response.php';
 require_once __DIR__ . '/../services/usuario.service.php';
 
@@ -35,6 +37,7 @@ class ListadoCeosPageController
                 'paginaActual' => $pagina,
                 'totalPaginas' => $totalPaginas,
                 'totalCeos' => $total,
+                'flash' => Flash::consume(),
             ],
             200,
             $layoutPath

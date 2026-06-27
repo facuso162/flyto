@@ -30,6 +30,19 @@ class AerolineaRepository
         );
     }
 
+    /**
+     * @return Aerolinea[]
+     */
+    public function getSinCeo(): array
+    {
+        $stmt = $this->pdo->query($this->selectBase() . ' WHERE a.ceo_id IS NULL ORDER BY a.nombre ASC');
+
+        return array_map(
+            fn (array $row): Aerolinea => $this->mapRow($row),
+            $stmt->fetchAll(PDO::FETCH_ASSOC)
+        );
+    }
+
     public function getPorCeoId(int $ceoId): ?Aerolinea
     {
         $stmt = $this->pdo->prepare($this->selectBase() . ' WHERE a.ceo_id = :ceo_id LIMIT 1');

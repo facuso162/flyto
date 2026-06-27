@@ -30,6 +30,14 @@ class AerolineaService
         return $this->aerolineaRepository->getTodas();
     }
 
+    /**
+     * @return Aerolinea[]
+     */
+    public function getSinCeo(): array
+    {
+        return $this->aerolineaRepository->getSinCeo();
+    }
+
     public function getPorCeoId(int $ceoId): ?Aerolinea
     {
         return $this->aerolineaRepository->getPorCeoId($ceoId);
