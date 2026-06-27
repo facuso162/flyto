@@ -25,8 +25,8 @@ class AdminNovedadesPageController
     public function show(array $params, array $query, string $layoutPath): void
     {
         $flash = Flash::consume();
-        $oldInput = Flash::consumeOld();
-        $validationErrors = $flash['validationErrors'] ?? [];
+        $itemsPorPagina = 3;
+        $paginaActual = max(1, (int) ($query['pagina'] ?? 1));
 
         try {
             $novedades = array_map(
@@ -38,17 +38,23 @@ class AdminNovedadesPageController
             $flash['error'] = 'No pudimos cargar las novedades. Intentalo nuevamente en unos minutos.';
         }
 
+        $totalNovedades = count($novedades);
+        $totalPaginas = max(1, (int) ceil($totalNovedades / $itemsPorPagina));
+        $paginaActual = min($paginaActual, $totalPaginas);
+        $novedadesPagina = array_slice($novedades, ($paginaActual - 1) * $itemsPorPagina, $itemsPorPagina);
+
         $this->viewResponse->render(
             __DIR__ . '/../views/pages/admin-novedades.page.php',
             'Administrar novedades - Flyto',
             [
-                'novedades' => $novedades,
+                'novedades' => $novedadesPagina,
+                'paginaActual' => $paginaActual,
+                'totalPaginas' => $totalPaginas,
+                'totalNovedades' => $totalNovedades,
                 'flash' => [
                     'success' => $flash['success'] ?? null,
                     'error' => $flash['error'] ?? null,
                 ],
-                'oldInput' => is_array($oldInput) ? $oldInput : [],
-                'validationErrors' => is_array($validationErrors) ? $validationErrors : [],
             ],
             200,
             $layoutPath

@@ -1,164 +1,126 @@
 <?php
 
-$novedades = $novedades ?? [];
-$flash = $flash ?? [];
-$oldInput = $oldInput ?? [];
-$validationErrors = $validationErrors ?? [];
 $basePath = $basePath ?? '';
+$novedades = $novedades ?? null;
+$novedades = is_array($novedades) ? $novedades : [];
+$paginaActual = max(1, (int) ($paginaActual ?? 1));
+$totalPaginas = max(1, (int) ($totalPaginas ?? 1));
+$totalNovedades = max(0, (int) ($totalNovedades ?? 0));
+$flash = $flash ?? null;
+$flash = is_array($flash) ? $flash : [];
 
-$html = fn ($value): string => htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
-$dateValue = function ($value): string {
+$html = static fn ($value): string => htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
+$fechaCorta = static function ($value): string {
+    if ($value instanceof DateTimeInterface) {
+        return $value->format('Y-m-d');
+    }
+
     $value = trim((string) $value);
 
     if ($value === '') {
         return '';
     }
 
-    return substr(str_replace(' ', 'T', $value), 0, 16);
+    try {
+        return (new DateTime($value))->format('Y-m-d');
+    } catch (Throwable) {
+        return substr($value, 0, 10);
+    }
 };
-$fieldError = function (string $field, bool $active = true) use ($validationErrors, $html): string {
-    if (!$active || empty($validationErrors[$field])) {
-        return '';
+$estaExpirada = static function (array $novedad): bool {
+    if (($novedad['estado'] ?? '') === 'expirada') {
+        return true;
     }
 
-    return '<p class="mt-1 text-xs text-red-700">' . $html($validationErrors[$field]) . '</p>';
+    try {
+        return new DateTime((string) ($novedad['fechaExpiracion'] ?? '')) <= new DateTime();
+    } catch (Throwable) {
+        return false;
+    }
 };
-
-$createOldInput = empty($oldInput['id']) ? $oldInput : [];
+$urlPagina = static fn (int $pagina): string => $basePath . '/admin/novedades?' . http_build_query(['pagina' => $pagina]);
 
 ?>
-<div class="bg-flyto-navy px-6 pt-16 pb-8 text-flyto-sand">
-    <div class="mx-auto max-w-7xl">
-        <p class="font-mono text-xs uppercase tracking-[1.2px] text-flyto-gold">Admin</p>
-        <h1 class="mt-4 font-display text-[32px] font-medium leading-10 md:text-[47.8px] md:leading-[59.76px]">Administrar novedades</h1>
-        <p class="mt-3 max-w-xl text-sm leading-[22.75px] text-flyto-sand/60">Gestion de publicaciones visibles en Flyto.</p>
-    </div>
-</div>
+<section class="px-5 py-8 sm:px-8">
+    <div class="mx-auto max-w-[900px]">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+                <p class="font-mono text-xs uppercase tracking-[0.1em] text-flyto-muted">Administraci&oacute;n</p>
+                <h1 class="mt-1 font-display text-3xl font-medium tracking-tight text-flyto-ink">Novedades</h1>
+            </div>
 
-<section class="bg-flyto-sand px-6 py-12">
-    <div class="mx-auto grid max-w-7xl gap-8">
+            <button type="button" class="flex w-fit items-center gap-2 bg-flyto-navy px-4 py-2 text-xs font-medium text-flyto-sand transition hover:bg-flyto-ink">
+                <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+                Agregar novedad
+            </button>
+        </div>
+
         <?php if (!empty($flash['success'])): ?>
-            <div class="border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-                <?= $html($flash['success']) ?>
-            </div>
+            <div class="mt-6 border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800" role="status"><?= $html($flash['success']) ?></div>
         <?php elseif (!empty($flash['error'])): ?>
-            <div class="border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
-                <?= $html($flash['error']) ?>
-            </div>
+            <div class="mt-6 border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800" role="alert"><?= $html($flash['error']) ?></div>
         <?php endif; ?>
 
-        <?php if (!empty($validationErrors['general'])): ?>
-            <div class="border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
-                <?= $html($validationErrors['general']) ?>
-            </div>
-        <?php endif; ?>
-
-        <section class="border border-flyto-ink/10 bg-white p-6" aria-labelledby="crear-novedad">
-            <h2 id="crear-novedad" class="font-display text-[26px] font-medium leading-8 text-flyto-ink">Crear novedad</h2>
-            <form class="mt-6 grid gap-4" method="post" action="<?= $html($basePath) ?>/admin/novedades/crear">
-                <div>
-                    <label class="block text-xs font-medium uppercase tracking-[1.2px] text-flyto-muted" for="crear-titulo">Titulo</label>
-                    <input id="crear-titulo" name="titulo" type="text" maxlength="160" value="<?= $html($createOldInput['titulo'] ?? '') ?>" class="mt-2 w-full border border-flyto-ink/15 px-3 py-2 text-sm text-flyto-ink">
-                    <?= $fieldError('titulo', $createOldInput !== []) ?>
-                </div>
-                <div>
-                    <label class="block text-xs font-medium uppercase tracking-[1.2px] text-flyto-muted" for="crear-categoria">Categoria</label>
-                    <input id="crear-categoria" name="categoria" type="text" maxlength="120" value="<?= $html($createOldInput['categoria'] ?? '') ?>" class="mt-2 w-full border border-flyto-ink/15 px-3 py-2 text-sm text-flyto-ink">
-                    <?= $fieldError('categoria', $createOldInput !== []) ?>
-                </div>
-                <div>
-                    <label class="block text-xs font-medium uppercase tracking-[1.2px] text-flyto-muted" for="crear-fecha-expiracion">Fecha de expiracion</label>
-                    <input id="crear-fecha-expiracion" name="fechaExpiracion" type="datetime-local" value="<?= $html($dateValue($createOldInput['fechaExpiracion'] ?? '')) ?>" class="mt-2 w-full border border-flyto-ink/15 px-3 py-2 text-sm text-flyto-ink">
-                    <?= $fieldError('fechaExpiracion', $createOldInput !== []) ?>
-                </div>
-                <div>
-                    <label class="block text-xs font-medium uppercase tracking-[1.2px] text-flyto-muted" for="crear-texto">Texto</label>
-                    <textarea id="crear-texto" name="texto" rows="5" maxlength="2000" class="mt-2 w-full border border-flyto-ink/15 px-3 py-2 text-sm text-flyto-ink"><?= $html($createOldInput['texto'] ?? '') ?></textarea>
-                    <?= $fieldError('texto', $createOldInput !== []) ?>
-                </div>
-                <div>
-                    <button type="submit" class="inline-flex items-center justify-center bg-flyto-navy px-5 py-3 text-sm font-medium text-flyto-sand hover:bg-flyto-ink">
-                        Crear novedad
-                    </button>
-                </div>
-            </form>
-        </section>
-
-        <section class="grid gap-5" aria-labelledby="listado-novedades">
-            <div class="flex flex-wrap items-end justify-between gap-3">
-                <div>
-                    <p class="font-mono text-xs uppercase tracking-[1.2px] text-flyto-muted">Listado</p>
-                    <h2 id="listado-novedades" class="mt-2 font-display text-[26px] font-medium leading-8 text-flyto-ink">Novedades cargadas</h2>
-                </div>
-                <p class="text-sm text-flyto-muted"><?= count($novedades) ?> registros</p>
-            </div>
-
-            <?php if ($novedades === []): ?>
-                <div class="border border-flyto-ink/10 bg-white p-6 text-sm text-flyto-muted">
-                    No hay novedades cargadas.
+        <div class="mt-6 border border-flyto-ink/10 bg-white">
+            <?php if ($totalNovedades === 0): ?>
+                <div class="px-6 py-16 text-center">
+                    <p class="font-display text-lg text-flyto-ink">No hay novedades para mostrar</p>
                 </div>
             <?php endif; ?>
 
-            <?php foreach ($novedades as $news): ?>
+            <?php foreach ($novedades as $index => $novedad): ?>
                 <?php
-                $newsId = (string) ($news['id'] ?? '');
-                $isActiveOldInput = isset($oldInput['id']) && (string) $oldInput['id'] === $newsId;
-                $formInput = $isActiveOldInput ? $oldInput : $news;
+                $expirada = $estaExpirada($novedad);
+                $fechaPublicacion = $fechaCorta($novedad['fechaPublicacion'] ?? '');
+                $fechaExpiracion = $fechaCorta($novedad['fechaExpiracion'] ?? '');
                 ?>
-                <article class="border border-flyto-ink/10 bg-white p-6">
-                    <div class="flex flex-wrap items-start justify-between gap-3">
+                <article class="<?= $index < count($novedades) - 1 ? 'border-b border-flyto-ink/10' : '' ?> px-6 py-5">
+                    <div class="flex flex-col gap-4">
                         <div>
-                            <p class="font-mono text-xs uppercase tracking-[1.2px] text-flyto-muted">
-                                <?= $html($news['estado'] ?? '') ?> - Publicada <?= $html($news['fechaPublicacion'] ?? '') ?>
-                            </p>
-                            <h3 class="mt-2 font-display text-[23px] font-medium leading-8 text-flyto-ink">
-                                <?= $html($news['titulo'] ?? '') ?>
-                            </h3>
-                        </div>
-                        <span class="bg-flyto-mist px-2 py-1 font-mono text-xs text-flyto-ink">
-                            <?= $html($news['categoria'] ?? '') ?>
-                        </span>
-                    </div>
+                            <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
+                                <h2 class="font-display text-base font-medium leading-6 text-flyto-ink"><?= $html($novedad['titulo'] ?? '') ?></h2>
+                                <?php if ($expirada): ?>
+                                    <span class="bg-red-700/10 px-2 py-0.5 font-mono text-xs font-medium text-red-700">Expirada</span>
+                                <?php endif; ?>
+                            </div>
 
-                    <form class="mt-6 grid gap-4" method="post" action="<?= $html($basePath) ?>/admin/novedades/editar">
-                        <input type="hidden" name="id" value="<?= $html($newsId) ?>">
-                        <div class="grid gap-4 md:grid-cols-2">
-                            <div>
-                                <label class="block text-xs font-medium uppercase tracking-[1.2px] text-flyto-muted" for="editar-titulo-<?= $html($newsId) ?>">Titulo</label>
-                                <input id="editar-titulo-<?= $html($newsId) ?>" name="titulo" type="text" maxlength="160" value="<?= $html($formInput['titulo'] ?? '') ?>" class="mt-2 w-full border border-flyto-ink/15 px-3 py-2 text-sm text-flyto-ink">
-                                <?= $fieldError('titulo', $isActiveOldInput) ?>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-medium uppercase tracking-[1.2px] text-flyto-muted" for="editar-categoria-<?= $html($newsId) ?>">Categoria</label>
-                                <input id="editar-categoria-<?= $html($newsId) ?>" name="categoria" type="text" maxlength="120" value="<?= $html($formInput['categoria'] ?? '') ?>" class="mt-2 w-full border border-flyto-ink/15 px-3 py-2 text-sm text-flyto-ink">
-                                <?= $fieldError('categoria', $isActiveOldInput) ?>
-                            </div>
+                            <p class="mt-1 font-mono text-xs uppercase tracking-[0.08em] text-flyto-muted"><?= $html($novedad['categoria'] ?? '') ?></p>
+                            <p class="mt-2 text-xs leading-[19.5px] text-flyto-muted"><?= $html($novedad['texto'] ?? '') ?></p>
+                            <p class="mt-2 font-mono text-xs leading-4 text-flyto-muted">
+                                Publicada: <?= $html($fechaPublicacion) ?> &middot; Expira: <?= $html($fechaExpiracion) ?>
+                            </p>
                         </div>
-                        <div>
-                            <label class="block text-xs font-medium uppercase tracking-[1.2px] text-flyto-muted" for="editar-fecha-expiracion-<?= $html($newsId) ?>">Fecha de expiracion</label>
-                            <input id="editar-fecha-expiracion-<?= $html($newsId) ?>" name="fechaExpiracion" type="datetime-local" value="<?= $html($dateValue($formInput['fechaExpiracion'] ?? '')) ?>" class="mt-2 w-full border border-flyto-ink/15 px-3 py-2 text-sm text-flyto-ink">
-                            <?= $fieldError('fechaExpiracion', $isActiveOldInput) ?>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium uppercase tracking-[1.2px] text-flyto-muted" for="editar-texto-<?= $html($newsId) ?>">Texto</label>
-                            <textarea id="editar-texto-<?= $html($newsId) ?>" name="texto" rows="4" maxlength="2000" class="mt-2 w-full border border-flyto-ink/15 px-3 py-2 text-sm text-flyto-ink"><?= $html($formInput['texto'] ?? '') ?></textarea>
-                            <?= $fieldError('texto', $isActiveOldInput) ?>
-                        </div>
-                        <div class="flex flex-wrap gap-3">
-                            <button type="submit" class="inline-flex items-center justify-center bg-flyto-navy px-4 py-2 text-sm font-medium text-flyto-sand hover:bg-flyto-ink">
-                                Guardar cambios
+
+                        <div class="flex justify-end gap-2">
+                            <button type="button" class="flex items-center gap-1.5 border border-red-700/30 px-3 py-1.5 text-xs font-medium text-red-700 transition hover:bg-red-50">
+                                <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                Borrar
+                            </button>
+                            <button type="button" class="flex items-center gap-1.5 bg-flyto-navy px-3 py-1.5 text-xs font-medium text-flyto-sand transition hover:bg-flyto-ink">
+                                <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m15.5 5.5 3 3M4 20l4.5-1 9-9a2.12 2.12 0 0 0-3-3l-9 9L4 20Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                Editar
                             </button>
                         </div>
-                    </form>
-
-                    <form class="mt-3" method="post" action="<?= $html($basePath) ?>/admin/novedades/borrar">
-                        <input type="hidden" name="id" value="<?= $html($newsId) ?>">
-                        <button type="submit" class="inline-flex items-center justify-center border border-red-700 px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-50">
-                            Eliminar novedad
-                        </button>
-                    </form>
+                    </div>
                 </article>
             <?php endforeach; ?>
-        </section>
+        </div>
+
+        <?php if ($totalNovedades > 0): ?>
+            <nav class="mt-4 flex min-h-9 items-center justify-end gap-3 font-mono text-xs text-flyto-muted" aria-label="Paginaci&oacute;n de novedades">
+                <?php if ($paginaActual > 1): ?>
+                    <a href="<?= $html($urlPagina($paginaActual - 1)) ?>" class="border border-flyto-ink/10 px-4 py-2 font-sans font-medium text-flyto-muted transition hover:border-flyto-navy hover:text-flyto-navy">Anterior</a>
+                <?php endif; ?>
+
+                <span class="border border-flyto-ink/10 px-4 py-2" aria-label="P&aacute;gina <?= $paginaActual ?> de <?= $totalPaginas ?>"><?= $paginaActual ?>/<?= $totalPaginas ?></span>
+
+                <?php if ($paginaActual < $totalPaginas): ?>
+                    <a href="<?= $html($urlPagina($paginaActual + 1)) ?>" class="flex items-center gap-2 border border-flyto-ink/10 px-4 py-2 font-sans font-medium text-flyto-ink transition hover:border-flyto-navy hover:text-flyto-navy">
+                        Siguiente
+                        <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m9 5 7 7-7 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </a>
+                <?php endif; ?>
+            </nav>
+        <?php endif; ?>
     </div>
 </section>
