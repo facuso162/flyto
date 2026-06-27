@@ -92,10 +92,13 @@ $urlPagina = static fn (int $pagina): string => $basePath . '/admin/novedades?' 
                         </div>
 
                         <div class="flex justify-end gap-2">
-                            <button type="button" class="flex items-center gap-1.5 border border-red-700/30 px-3 py-1.5 text-xs font-medium text-red-700 transition hover:bg-red-50">
-                                <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                                Borrar
-                            </button>
+                            <form method="post" action="<?= $html($basePath) ?>/admin/novedades/borrar">
+                                <input type="hidden" name="id" value="<?= (int) ($novedad['id'] ?? 0) ?>">
+                                <button type="submit" class="flex items-center gap-1.5 border border-red-700/30 px-3 py-1.5 text-xs font-medium text-red-700 transition hover:bg-red-50">
+                                    <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                    Borrar
+                                </button>
+                            </form>
                             <a href="<?= $html($basePath) ?>/admin/novedades/editar?id=<?= (int) ($novedad['id'] ?? 0) ?>" class="flex items-center gap-1.5 bg-flyto-navy px-3 py-1.5 text-xs font-medium text-flyto-sand transition hover:bg-flyto-ink">
                                 <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m15.5 5.5 3 3M4 20l4.5-1 9-9a2.12 2.12 0 0 0-3-3l-9 9L4 20Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
                                 Editar
