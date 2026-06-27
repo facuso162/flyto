@@ -4,6 +4,7 @@ namespace App\Novedades\Controllers;
 
 use App\Auth\Middlewares\AdminMiddleware;
 use App\Auth\Services\SessionService;
+use App\Novedades\Dtos\EditarNovedadDto;
 use App\Novedades\Services\NovedadService;
 use App\Novedades\Validators\NovedadValidator;
 use App\Shared\Http\Flash;
@@ -13,6 +14,7 @@ use Throwable;
 
 require_once __DIR__ . '/../../auth/middlewares/admin.middleware.php';
 require_once __DIR__ . '/../../auth/services/session.service.php';
+require_once __DIR__ . '/../dtos/editar-novedad.dto.php';
 require_once __DIR__ . '/../services/novedad.service.php';
 require_once __DIR__ . '/../validators/novedad.validator.php';
 require_once __DIR__ . '/../../shared/http/flash.php';
@@ -39,7 +41,15 @@ class EditarNovedadActionController
         }
 
         try {
-            $dto = NovedadValidator::editar($_POST);
+            NovedadValidator::editar($_POST);
+            $dto = new EditarNovedadDto(
+                id: (int) $this->stringInput($_POST, 'id'),
+                titulo: $this->stringInput($_POST, 'titulo'),
+                texto: $this->stringInput($_POST, 'texto'),
+                categoria: $this->stringInput($_POST, 'categoria'),
+                fechaExpiracion: $this->fechaExpiracion($_POST)
+            );
+
             $this->novedadService->editar($dto);
 
             Flash::success('Novedad actualizada correctamente.');
@@ -47,14 +57,14 @@ class EditarNovedadActionController
         } catch (HttpException $exception) {
             Flash::error('No pudimos actualizar la novedad. Revisa los datos e intentalo nuevamente.');
             Flash::validationErrors($this->validationErrorsFromException($exception));
-            Flash::old($_POST);
+            Flash::old($this->safeOldInput($_POST));
 
-            RedirectResponse::to('/admin/novedades', [], 303);
+            RedirectResponse::to($this->editUrl($_POST), [], 303);
         } catch (Throwable) {
             Flash::error('No pudimos actualizar la novedad. Intentalo nuevamente en unos minutos.');
-            Flash::old($_POST);
+            Flash::old($this->safeOldInput($_POST));
 
-            RedirectResponse::to('/admin/novedades', [], 303);
+            RedirectResponse::to($this->editUrl($_POST), [], 303);
         }
     }
 
@@ -88,5 +98,42 @@ class EditarNovedadActionController
         }
 
         return [$field => $exception->getMessage()];
+    }
+
+    private function stringInput(array $data, string $field): string
+    {
+        return isset($data[$field]) && is_scalar($data[$field])
+            ? trim((string) $data[$field])
+            : '';
+    }
+
+    private function safeOldInput(array $data): array
+    {
+        $oldInput = [];
+
+        foreach (['titulo', 'categoria', 'texto', 'fechaExpiracion'] as $field) {
+            if (isset($data[$field]) && is_scalar($data[$field])) {
+                $oldInput[$field] = (string) $data[$field];
+            }
+        }
+
+        return $oldInput;
+    }
+
+    private function editUrl(array $data): string
+    {
+        $id = $data['id'] ?? null;
+        $id = is_scalar($id)
+            ? filter_var($id, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]])
+            : false;
+
+        return $id === false
+            ? '/admin/novedades'
+            : '/admin/novedades/editar?' . http_build_query(['id' => $id]);
+    }
+
+    private function fechaExpiracion(array $data): \DateTime
+    {
+        return \DateTime::createFromFormat('!Y-m-d', $this->stringInput($data, 'fechaExpiracion')) ?: new \DateTime();
     }
 }

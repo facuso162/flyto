@@ -39,7 +39,8 @@ class BorrarNovedadActionController
         }
 
         try {
-            $id = NovedadValidator::borrar($_POST);
+            NovedadValidator::borrar($_POST);
+            $id = isset($_POST['id']) && is_scalar($_POST['id']) ? (int) $_POST['id'] : 0;
             $this->novedadService->borrar($id);
 
             Flash::success('Novedad eliminada correctamente.');
