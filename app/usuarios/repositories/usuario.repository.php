@@ -20,6 +20,18 @@ class UsuarioRepository
     /** @return Usuario[] */
     public function getConfirmadosByTipo(string $tipo): array
     {
+        return $this->fetchByTipo($tipo, true);
+    }
+
+    /** @return Usuario[] */
+    public function getByTipo(string $tipo): array
+    {
+        return $this->fetchByTipo($tipo, false);
+    }
+
+    /** @return Usuario[] */
+    private function fetchByTipo(string $tipo, bool $soloConfirmados): array
+    {
         $stmt = $this->pdo->prepare(
             'SELECT
                 u.id, u.nombre, u.apellido, u.email, u.activo,
@@ -34,9 +46,11 @@ class UsuarioRepository
              INNER JOIN tipos_usuarios tu ON tu.id = u.tipo_usuario_id
              LEFT JOIN aerolineas a ON a.ceo_id = u.id
              LEFT JOIN paises p ON p.id = a.pais_id
-             WHERE tu.nombre = :tipo
+             WHERE tu.nombre = :tipo' .
+                ($soloConfirmados ? '
                AND u.activo = 1
-               AND u.email_verificado = 1
+               AND u.email_verificado = 1' : '') .
+             '
              ORDER BY u.fecha_registro DESC, u.id DESC'
         );
         $stmt->execute([':tipo' => $tipo]);

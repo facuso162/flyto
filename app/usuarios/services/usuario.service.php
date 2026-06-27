@@ -16,4 +16,9 @@ class UsuarioService
     {
         return $this->usuarioRepository->getConfirmadosByTipo($tipo);
     }
+
+    public function getByTipo(string $tipo): array
+    {
+        return $this->usuarioRepository->getByTipo($tipo);
+    }
 }

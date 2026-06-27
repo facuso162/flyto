@@ -82,6 +82,7 @@ use App\Shared\Http\HttpException;
 use App\Shared\Http\RedirectResponse;
 use App\Shared\Http\ViewResponse;
 use App\Shared\Services\EmailService;
+use App\Usuarios\Controllers\ListadoCeosPageController;
 use App\Usuarios\Repositories\UsuarioRepository as PanelUsuarioRepository;
 use App\Usuarios\Services\UsuarioService as PanelUsuarioService;
 use App\Vuelos\Controllers\BuscarVuelosPageController;
@@ -167,6 +168,7 @@ require_once __DIR__ . '/../app/promociones/controllers/solicitar-activacion-pag
 
 require_once __DIR__ . '/../app/usuarios/repositories/usuario.repository.php';
 require_once __DIR__ . '/../app/usuarios/services/usuario.service.php';
+require_once __DIR__ . '/../app/usuarios/controllers/listado-ceos-page.controller.php';
 
 require_once __DIR__ . '/../app/admin/controllers/admin-dashboard-page.controller.php';
 
@@ -448,6 +450,13 @@ $container->scoped(PanelUsuarioService::class, function ($c) {
 $container->scoped(AdminDashboardPageController::class, function ($c) {
     return new AdminDashboardPageController(
         $c->get(PromocionService::class),
+        $c->get(PanelUsuarioService::class),
+        $c->get(ViewResponse::class)
+    );
+});
+
+$container->scoped(ListadoCeosPageController::class, function ($c) {
+    return new ListadoCeosPageController(
         $c->get(PanelUsuarioService::class),
         $c->get(ViewResponse::class)
     );
@@ -968,6 +977,10 @@ $adminRoutes = [
     ],
     '/admin/aerolineas/editar' => [
         'controller' => EditarAerolineaPageController::class,
+        'action' => 'show',
+    ],
+    '/admin/ceos' => [
+        'controller' => ListadoCeosPageController::class,
         'action' => 'show',
     ],
     '/admin/novedades' => [
