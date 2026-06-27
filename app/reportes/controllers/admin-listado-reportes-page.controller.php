@@ -31,9 +31,9 @@ class AdminListadoReportesPageController
                         'slug' => 'vuelos',
                     ],
                     [
-                        'titulo' => 'Reporte de usuarios',
-                        'descripcion' => 'CEOs registrados, aerolineas activas y actividad reciente de los usuarios en el panel de administracion.',
-                        'slug' => 'usuarios',
+                        'titulo' => 'Reporte de CEOs',
+                        'descripcion' => 'CEOs registrados, nuevos CEOs del mes, promociones activas y CEO con mayor facturacion.',
+                        'slug' => 'ceos',
                     ],
                 ],
             ],

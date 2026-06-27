@@ -63,6 +63,7 @@ use App\Promociones\Controllers\SolicitudesPromocionesPageController;
 use App\Promociones\Repositories\PromocionRepository;
 use App\Promociones\Services\PromocionService;
 use App\Reportes\Controllers\AdminListadoReportesPageController;
+use App\Reportes\Controllers\AdminReporteCeosPageController;
 use App\Reportes\Controllers\AdminReporteVentasPageController;
 use App\Reportes\Controllers\AdminReporteVuelosPageController;
 use App\Reportes\Controllers\ListadoReportesPageController;
@@ -189,6 +190,7 @@ require_once __DIR__ . '/../app/ceo/controllers/ceo-dashboard-page.controller.ph
 require_once __DIR__ . '/../app/reportes/repositories/reporte.repository.php';
 require_once __DIR__ . '/../app/reportes/services/reporte.service.php';
 require_once __DIR__ . '/../app/reportes/controllers/admin-listado-reportes-page.controller.php';
+require_once __DIR__ . '/../app/reportes/controllers/admin-reporte-ceos-page.controller.php';
 require_once __DIR__ . '/../app/reportes/controllers/admin-reporte-ventas-page.controller.php';
 require_once __DIR__ . '/../app/reportes/controllers/admin-reporte-vuelos-page.controller.php';
 require_once __DIR__ . '/../app/reportes/controllers/listado-reportes-page.controller.php';
@@ -790,6 +792,14 @@ $container->scoped(AdminReporteVentasPageController::class, function ($c) {
     );
 });
 
+$container->scoped(AdminReporteCeosPageController::class, function ($c) {
+    return new AdminReporteCeosPageController(
+        $c->get(ReporteService::class),
+        $c->get(SessionService::class),
+        $c->get(ViewResponse::class)
+    );
+});
+
 $container->scoped(AdminReporteVuelosPageController::class, function ($c) {
     return new AdminReporteVuelosPageController(
         $c->get(ReporteService::class),
@@ -1068,6 +1078,10 @@ $adminRoutes = [
     ],
     '/admin/reportes/ventas' => [
         'controller' => AdminReporteVentasPageController::class,
+        'action' => 'show',
+    ],
+    '/admin/reportes/ceos' => [
+        'controller' => AdminReporteCeosPageController::class,
         'action' => 'show',
     ],
     '/admin/reportes/vuelos' => [

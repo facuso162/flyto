@@ -3,16 +3,19 @@
 namespace App\Reportes\Repositories;
 
 use App\Reportes\Models\ReporteVentas;
+use App\Reportes\Models\ReporteCeosAdmin;
 use App\Reportes\Models\ReporteVentasAdmin;
 use App\Reportes\Models\ReporteVuelosAdmin;
 use App\Reportes\Models\ReporteOcupacion;
 use App\Reportes\Models\AerolineaReporteVentas;
 use App\Reportes\Models\AerolineaReporteVuelos;
+use App\Reportes\Models\CeoDelMes;
 use App\Reportes\Models\VueloReporteVentas;
 use App\Reportes\Models\VueloReporteOcupacion;
 use PDO;
 
 require_once __DIR__ . '/../models/reporte-ventas.model.php';
+require_once __DIR__ . '/../models/reporte-ceos-admin.model.php';
 require_once __DIR__ . '/../models/reporte-ventas-admin.model.php';
 require_once __DIR__ . '/../models/reporte-vuelos-admin.model.php';
 require_once __DIR__ . '/../models/reporte-ocupacion.model.php';
@@ -160,6 +163,89 @@ class ReporteRepository
                 ),
                 $topStmt->fetchAll(PDO::FETCH_ASSOC)
             )
+        );
+    }
+
+    public function generarReporteCeosAdmin(
+        \DateTimeImmutable $inicioPeriodo,
+        \DateTimeImmutable $finPeriodo
+    ): ReporteCeosAdmin {
+        $params = [
+            ':inicio' => $inicioPeriodo->format('Y-m-d H:i:s'),
+            ':fin' => $finPeriodo->format('Y-m-d H:i:s'),
+        ];
+
+        $resumenStmt = $this->pdo->prepare("
+            SELECT
+                (
+                    SELECT COUNT(u.id)
+                    FROM usuarios u
+                    INNER JOIN tipos_usuarios tu ON tu.id = u.tipo_usuario_id
+                    WHERE tu.nombre = 'ceo'
+                ) AS total_ceos,
+                (
+                    SELECT COUNT(u.id)
+                    FROM usuarios u
+                    INNER JOIN tipos_usuarios tu ON tu.id = u.tipo_usuario_id
+                    WHERE tu.nombre = 'ceo'
+                        AND u.fecha_registro >= :inicio
+                        AND u.fecha_registro < :fin
+                ) AS ceos_nuevos_mes,
+                (
+                    SELECT COUNT(DISTINCT a.ceo_id)
+                    FROM promociones p
+                    INNER JOIN estados_promociones ep ON ep.id = p.estado_id
+                    INNER JOIN aerolineas a ON a.id = p.aerolinea_id
+                    WHERE a.ceo_id IS NOT NULL
+                        AND ep.nombre = 'activa'
+                        AND p.activa = 1
+                        AND p.fecha_aprobacion IS NOT NULL
+                        AND p.fecha_aprobacion <= NOW()
+                        AND (p.fecha_fin IS NULL OR p.fecha_fin >= NOW())
+                ) AS ceos_con_promocion_activa
+        ");
+        $resumenStmt->execute($params);
+        $resumen = $resumenStmt->fetch(PDO::FETCH_ASSOC) ?: [];
+
+        $ceoDelMesStmt = $this->pdo->prepare("
+            SELECT
+                u.id,
+                u.nombre,
+                u.apellido,
+                a.nombre AS aerolinea,
+                COUNT(r.id) AS reservas,
+                COALESCE(SUM(r.precio_total), 0) AS ingresos
+            FROM reservas r
+            INNER JOIN estados_reservas er ON er.id = r.estado_id
+            INNER JOIN vuelos v ON v.id = r.vuelo_id
+            INNER JOIN aerolineas a ON a.id = v.aerolinea_id
+            INNER JOIN usuarios u ON u.id = a.ceo_id
+            INNER JOIN tipos_usuarios tu ON tu.id = u.tipo_usuario_id
+            WHERE tu.nombre = 'ceo'
+                AND r.fecha_reserva >= :inicio
+                AND r.fecha_reserva < :fin
+                AND LOWER(er.nombre) IN ('confirmada', 'completada')
+            GROUP BY u.id, u.nombre, u.apellido, a.nombre
+            ORDER BY ingresos DESC, reservas DESC, u.apellido ASC, u.nombre ASC
+            LIMIT 1
+        ");
+        $ceoDelMesStmt->execute($params);
+        $ceoDelMes = $ceoDelMesStmt->fetch(PDO::FETCH_ASSOC);
+
+        return new ReporteCeosAdmin(
+            periodo: $inicioPeriodo,
+            generadoEn: new \DateTimeImmutable(),
+            totalCeos: (int) ($resumen['total_ceos'] ?? 0),
+            ceosNuevosMes: (int) ($resumen['ceos_nuevos_mes'] ?? 0),
+            ceosConPromocionActiva: (int) ($resumen['ceos_con_promocion_activa'] ?? 0),
+            ceoDelMes: $ceoDelMes ? new CeoDelMes(
+                id: (int) $ceoDelMes['id'],
+                nombre: (string) $ceoDelMes['nombre'],
+                apellido: (string) $ceoDelMes['apellido'],
+                aerolinea: $ceoDelMes['aerolinea'] === null ? null : (string) $ceoDelMes['aerolinea'],
+                reservas: (int) $ceoDelMes['reservas'],
+                ingresos: (float) $ceoDelMes['ingresos']
+            ) : null
         );
     }
 
