@@ -32,6 +32,12 @@ $puedeBorrarse = $aerolinea->ceo === null;
                         <?= htmlspecialchars($pais, ENT_QUOTES, 'UTF-8') ?>
                     </span>
                 <?php endif; ?>
+
+                <?php if ($aerolinea->ceo === null): ?>
+                    <span class="border border-amber-500/40 bg-amber-50 px-2 py-0.5 font-mono text-xs text-amber-800">
+                        Sin CEO asignado
+                    </span>
+                <?php endif; ?>
             </div>
 
             <p class="mt-1 text-xs leading-[1.65] text-flyto-muted">
