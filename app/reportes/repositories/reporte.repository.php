@@ -3,12 +3,15 @@
 namespace App\Reportes\Repositories;
 
 use App\Reportes\Models\ReporteVentas;
+use App\Reportes\Models\ReporteVentasAdmin;
 use App\Reportes\Models\ReporteOcupacion;
+use App\Reportes\Models\AerolineaReporteVentas;
 use App\Reportes\Models\VueloReporteVentas;
 use App\Reportes\Models\VueloReporteOcupacion;
 use PDO;
 
 require_once __DIR__ . '/../models/reporte-ventas.model.php';
+require_once __DIR__ . '/../models/reporte-ventas-admin.model.php';
 require_once __DIR__ . '/../models/reporte-ocupacion.model.php';
 
 class ReporteRepository
@@ -88,6 +91,67 @@ class ReporteRepository
                     codigoVuelo: (string) $row['codigo_vuelo'],
                     origen: (string) $row['origen'],
                     destino: (string) $row['destino'],
+                    reservas: (int) $row['reservas'],
+                    ingresos: (float) $row['ingresos']
+                ),
+                $topStmt->fetchAll(PDO::FETCH_ASSOC)
+            )
+        );
+    }
+
+    public function generarReporteVentasAdmin(
+        \DateTimeImmutable $inicioPeriodo,
+        \DateTimeImmutable $finPeriodo
+    ): ReporteVentasAdmin {
+        $params = [
+            ':inicio' => $inicioPeriodo->format('Y-m-d H:i:s'),
+            ':fin' => $finPeriodo->format('Y-m-d H:i:s'),
+        ];
+
+        $resumenStmt = $this->pdo->prepare("
+            SELECT
+                (SELECT COUNT(a.id) FROM aerolineas a WHERE a.ceo_id IS NOT NULL) AS aerolineas_activas,
+                COUNT(r.id) AS total_reservas,
+                COALESCE(SUM(r.precio_total), 0) AS ingresos_totales
+            FROM reservas r
+            INNER JOIN estados_reservas er ON er.id = r.estado_id
+            WHERE r.fecha_reserva >= :inicio
+                AND r.fecha_reserva < :fin
+                AND LOWER(er.nombre) IN ('confirmada', 'completada')
+        ");
+        $resumenStmt->execute($params);
+        $resumen = $resumenStmt->fetch(PDO::FETCH_ASSOC) ?: [];
+
+        $topStmt = $this->pdo->prepare("
+            SELECT
+                a.nombre AS aerolinea,
+                COUNT(r.id) AS reservas,
+                COALESCE(SUM(r.precio_total), 0) AS ingresos
+            FROM reservas r
+            INNER JOIN estados_reservas er ON er.id = r.estado_id
+            INNER JOIN vuelos v ON v.id = r.vuelo_id
+            INNER JOIN aerolineas a ON a.id = v.aerolinea_id
+            WHERE r.fecha_reserva >= :inicio
+                AND r.fecha_reserva < :fin
+                AND LOWER(er.nombre) IN ('confirmada', 'completada')
+            GROUP BY a.id, a.nombre
+            ORDER BY ingresos DESC, reservas DESC, a.nombre ASC
+            LIMIT 5
+        ");
+        $topStmt->execute($params);
+
+        $ingresosTotales = (float) ($resumen['ingresos_totales'] ?? 0);
+
+        return new ReporteVentasAdmin(
+            periodo: $inicioPeriodo,
+            generadoEn: new \DateTimeImmutable(),
+            aerolineasActivas: (int) ($resumen['aerolineas_activas'] ?? 0),
+            totalReservas: (int) ($resumen['total_reservas'] ?? 0),
+            ingresosTotales: $ingresosTotales,
+            comision: round($ingresosTotales * 0.03, 2),
+            topAerolineas: array_map(
+                fn (array $row) => new AerolineaReporteVentas(
+                    nombre: (string) $row['aerolinea'],
                     reservas: (int) $row['reservas'],
                     ingresos: (float) $row['ingresos']
                 ),

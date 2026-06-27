@@ -63,6 +63,7 @@ use App\Promociones\Controllers\SolicitudesPromocionesPageController;
 use App\Promociones\Repositories\PromocionRepository;
 use App\Promociones\Services\PromocionService;
 use App\Reportes\Controllers\AdminListadoReportesPageController;
+use App\Reportes\Controllers\AdminReporteVentasPageController;
 use App\Reportes\Controllers\ListadoReportesPageController;
 use App\Reportes\Controllers\ReporteOcupacionPageController;
 use App\Reportes\Controllers\ReporteVentasPageController;
@@ -187,6 +188,7 @@ require_once __DIR__ . '/../app/ceo/controllers/ceo-dashboard-page.controller.ph
 require_once __DIR__ . '/../app/reportes/repositories/reporte.repository.php';
 require_once __DIR__ . '/../app/reportes/services/reporte.service.php';
 require_once __DIR__ . '/../app/reportes/controllers/admin-listado-reportes-page.controller.php';
+require_once __DIR__ . '/../app/reportes/controllers/admin-reporte-ventas-page.controller.php';
 require_once __DIR__ . '/../app/reportes/controllers/listado-reportes-page.controller.php';
 require_once __DIR__ . '/../app/reportes/controllers/reporte-ventas-page.controller.php';
 require_once __DIR__ . '/../app/reportes/controllers/reporte-ocupacion-page.controller.php';
@@ -779,6 +781,13 @@ $container->scoped(AdminListadoReportesPageController::class, function ($c) {
     );
 });
 
+$container->scoped(AdminReporteVentasPageController::class, function ($c) {
+    return new AdminReporteVentasPageController(
+        $c->get(ReporteService::class),
+        $c->get(ViewResponse::class)
+    );
+});
+
 $container->scoped(ReporteRepository::class, function ($c) {
     return new ReporteRepository($c->get(Database::class));
 });
@@ -1046,6 +1055,10 @@ $adminRoutes = [
     ],
     '/admin/reportes' => [
         'controller' => AdminListadoReportesPageController::class,
+        'action' => 'show',
+    ],
+    '/admin/reportes/ventas' => [
+        'controller' => AdminReporteVentasPageController::class,
         'action' => 'show',
     ],
     '/admin/novedades' => [

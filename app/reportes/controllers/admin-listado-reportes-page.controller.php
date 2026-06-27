@@ -22,7 +22,7 @@ class AdminListadoReportesPageController
                 'reportes' => [
                     [
                         'titulo' => 'Reporte de ventas',
-                        'descripcion' => 'Ingresos totales, reservas y ticket promedio agregados para todas las aerolineas registradas en la plataforma.',
+                        'descripcion' => 'Ingresos totales, comision de Flyto y top de aerolineas con mayor facturacion del periodo.',
                         'slug' => 'ventas',
                     ],
                     [
