@@ -57,6 +57,7 @@ use App\Promociones\Controllers\EditarPromocionPageController;
 use App\Promociones\Controllers\ListadoPromocionesPageController;
 use App\Promociones\Controllers\SolicitarActivacionActionController;
 use App\Promociones\Controllers\SolicitarActivacionPageController;
+use App\Promociones\Controllers\SolicitudesPromocionesPageController;
 use App\Promociones\Repositories\PromocionRepository;
 use App\Promociones\Services\PromocionService;
 use App\Reportes\Controllers\ListadoReportesPageController;
@@ -167,6 +168,7 @@ require_once __DIR__ . '/../app/promociones/controllers/editar-promocion-page.co
 require_once __DIR__ . '/../app/promociones/controllers/listado-promociones-page.controller.php';
 require_once __DIR__ . '/../app/promociones/controllers/solicitar-activacion-action.controller.php';
 require_once __DIR__ . '/../app/promociones/controllers/solicitar-activacion-page.controller.php';
+require_once __DIR__ . '/../app/promociones/controllers/solicitudes-promociones-page.controller.php';
 
 require_once __DIR__ . '/../app/usuarios/repositories/usuario.repository.php';
 require_once __DIR__ . '/../app/usuarios/services/usuario.service.php';
@@ -530,6 +532,13 @@ $container->scoped(ListadoPromocionesPageController::class, function ($c) {
 
 $container->scoped(SolicitarActivacionPageController::class, function ($c) {
     return new SolicitarActivacionPageController($c->get(ViewResponse::class));
+});
+
+$container->scoped(SolicitudesPromocionesPageController::class, function ($c) {
+    return new SolicitudesPromocionesPageController(
+        $c->get(PromocionService::class),
+        $c->get(ViewResponse::class)
+    );
 });
 
 $container->scoped(SolicitarActivacionActionController::class, function ($c) {
@@ -1003,6 +1012,10 @@ $adminRoutes = [
     ],
     '/admin/ceos/crear' => [
         'controller' => CrearCeoPageController::class,
+        'action' => 'show',
+    ],
+    '/admin/promociones' => [
+        'controller' => SolicitudesPromocionesPageController::class,
         'action' => 'show',
     ],
     '/admin/novedades' => [
