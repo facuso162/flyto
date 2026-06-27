@@ -3,9 +3,11 @@
 namespace App\Aerolineas\Repositories;
 
 use App\Aerolineas\Models\Aerolinea;
+use App\Aerolineas\Dtos\CrearAerolineaDto;
 use App\Paises\Models\Pais;
 use PDO;
 
+require_once __DIR__ . '/../dtos/crear-aerolinea.dto.php';
 require_once __DIR__ . '/../models/aerolinea.model.php';
 require_once __DIR__ . '/../../paises/models/pais.model.php';
 
@@ -36,6 +38,31 @@ class AerolineaRepository
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
         return $row ? $this->mapRow($row) : null;
+    }
+
+    public function existsByCodigoIata(string $codigoIata): bool
+    {
+        $stmt = $this->pdo->prepare('SELECT COUNT(*) FROM aerolineas WHERE codigo_iata = :codigo_iata');
+        $stmt->execute([':codigo_iata' => strtoupper($codigoIata)]);
+
+        return (int) $stmt->fetchColumn() > 0;
+    }
+
+    public function crear(CrearAerolineaDto $dto): int
+    {
+        $stmt = $this->pdo->prepare(
+            'INSERT INTO aerolineas (nombre, descripcion, codigo_iata, pais_id, ceo_id, activa)
+             VALUES (:nombre, :descripcion, :codigo_iata, :pais_id, NULL, TRUE)'
+        );
+
+        $stmt->execute([
+            ':nombre' => $dto->nombre,
+            ':descripcion' => $dto->descripcion,
+            ':codigo_iata' => strtoupper($dto->codigoIata),
+            ':pais_id' => $dto->paisId,
+        ]);
+
+        return (int) $this->pdo->lastInsertId();
     }
 
     private function selectBase(): string

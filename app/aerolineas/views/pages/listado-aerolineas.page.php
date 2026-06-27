@@ -20,10 +20,10 @@ $urlPagina = static fn (int $pagina): string => $urlListado . '?' . http_build_q
                 <h1 class="mt-1 font-display text-3xl font-medium tracking-tight">Aerol&iacute;neas</h1>
             </div>
 
-            <button type="button" class="inline-flex w-fit items-center gap-2 bg-flyto-navy px-4 py-2 text-xs font-medium text-flyto-sand transition hover:bg-flyto-ink">
+            <a href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/admin/aerolineas/crear" class="inline-flex w-fit items-center gap-2 bg-flyto-navy px-4 py-2 text-xs font-medium text-flyto-sand transition hover:bg-flyto-ink">
                 <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
                 Agregar aerol&iacute;nea
-            </button>
+            </a>
         </div>
 
         <?php if (!empty($flash['success'])): ?>

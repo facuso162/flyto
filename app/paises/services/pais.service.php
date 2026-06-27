@@ -21,4 +21,9 @@ class PaisService
     {
         return $this->paisRepository->getAll();
     }
+
+    public function getPorId(int $id): ?Pais
+    {
+        return $this->paisRepository->findById($id);
+    }
 }

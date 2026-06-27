@@ -7,6 +7,8 @@ use App\Auth\Controllers\LogoutUsuarioActionController;
 use App\Auth\Controllers\RegisterUsuarioActionController;
 use App\Auth\Controllers\RegistroPageController;
 use App\Admin\Controllers\AdminDashboardPageController;
+use App\Aerolineas\Controllers\CrearAerolineaActionController;
+use App\Aerolineas\Controllers\CrearAerolineaPageController;
 use App\Aerolineas\Controllers\ListadoAerolineasPageController;
 use App\Aerolineas\Repositories\AerolineaRepository;
 use App\Aerolineas\Services\AerolineaService;
@@ -134,6 +136,8 @@ require_once __DIR__ . '/../app/paises/services/pais.service.php';
 
 require_once __DIR__ . '/../app/aerolineas/repositories/aerolinea.repository.php';
 require_once __DIR__ . '/../app/aerolineas/services/aerolinea.service.php';
+require_once __DIR__ . '/../app/aerolineas/controllers/crear-aerolinea-action.controller.php';
+require_once __DIR__ . '/../app/aerolineas/controllers/crear-aerolinea-page.controller.php';
 require_once __DIR__ . '/../app/aerolineas/controllers/listado-aerolineas-page.controller.php';
 
 require_once __DIR__ . '/../app/ciudades/repositories/ciudad.repository.php';
@@ -339,7 +343,24 @@ $container->scoped(AerolineaRepository::class, function ($c) {
 });
 
 $container->scoped(AerolineaService::class, function ($c) {
-    return new AerolineaService($c->get(AerolineaRepository::class));
+    return new AerolineaService(
+        $c->get(AerolineaRepository::class),
+        $c->get(PaisService::class)
+    );
+});
+
+$container->scoped(CrearAerolineaPageController::class, function ($c) {
+    return new CrearAerolineaPageController(
+        $c->get(PaisService::class),
+        $c->get(ViewResponse::class)
+    );
+});
+
+$container->scoped(CrearAerolineaActionController::class, function ($c) {
+    return new CrearAerolineaActionController(
+        $c->get(AerolineaService::class),
+        $c->get(SessionService::class)
+    );
 });
 
 $container->scoped(ListadoAerolineasPageController::class, function ($c) {
@@ -898,6 +919,10 @@ $adminRoutes = [
         'controller' => ListadoAerolineasPageController::class,
         'action' => 'show',
     ],
+    '/admin/aerolineas/crear' => [
+        'controller' => CrearAerolineaPageController::class,
+        'action' => 'show',
+    ],
     '/admin/novedades' => [
         'controller' => AdminNovedadesPageController::class,
         'action' => 'show',
@@ -972,6 +997,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 $router = new Router();
 
 $router->registerModule(require __DIR__ . '/../app/auth/routes.php');
+$router->registerModule(require __DIR__ . '/../app/aerolineas/routes.php');
 $router->registerModule(require __DIR__ . '/../app/contacto/routes.php');
 $router->registerModule(require __DIR__ . '/../app/novedades/routes.php');
 $router->registerModule(require __DIR__ . '/../app/promociones/routes.php');

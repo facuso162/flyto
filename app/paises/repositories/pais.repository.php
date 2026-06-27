@@ -28,6 +28,16 @@ class PaisRepository
         );
     }
 
+    public function findById(int $id): ?Pais
+    {
+        $stmt = $this->pdo->prepare('SELECT id, nombre, codigo FROM paises WHERE id = :id LIMIT 1');
+        $stmt->execute([':id' => $id]);
+
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $row ? $this->mapRow($row) : null;
+    }
+
     private function mapRow(array $row): Pais
     {
         return new Pais(
