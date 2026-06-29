@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const loginForm = document.getElementById('loginForm');
     
     if (loginForm) {
+        const emailLogin = document.getElementById('email');
         const passLogin = document.getElementById('password');
         const toggleLogin = document.getElementById('togglePasswordLogin');
         const btnSubmitLogin = document.getElementById('btnSubmitLogin');
@@ -21,19 +22,28 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // 2. Validación Cliente: Habilitar botón Submit
-        loginForm.addEventListener('input', () => {
-            // checkValidity() verifica automáticamente que el email tenga un "@" 
-            // y que los campos requeridos no estén vacíos.
-            if (loginForm.checkValidity()) {
+        const checkLoginValidity = () => {
+            const isEmailFilled = emailLogin && emailLogin.value.trim() !== '';
+            const isPasswordFilled = passLogin && passLogin.value.trim() !== '';
+
+            // Verifica que los elementos existan (IDs correctos) y tengan valor, 
+            // además de la validación nativa (ej. el "@" en el email)
+            if (isEmailFilled && isPasswordFilled && loginForm.checkValidity()) {
                 btnSubmitLogin.removeAttribute('disabled');
             } else {
                 btnSubmitLogin.setAttribute('disabled', 'true');
             }
-        });
-    }
-});
+        };
 
-// ==========================================
+        // Estado inicial
+        checkLoginValidity();
+
+        // Escuchar cambios
+        loginForm.addEventListener('input', checkLoginValidity);
+        loginForm.addEventListener('change', checkLoginValidity);
+    }
+
+    // ==========================================
     // FORMULARIO DE REGISTRO
     // ==========================================
     const registroForm = document.getElementById('registroForm');
@@ -97,3 +107,28 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
+
+    // ==========================================
+    // FORMULARIO DE BÚSQUEDA DE VUELOS
+    // ==========================================
+    const buscarVuelosForm = document.getElementById('buscar-vuelos');
+    
+    if (buscarVuelosForm) {
+        const btnSubmitBuscarVuelos = document.getElementById('btnSubmitBuscarVuelos');
+        
+        const checkBuscarVuelosValidity = () => {
+            if (buscarVuelosForm.checkValidity()) {
+                btnSubmitBuscarVuelos.removeAttribute('disabled');
+            } else {
+                btnSubmitBuscarVuelos.setAttribute('disabled', 'true');
+            }
+        };
+
+        // Estado inicial
+        checkBuscarVuelosValidity();
+
+        // Escuchar cambios en los select e inputs
+        buscarVuelosForm.addEventListener('input', checkBuscarVuelosValidity);
+        buscarVuelosForm.addEventListener('change', checkBuscarVuelosValidity);
+    }
+});

@@ -920,8 +920,17 @@ if (is_string($requestQuery) && $requestQuery !== '') {
     $normalizedUri .= '?' . $requestQuery;
 }
 
-$router->resolve(
-    $_SERVER['REQUEST_METHOD'],
-    $normalizedUri,
-    $container
-);
+try {
+    $router->resolve(
+        $_SERVER['REQUEST_METHOD'],
+        $normalizedUri,
+        $container
+    );
+} catch (\Throwable $exception) {
+    echo json_encode([
+        'error' => $exception->getMessage(),
+        'file' => $exception->getFile(),
+        'line' => $exception->getLine(),
+        'trace' => $exception->getTraceAsString(),
+    ]);
+}

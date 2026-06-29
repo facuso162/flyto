@@ -5,8 +5,8 @@ $ciudades = $ciudades ?? [];
 $flight = $flight ?? [];
 $selectedOrigen = (string) ($flight['origen'] ?? '');
 $selectedDestino = (string) ($flight['destino'] ?? '');
-$selectedFecha = (string) ($flight['fechaSalida'] ?? '');
-$selectedPasajeros = (string) ($flight['cantidadPasajeros'] ?? '');
+$selectedFecha = (string) ($flight['fecha'] ?? $flight['fechaSalida'] ?? '');
+$selectedPasajeros = (string) ($flight['pasajeros'] ?? $flight['cantidadPasajeros'] ?? '');
 
 $cityDescription = static function (array $ciudades, string $selectedId, string $fallback = ''): string {
     foreach ($ciudades as $ciudad) {
@@ -94,7 +94,7 @@ $renderCityOptions = static function (array $ciudades, string $selectedId): void
     </div>
 
     <div class="mt-4 flex justify-end">
-        <button id="btnSubmitBuscarVuelos" tabindex="6" disabled class="inline-flex h-11 items-center gap-2 bg-flyto-navy px-8 text-sm font-medium text-flyto-sand disabled:opacity-50 disabled:cursor-not-allowed transition-opacity" type="submit">
+        <button id="btnSubmitBuscarVuelos" tabindex="6" class="inline-flex h-11 items-center gap-2 bg-flyto-navy px-8 text-sm font-medium text-flyto-sand disabled:opacity-50 disabled:cursor-not-allowed transition-opacity" type="submit">
             <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path d="M10.5 18A7.5 7.5 0 1 1 16 15.45L20 19.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
             </svg>
