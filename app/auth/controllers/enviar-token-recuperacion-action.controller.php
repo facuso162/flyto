@@ -21,6 +21,8 @@ require_once __DIR__ . '/../../shared/http/redirect-response.php';
 
 class EnviarTokenRecuperacionActionController
 {
+    private const RECOVERY_USER_ID_KEY = 'recuperar_contrasena_usuario_id';
+
     private EnviarTokenRecuperacionService $enviarTokenRecuperacionService;
     private SessionService $sessionService;
 
@@ -42,6 +44,8 @@ class EnviarTokenRecuperacionActionController
         }
 
         try {
+            $this->sessionService->remove(self::RECOVERY_USER_ID_KEY);
+
             $data = $_POST;
 
             EnviarTokenRecuperacionValidator::validate($data);

@@ -1,6 +1,7 @@
 <?php
 
 use App\Auth\Controllers\ConfirmarUsuarioActionController;
+use App\Auth\Controllers\CambiarContrasenaActionController;
 use App\Auth\Controllers\EnviarTokenRecuperacionActionController;
 use App\Auth\Controllers\LoginPageController;
 use App\Auth\Controllers\LoginUsuarioActionController;
@@ -27,6 +28,8 @@ use App\Auth\Middlewares\GuestMiddleware;
 use App\Auth\Repositories\TipoUsuarioRepository;
 use App\Auth\Repositories\UsuarioRepository;
 use App\Auth\Services\ConfirmacionUsuarioEmailService;
+use App\Auth\Services\BorrarTokenRecuperacionService;
+use App\Auth\Services\CambiarContrasenaService;
 use App\Auth\Services\ConfirmarUsuarioService;
 use App\Auth\Services\EnviarTokenRecuperacionService;
 use App\Auth\Services\LoginUsuarioService;
@@ -139,8 +142,10 @@ require_once __DIR__ . '/../app/auth/repositories/tipo-usuario.repository.php';
 require_once __DIR__ . '/../app/auth/services/session.service.php';
 require_once __DIR__ . '/../app/auth/services/confirmacion-usuario-email.service.php';
 require_once __DIR__ . '/../app/auth/services/token-recuperacion-email.service.php';
+require_once __DIR__ . '/../app/auth/services/borrar-token-recuperacion.service.php';
 require_once __DIR__ . '/../app/auth/services/enviar-token-recuperacion.service.php';
 require_once __DIR__ . '/../app/auth/services/verificar-token-recuperacion.service.php';
+require_once __DIR__ . '/../app/auth/services/cambiar-contrasena.service.php';
 require_once __DIR__ . '/../app/auth/services/register-usuario.service.php';
 require_once __DIR__ . '/../app/auth/services/confirmar-usuario.service.php';
 require_once __DIR__ . '/../app/auth/services/login-usuario.service.php';
@@ -153,6 +158,7 @@ require_once __DIR__ . '/../app/auth/controllers/recuperar-contrasena-cambiar-pa
 require_once __DIR__ . '/../app/auth/controllers/confirmar-usuario-action.controller.php';
 require_once __DIR__ . '/../app/auth/controllers/enviar-token-recuperacion-action.controller.php';
 require_once __DIR__ . '/../app/auth/controllers/verificar-token-recuperacion-action.controller.php';
+require_once __DIR__ . '/../app/auth/controllers/cambiar-contrasena-action.controller.php';
 require_once __DIR__ . '/../app/auth/controllers/login-usuario-action.controller.php';
 require_once __DIR__ . '/../app/auth/controllers/register-usuario-action.controller.php';
 require_once __DIR__ . '/../app/auth/controllers/logout-usuario-action.controller.php';
@@ -314,8 +320,22 @@ $container->scoped(EnviarTokenRecuperacionService::class, function ($c) {
     );
 });
 
+$container->scoped(BorrarTokenRecuperacionService::class, function ($c) {
+    return new BorrarTokenRecuperacionService($c->get(UsuarioRepository::class));
+});
+
 $container->scoped(VerificarTokenRecuperacionService::class, function ($c) {
-    return new VerificarTokenRecuperacionService($c->get(UsuarioRepository::class));
+    return new VerificarTokenRecuperacionService(
+        $c->get(UsuarioRepository::class),
+        $c->get(BorrarTokenRecuperacionService::class)
+    );
+});
+
+$container->scoped(CambiarContrasenaService::class, function ($c) {
+    return new CambiarContrasenaService(
+        $c->get(UsuarioRepository::class),
+        $c->get(VerificarTokenRecuperacionService::class)
+    );
 });
 
 $container->scoped(ConfirmarUsuarioService::class, function ($c) {
@@ -364,7 +384,8 @@ $container->scoped(RecuperarContrasenaTokenPageController::class, function ($c) 
 $container->scoped(RecuperarContrasenaCambiarPageController::class, function ($c) {
     return new RecuperarContrasenaCambiarPageController(
         $c->get(SessionService::class),
-        $c->get(ViewResponse::class)
+        $c->get(ViewResponse::class),
+        $c->get(VerificarTokenRecuperacionService::class)
     );
 });
 
@@ -385,6 +406,13 @@ $container->scoped(EnviarTokenRecuperacionActionController::class, function ($c)
 $container->scoped(VerificarTokenRecuperacionActionController::class, function ($c) {
     return new VerificarTokenRecuperacionActionController(
         $c->get(VerificarTokenRecuperacionService::class),
+        $c->get(SessionService::class)
+    );
+});
+
+$container->scoped(CambiarContrasenaActionController::class, function ($c) {
+    return new CambiarContrasenaActionController(
+        $c->get(CambiarContrasenaService::class),
         $c->get(SessionService::class)
     );
 });

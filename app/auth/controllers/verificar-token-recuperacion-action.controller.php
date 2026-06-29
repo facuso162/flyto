@@ -21,6 +21,8 @@ require_once __DIR__ . '/../../shared/http/redirect-response.php';
 
 class VerificarTokenRecuperacionActionController
 {
+    private const RECOVERY_USER_ID_KEY = 'recuperar_contrasena_usuario_id';
+
     private VerificarTokenRecuperacionService $verificarTokenRecuperacionService;
     private SessionService $sessionService;
 
@@ -48,16 +50,21 @@ class VerificarTokenRecuperacionActionController
 
             $dto = new VerificarTokenRecuperacionDTO(trim((string) $data['token']));
 
-            $this->verificarTokenRecuperacionService->execute($dto);
+            $usuario = $this->verificarTokenRecuperacionService->execute($dto);
+            $this->sessionService->set(self::RECOVERY_USER_ID_KEY, (int) $usuario->id);
 
             Flash::success('Codigo verificado. Ingresa tu nueva contrasena.');
             RedirectResponse::to('/auth/recuperar-contrasena/cambiar', [], 303);
         } catch (HttpException $exception) {
+            $this->sessionService->remove(self::RECOVERY_USER_ID_KEY);
+
             Flash::error('No pudimos verificar el codigo de recuperacion. Revisa los datos e intentalo nuevamente.');
             Flash::validationErrors($this->validationErrorsFromException($exception));
 
             RedirectResponse::to('/auth/recuperar-contrasena/codigo', [], 303);
         } catch (Throwable) {
+            $this->sessionService->remove(self::RECOVERY_USER_ID_KEY);
+
             Flash::error('No pudimos verificar el codigo de recuperacion. Intentalo nuevamente en unos minutos.');
 
             RedirectResponse::to('/auth/recuperar-contrasena/codigo', [], 303);

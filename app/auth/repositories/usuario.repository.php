@@ -218,6 +218,63 @@ class UsuarioRepository
         );
     }
 
+    public function findById(int $id): ?Usuario {
+        $sql = "
+            SELECT
+                u.id,
+                u.nombre,
+                u.apellido,
+                u.email,
+                u.telefono,
+                u.clave_hash,
+                u.activo,
+                u.fecha_registro,
+                u.email_verificado,
+                u.token_verificacion,
+                u.token_recupero,
+                u.token_expiracion,
+                tu.id AS tipo_usuario_id,
+                tu.nombre AS tipo_usuario_nombre
+            FROM usuarios u
+            JOIN tipos_usuarios tu ON u.tipo_usuario_id = tu.id
+            WHERE u.id = :id
+            LIMIT 1
+        ";
+
+        $stmt = $this->pdo->prepare($sql);
+
+        $stmt->execute([
+            ':id' => $id
+        ]);
+
+        $row = $stmt->fetch();
+
+        if (!$row) {
+            return null;
+        }
+
+        $tipoUsuario = new TipoUsuario(
+            id: (int) $row['tipo_usuario_id'],
+            nombre: $row['tipo_usuario_nombre']
+        );
+
+        return new Usuario(
+            id: (int) $row['id'],
+            nombre: $row['nombre'],
+            apellido: $row['apellido'],
+            email: $row['email'],
+            telefono: $row['telefono'],
+            claveHash: $row['clave_hash'],
+            tipoUsuario: $tipoUsuario,
+            activo: (bool) $row['activo'],
+            fechaRegistro: new \DateTime($row['fecha_registro']),
+            emailVerificado: (bool) $row['email_verificado'],
+            tokenVerificacion: $row['token_verificacion'],
+            tokenRecupero: $row['token_recupero'],
+            tokenExpiracion: $row['token_expiracion'] ? new \DateTime($row['token_expiracion']) : null
+        );
+    }
+
     public function findByTokenRecuperacion(string $token): ?Usuario {
         $sql = "
             SELECT
@@ -328,6 +385,40 @@ class UsuarioRepository
             ':id' => $usuarioId,
             ':token_recupero' => $token,
             ':token_expiracion' => $tokenExpiracion->format('Y-m-d H:i:s')
+        ]);
+    }
+
+    public function clearTokenRecuperacion(int $usuarioId): void
+    {
+        $sql = "
+            UPDATE usuarios SET
+                token_recupero = NULL,
+                token_expiracion = NULL
+            WHERE id = :id
+        ";
+
+        $stmt = $this->pdo->prepare($sql);
+
+        $stmt->execute([
+            ':id' => $usuarioId
+        ]);
+    }
+
+    public function updatePasswordAndClearRecoveryToken(int $usuarioId, string $passwordHash): void
+    {
+        $sql = "
+            UPDATE usuarios SET
+                clave_hash = :clave_hash,
+                token_recupero = NULL,
+                token_expiracion = NULL
+            WHERE id = :id
+        ";
+
+        $stmt = $this->pdo->prepare($sql);
+
+        $stmt->execute([
+            ':id' => $usuarioId,
+            ':clave_hash' => $passwordHash
         ]);
     }
 }

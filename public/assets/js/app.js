@@ -111,4 +111,44 @@
         recuperarContrasenaToken.addEventListener('blur', updateRecoveryTokenSubmitState);
         updateRecoveryTokenSubmitState();
     }
+
+    var recuperarContrasenaPassword = document.getElementById('recuperar-contrasena-password');
+    var recuperarContrasenaPasswordConfirmation = document.getElementById('recuperar-contrasena-password-confirmation');
+    var recuperarContrasenaCambiarSubmit = document.getElementById('recuperar-contrasena-cambiar-submit');
+
+    if (recuperarContrasenaPassword && recuperarContrasenaPasswordConfirmation && recuperarContrasenaCambiarSubmit) {
+        var changePasswordActiveClasses = ['bg-flyto-navy', 'text-flyto-sand'];
+        var changePasswordDisabledClasses = ['cursor-not-allowed', 'border', 'border-flyto-ink/10', 'bg-[#e5e4e0]', 'text-flyto-muted'];
+
+        function setChangePasswordSubmitClasses(classes, enabled) {
+            classes.forEach(function (className) {
+                recuperarContrasenaCambiarSubmit.classList.toggle(className, enabled);
+            });
+        }
+
+        function isStrongRecoveryPassword(password) {
+            return password.length >= 8 &&
+                /[A-Z]/.test(password) &&
+                /[0-9]/.test(password) &&
+                /[^a-zA-Z0-9]/.test(password);
+        }
+
+        function updateChangePasswordSubmitState() {
+            var password = recuperarContrasenaPassword.value;
+            var passwordConfirmation = recuperarContrasenaPasswordConfirmation.value;
+            var isValid = isStrongRecoveryPassword(password) &&
+                passwordConfirmation !== '' &&
+                passwordConfirmation === password;
+
+            recuperarContrasenaCambiarSubmit.disabled = !isValid;
+            setChangePasswordSubmitClasses(changePasswordActiveClasses, isValid);
+            setChangePasswordSubmitClasses(changePasswordDisabledClasses, !isValid);
+        }
+
+        recuperarContrasenaPassword.addEventListener('input', updateChangePasswordSubmitState);
+        recuperarContrasenaPassword.addEventListener('blur', updateChangePasswordSubmitState);
+        recuperarContrasenaPasswordConfirmation.addEventListener('input', updateChangePasswordSubmitState);
+        recuperarContrasenaPasswordConfirmation.addEventListener('blur', updateChangePasswordSubmitState);
+        updateChangePasswordSubmitState();
+    }
 })();
