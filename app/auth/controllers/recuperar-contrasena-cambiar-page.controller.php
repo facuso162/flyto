@@ -12,7 +12,7 @@ require_once __DIR__ . '/../../shared/http/flash.php';
 require_once __DIR__ . '/../../shared/http/redirect-response.php';
 require_once __DIR__ . '/../../shared/http/view-response.php';
 
-class RecuperarContrasenaTokenPageController
+class RecuperarContrasenaCambiarPageController
 {
     private SessionService $sessionService;
     private ViewResponse $viewResponse;
@@ -33,19 +33,15 @@ class RecuperarContrasenaTokenPageController
         }
 
         $flash = Flash::consume();
-        $oldInput = Flash::consumeOld();
-        $validationErrors = $flash['validationErrors'] ?? [];
 
         $this->viewResponse->render(
-            __DIR__ . '/../views/pages/recuperar-contrasena-token.page.php',
-            'Codigo de recuperacion - Flyto',
+            __DIR__ . '/../views/pages/recuperar-contrasena-cambiar.page.php',
+            'Cambiar contrasena - Flyto',
             [
                 'flash' => [
                     'success' => $flash['success'] ?? null,
                     'error' => $flash['error'] ?? null,
                 ],
-                'oldInput' => is_array($oldInput) ? $oldInput : [],
-                'validationErrors' => is_array($validationErrors) ? $validationErrors : [],
             ],
             200,
             $layoutPath

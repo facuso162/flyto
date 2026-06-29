@@ -2,10 +2,22 @@
 
 require_once __DIR__ . '/../components/auth-ui.php';
 
+$cambiarContrasenaFlash = $flash ?? [];
+
 flytoAuthShellStart('Cambio de contrase&ntilde;a', 'Cre&aacute; tu nueva contrase&ntilde;a');
 ?>
 <form action="<?= flytoAuthUrl($basePath ?? '', '/auth/login') ?>" method="get" class="mt-8 border border-flyto-ink/10 bg-white p-8">
     <input type="hidden" name="login" value="recuperacion-pendiente">
+
+    <?php if (!empty($cambiarContrasenaFlash['success'])): ?>
+        <p class="mb-5 border border-flyto-navy bg-flyto-navy/10 px-4 py-3 text-sm leading-5 text-flyto-navy">
+            <?= htmlspecialchars((string) $cambiarContrasenaFlash['success'], ENT_QUOTES, 'UTF-8') ?>
+        </p>
+    <?php elseif (!empty($cambiarContrasenaFlash['error'])): ?>
+        <p class="mb-5 border border-flyto-ink/10 bg-flyto-sand px-4 py-3 text-sm leading-5 text-flyto-ink">
+            <?= htmlspecialchars((string) $cambiarContrasenaFlash['error'], ENT_QUOTES, 'UTF-8') ?>
+        </p>
+    <?php endif; ?>
 
     <div class="grid gap-4">
         <?php flytoAuthField('Nueva contrase&ntilde;a', 'password', 'password', '********', 'new-password'); ?>

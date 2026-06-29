@@ -85,4 +85,30 @@
         recuperarContrasenaEmail.addEventListener('blur', updateRecoverySubmitState);
         updateRecoverySubmitState();
     }
+
+    var recuperarContrasenaToken = document.getElementById('recuperar-contrasena-token');
+    var recuperarContrasenaTokenSubmit = document.getElementById('recuperar-contrasena-token-submit');
+
+    if (recuperarContrasenaToken && recuperarContrasenaTokenSubmit) {
+        var tokenActiveClasses = ['bg-flyto-navy', 'text-flyto-sand'];
+        var tokenDisabledClasses = ['cursor-not-allowed', 'border', 'border-flyto-ink/10', 'bg-[#e5e4e0]', 'text-flyto-muted'];
+
+        function setRecoveryTokenSubmitClasses(classes, enabled) {
+            classes.forEach(function (className) {
+                recuperarContrasenaTokenSubmit.classList.toggle(className, enabled);
+            });
+        }
+
+        function updateRecoveryTokenSubmitState() {
+            var isValid = recuperarContrasenaToken.value.trim() !== '';
+
+            recuperarContrasenaTokenSubmit.disabled = !isValid;
+            setRecoveryTokenSubmitClasses(tokenActiveClasses, isValid);
+            setRecoveryTokenSubmitClasses(tokenDisabledClasses, !isValid);
+        }
+
+        recuperarContrasenaToken.addEventListener('input', updateRecoveryTokenSubmitState);
+        recuperarContrasenaToken.addEventListener('blur', updateRecoveryTokenSubmitState);
+        updateRecoveryTokenSubmitState();
+    }
 })();

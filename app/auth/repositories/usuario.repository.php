@@ -218,6 +218,63 @@ class UsuarioRepository
         );
     }
 
+    public function findByTokenRecuperacion(string $token): ?Usuario {
+        $sql = "
+            SELECT
+                u.id,
+                u.nombre,
+                u.apellido,
+                u.email,
+                u.telefono,
+                u.clave_hash,
+                u.activo,
+                u.fecha_registro,
+                u.email_verificado,
+                u.token_verificacion,
+                u.token_recupero,
+                u.token_expiracion,
+                tu.id AS tipo_usuario_id,
+                tu.nombre AS tipo_usuario_nombre
+            FROM usuarios u
+            JOIN tipos_usuarios tu ON u.tipo_usuario_id = tu.id
+            WHERE u.token_recupero = :token
+            LIMIT 1
+        ";
+
+        $stmt = $this->pdo->prepare($sql);
+
+        $stmt->execute([
+            ':token' => $token
+        ]);
+
+        $row = $stmt->fetch();
+
+        if (!$row) {
+            return null;
+        }
+
+        $tipoUsuario = new TipoUsuario(
+            id: (int) $row['tipo_usuario_id'],
+            nombre: $row['tipo_usuario_nombre']
+        );
+
+        return new Usuario(
+            id: (int) $row['id'],
+            nombre: $row['nombre'],
+            apellido: $row['apellido'],
+            email: $row['email'],
+            telefono: $row['telefono'],
+            claveHash: $row['clave_hash'],
+            tipoUsuario: $tipoUsuario,
+            activo: (bool) $row['activo'],
+            fechaRegistro: new \DateTime($row['fecha_registro']),
+            emailVerificado: (bool) $row['email_verificado'],
+            tokenVerificacion: $row['token_verificacion'],
+            tokenRecupero: $row['token_recupero'],
+            tokenExpiracion: $row['token_expiracion'] ? new \DateTime($row['token_expiracion']) : null
+        );
+    }
+
     // TODO: que pasa si el usuario tiene id null?
     public function update(Usuario $usuario): void {
         $sql = "

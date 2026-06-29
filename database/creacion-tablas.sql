@@ -76,6 +76,7 @@ CREATE TABLE usuarios (
     token_expiracion DATETIME NULL,
 
     CONSTRAINT uq_usuarios_email UNIQUE (email),
+    CONSTRAINT uq_usuarios_token_recupero UNIQUE (token_recupero),
 
     CONSTRAINT fk_usuarios_tipo
         FOREIGN KEY (tipo_usuario_id) REFERENCES tipos_usuarios(id)
