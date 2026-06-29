@@ -59,4 +59,30 @@
             });
         });
     });
+
+    var recuperarContrasenaEmail = document.getElementById('recuperar-contrasena-email');
+    var recuperarContrasenaSubmit = document.getElementById('recuperar-contrasena-submit');
+
+    if (recuperarContrasenaEmail && recuperarContrasenaSubmit) {
+        var activeClasses = ['bg-flyto-navy', 'text-flyto-sand'];
+        var disabledClasses = ['cursor-not-allowed', 'border', 'border-flyto-ink/10', 'bg-[#e5e4e0]', 'text-flyto-muted'];
+
+        function setRecoverySubmitClasses(classes, enabled) {
+            classes.forEach(function (className) {
+                recuperarContrasenaSubmit.classList.toggle(className, enabled);
+            });
+        }
+
+        function updateRecoverySubmitState() {
+            var isValid = recuperarContrasenaEmail.checkValidity();
+
+            recuperarContrasenaSubmit.disabled = !isValid;
+            setRecoverySubmitClasses(activeClasses, isValid);
+            setRecoverySubmitClasses(disabledClasses, !isValid);
+        }
+
+        recuperarContrasenaEmail.addEventListener('input', updateRecoverySubmitState);
+        recuperarContrasenaEmail.addEventListener('blur', updateRecoverySubmitState);
+        updateRecoverySubmitState();
+    }
 })();

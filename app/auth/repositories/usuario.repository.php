@@ -255,4 +255,22 @@ class UsuarioRepository
             ':token_expiracion' => $usuario->tokenExpiracion?->format('Y-m-d H:i:s')
         ]);
     }
+
+    public function updateTokenRecuperacion(int $usuarioId, string $token, \DateTime $tokenExpiracion): void
+    {
+        $sql = "
+            UPDATE usuarios SET
+                token_recupero = :token_recupero,
+                token_expiracion = :token_expiracion
+            WHERE id = :id
+        ";
+
+        $stmt = $this->pdo->prepare($sql);
+
+        $stmt->execute([
+            ':id' => $usuarioId,
+            ':token_recupero' => $token,
+            ':token_expiracion' => $tokenExpiracion->format('Y-m-d H:i:s')
+        ]);
+    }
 }

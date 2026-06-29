@@ -17,7 +17,7 @@ flytoAuthShellStart('Cambio de contrase&ntilde;a', 'Cre&aacute; tu nueva contras
     </div>
 
     <div class="mt-7 grid gap-3 sm:grid-cols-2">
-        <a href="<?= flytoAuthUrl($basePath ?? '', '/recuperar-contrasena/codigo') ?>" class="flex h-[45.6px] items-center justify-center gap-2 border border-flyto-ink/10 bg-white px-6 text-sm font-medium text-flyto-ink">
+        <a href="<?= flytoAuthUrl($basePath ?? '', '/auth/recuperar-contrasena/codigo') ?>" class="flex h-[45.6px] items-center justify-center gap-2 border border-flyto-ink/10 bg-white px-6 text-sm font-medium text-flyto-ink">
             <?= flytoBackIcon() ?> Volver
         </a>
         <button type="submit" class="h-[45.6px] bg-[#e5e4e0] px-5 text-sm font-medium text-flyto-muted">

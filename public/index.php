@@ -1,10 +1,13 @@
 <?php
 
 use App\Auth\Controllers\ConfirmarUsuarioActionController;
+use App\Auth\Controllers\EnviarTokenRecuperacionActionController;
 use App\Auth\Controllers\LoginPageController;
 use App\Auth\Controllers\LoginUsuarioActionController;
 use App\Auth\Controllers\LogoutUsuarioActionController;
 use App\Auth\Controllers\RegisterUsuarioActionController;
+use App\Auth\Controllers\RecuperarContrasenaPageController;
+use App\Auth\Controllers\RecuperarContrasenaTokenPageController;
 use App\Auth\Controllers\RegistroPageController;
 use App\Admin\Controllers\AdminDashboardPageController;
 use App\Aerolineas\Controllers\BorrarAerolineaActionController;
@@ -23,10 +26,12 @@ use App\Auth\Repositories\TipoUsuarioRepository;
 use App\Auth\Repositories\UsuarioRepository;
 use App\Auth\Services\ConfirmacionUsuarioEmailService;
 use App\Auth\Services\ConfirmarUsuarioService;
+use App\Auth\Services\EnviarTokenRecuperacionService;
 use App\Auth\Services\LoginUsuarioService;
 use App\Auth\Services\LogoutUsuarioService;
 use App\Auth\Services\RegisterUsuarioService;
 use App\Auth\Services\SessionService;
+use App\Auth\Services\TokenRecuperacionEmailService;
 use App\Contacto\Controllers\ContactoPageController;
 use App\Contacto\Controllers\EnviarMensajeActionController;
 use App\Contacto\Services\ContactoEmailService;
@@ -130,13 +135,18 @@ require_once __DIR__ . '/../app/auth/repositories/usuario.repository.php';
 require_once __DIR__ . '/../app/auth/repositories/tipo-usuario.repository.php';
 require_once __DIR__ . '/../app/auth/services/session.service.php';
 require_once __DIR__ . '/../app/auth/services/confirmacion-usuario-email.service.php';
+require_once __DIR__ . '/../app/auth/services/token-recuperacion-email.service.php';
+require_once __DIR__ . '/../app/auth/services/enviar-token-recuperacion.service.php';
 require_once __DIR__ . '/../app/auth/services/register-usuario.service.php';
 require_once __DIR__ . '/../app/auth/services/confirmar-usuario.service.php';
 require_once __DIR__ . '/../app/auth/services/login-usuario.service.php';
 require_once __DIR__ . '/../app/auth/services/logout-usuario.service.php';
 require_once __DIR__ . '/../app/auth/controllers/login-page.controller.php';
 require_once __DIR__ . '/../app/auth/controllers/registro-page.controller.php';
+require_once __DIR__ . '/../app/auth/controllers/recuperar-contrasena-page.controller.php';
+require_once __DIR__ . '/../app/auth/controllers/recuperar-contrasena-token-page.controller.php';
 require_once __DIR__ . '/../app/auth/controllers/confirmar-usuario-action.controller.php';
+require_once __DIR__ . '/../app/auth/controllers/enviar-token-recuperacion-action.controller.php';
 require_once __DIR__ . '/../app/auth/controllers/login-usuario-action.controller.php';
 require_once __DIR__ . '/../app/auth/controllers/register-usuario-action.controller.php';
 require_once __DIR__ . '/../app/auth/controllers/logout-usuario-action.controller.php';
@@ -279,11 +289,22 @@ $container->scoped(ConfirmacionUsuarioEmailService::class, function ($c) {
     return new ConfirmacionUsuarioEmailService($c->get(EmailService::class));
 });
 
+$container->scoped(TokenRecuperacionEmailService::class, function ($c) {
+    return new TokenRecuperacionEmailService($c->get(EmailService::class));
+});
+
 $container->scoped(RegisterUsuarioService::class, function ($c) {
     return new RegisterUsuarioService(
         $c->get(UsuarioRepository::class),
         $c->get(TipoUsuarioRepository::class),
         $c->get(ConfirmacionUsuarioEmailService::class)
+    );
+});
+
+$container->scoped(EnviarTokenRecuperacionService::class, function ($c) {
+    return new EnviarTokenRecuperacionService(
+        $c->get(UsuarioRepository::class),
+        $c->get(TokenRecuperacionEmailService::class)
     );
 });
 
@@ -316,9 +337,30 @@ $container->scoped(RegistroPageController::class, function ($c) {
     );
 });
 
+$container->scoped(RecuperarContrasenaPageController::class, function ($c) {
+    return new RecuperarContrasenaPageController(
+        $c->get(SessionService::class),
+        $c->get(ViewResponse::class)
+    );
+});
+
+$container->scoped(RecuperarContrasenaTokenPageController::class, function ($c) {
+    return new RecuperarContrasenaTokenPageController(
+        $c->get(SessionService::class),
+        $c->get(ViewResponse::class)
+    );
+});
+
 $container->scoped(RegisterUsuarioActionController::class, function ($c) {
     return new RegisterUsuarioActionController(
         $c->get(RegisterUsuarioService::class),
+        $c->get(SessionService::class)
+    );
+});
+
+$container->scoped(EnviarTokenRecuperacionActionController::class, function ($c) {
+    return new EnviarTokenRecuperacionActionController(
+        $c->get(EnviarTokenRecuperacionService::class),
         $c->get(SessionService::class)
     );
 });
@@ -987,12 +1029,12 @@ $publicRoutes = [
         'title' => 'Cuenta confirmada - Flyto',
     ],
     '/auth/recuperar-contrasena' => [
-        'view' => __DIR__ . '/../app/auth/views/pages/recuperar-contrasena.page.php',
-        'title' => 'Recuperar contrasena - Flyto',
+        'controller' => RecuperarContrasenaPageController::class,
+        'action' => 'show',
     ],
     '/auth/recuperar-contrasena/codigo' => [
-        'view' => __DIR__ . '/../app/auth/views/pages/recuperar-contrasena-token.page.php',
-        'title' => 'Codigo de recuperacion - Flyto',
+        'controller' => RecuperarContrasenaTokenPageController::class,
+        'action' => 'show',
     ],
     '/auth/recuperar-contrasena/cambiar' => [
         'view' => __DIR__ . '/../app/auth/views/pages/recuperar-contrasena-cambiar.page.php',

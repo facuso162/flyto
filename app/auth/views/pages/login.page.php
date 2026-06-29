@@ -32,7 +32,7 @@ flytoAuthShellStart('Acceso a tu cuenta', 'Inici&aacute; sesi&oacute;n en Flyto'
         <?php flytoAuthField('Contrase&ntilde;a', 'password', 'password', '********', 'current-password', '', '', $loginError('password')); ?>
     </div>
 
-    <a href="<?= flytoAuthUrl($basePath ?? '', '/recuperar-contrasena') ?>" class="mt-5 inline-block text-xs font-medium leading-4 text-flyto-navy">
+    <a href="<?= flytoAuthUrl($basePath ?? '', '/auth/recuperar-contrasena') ?>" class="mt-5 inline-block text-xs font-medium leading-4 text-flyto-navy">
         Olvid&eacute; mi contrase&ntilde;a
     </a>
 
