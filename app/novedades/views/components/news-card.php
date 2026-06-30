@@ -15,9 +15,9 @@ $texto = $news['texto'] ?? '';
             <?= htmlspecialchars($news['categoria'] ?? '', ENT_QUOTES, 'UTF-8') ?>
         </p>
     </div>
-    <h3 class="mt-5 font-display text-[23px] font-medium leading-8 text-flyto-ink">
+    <h2 class="mt-5 font-display text-[23px] font-medium leading-8 text-flyto-ink">
         <?= htmlspecialchars($news['titulo'] ?? '', ENT_QUOTES, 'UTF-8') ?>
-    </h3>
+    </h2>
     <p class="mt-4 text-sm leading-[22.75px] text-flyto-muted">
         <?= htmlspecialchars($texto, ENT_QUOTES, 'UTF-8') ?>
     </p>

@@ -4,6 +4,12 @@ module.exports = {
     './public/**/*.php',
     './app/**/*.php'
   ],
+  safelist: [
+    'text-flyto-navy',
+    'bg-flyto-navy',
+    'text-flyto-muted',
+    'bg-flyto-muted/30'
+  ],
   theme: {
     extend: {
       colors: {

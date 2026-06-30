@@ -45,13 +45,15 @@ $renderCityOptions = static function (array $ciudades, string $selectedId): void
 ?>
 <form id="buscar-vuelos" action="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/vuelos/buscar" method="get" class="bg-white p-6 shadow-flyto">
     <div class="grid border border-flyto-ink/10 md:grid-cols-[1fr_56px_1fr_160px_140px]">
-        <label class="block border-b border-flyto-ink/10 p-4 md:border-b-0 md:border-r">
-            <span class="font-mono text-xs uppercase tracking-[0.3px] text-flyto-muted">Origen</span>
-            <select name="origen" class="mt-1 block w-full bg-transparent font-display text-2xl font-semibold leading-6 text-flyto-ink outline-none" aria-describedby="origen_nombre" data-city-select data-description-target="origen_nombre" required>
+        <div class="border-b border-flyto-ink/10 p-4 md:border-b-0 md:border-r">
+            <label for="origen_field" class="block">
+                <span class="font-mono text-xs uppercase tracking-[0.3px] text-flyto-muted">Origen</span>
+            </label>
+            <select id="origen_field" name="origen" class="mt-1 block w-full bg-transparent font-display text-2xl font-semibold leading-6 text-flyto-ink outline-none" aria-describedby="origen_nombre" data-city-select data-description-target="origen_nombre" required>
                 <?php $renderCityOptions($ciudades, $selectedOrigen); ?>
             </select>
             <span id="origen_nombre" class="mt-1 block text-xs text-flyto-muted"><?= htmlspecialchars($origenDescripcion, ENT_QUOTES, 'UTF-8') ?></span>
-        </label>
+        </div>
 
         <button id="change-destiny-origin" type="button" class="flex h-12 items-center justify-center border-b border-flyto-ink/10 text-flyto-muted hover:text-flyto-navy md:h-auto md:border-b-0 md:border-r" aria-label="Intercambiar origen y destino">
             <svg class="h-4 w-4 text-flyto-muted" viewBox="0 0 24 24" fill="none">
@@ -59,28 +61,35 @@ $renderCityOptions = static function (array $ciudades, string $selectedId): void
             </svg>
         </button>
 
-        <label class="block border-b border-flyto-ink/10 p-4 md:border-b-0 md:border-r">
-            <span class="font-mono text-xs uppercase tracking-[0.3px] text-flyto-muted">Destino</span>
-            <select name="destino" class="mt-1 block w-full bg-transparent font-display text-2xl font-semibold leading-6 text-flyto-ink outline-none" aria-describedby="destino_nombre" data-city-select data-description-target="destino_nombre" required>
+        <div class="border-b border-flyto-ink/10 p-4 md:border-b-0 md:border-r">
+            <label for="destino_field" class="block">
+                <span class="font-mono text-xs uppercase tracking-[0.3px] text-flyto-muted">Destino</span>
+            </label>
+            <select id="destino_field" name="destino" class="mt-1 block w-full bg-transparent font-display text-2xl font-semibold leading-6 text-flyto-ink outline-none" aria-describedby="destino_nombre" data-city-select data-description-target="destino_nombre" required>
                 <?php $renderCityOptions($ciudades, $selectedDestino); ?>
             </select>
             <span id="destino_nombre" class="mt-1 block text-xs text-flyto-muted"><?= htmlspecialchars($destinoDescripcion, ENT_QUOTES, 'UTF-8') ?></span>
-        </label>
+        </div>
 
-        <label class="block border-b border-flyto-ink/10 p-4 md:border-b-0 md:border-r">
-            <span class="font-mono text-xs uppercase tracking-[0.3px] text-flyto-muted">Fecha</span>
+        <div class="border-b border-flyto-ink/10 p-4 md:border-b-0 md:border-r">
+            <label for="fecha_field" class="block">
+                <span class="font-mono text-xs uppercase tracking-[0.3px] text-flyto-muted">Fecha</span>
+            </label>
             <input
+                id="fecha_field"
                 type="date"
                 name="fechaSalida"
                 value="<?= htmlspecialchars($selectedFecha, ENT_QUOTES, 'UTF-8') ?>"
                 class="mt-1 block h-8 w-full bg-transparent text-sm font-medium leading-5 text-flyto-ink outline-none"
                 required
             >
-        </label>
+        </div>
 
-        <label class="block p-4">
-            <span class="font-mono text-xs uppercase tracking-[0.3px] text-flyto-muted">Pasajeros</span>
-            <select name="cantidadPasajeros" class="mt-1 block w-full bg-transparent text-sm font-medium leading-5 text-flyto-ink outline-none" required>
+        <div class="p-4">
+            <label for="pasajeros_field" class="block">
+                <span class="font-mono text-xs uppercase tracking-[0.3px] text-flyto-muted">Pasajeros</span>
+            </label>
+            <select id="pasajeros_field" name="cantidadPasajeros" class="mt-1 block w-full bg-transparent text-sm font-medium leading-5 text-flyto-ink outline-none" required>
                 <option value="" <?= $selectedPasajeros === '' ? 'selected' : '' ?> disabled>Seleccionar</option>
                 <?php for ($passengers = 1; $passengers <= 4; $passengers++): ?>
                     <option value="<?= $passengers ?>" <?= (string) $passengers === $selectedPasajeros ? 'selected' : '' ?>>
@@ -88,7 +97,7 @@ $renderCityOptions = static function (array $ciudades, string $selectedId): void
                     </option>
                 <?php endfor; ?>
             </select>
-        </label>
+        </div>
     </div>
 
     <div class="mt-4 flex justify-end">

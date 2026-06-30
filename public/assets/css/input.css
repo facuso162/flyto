@@ -10,4 +10,9 @@
   body {
     @apply bg-flyto-sand text-flyto-ink antialiased;
   }
+
+  input[type="password"]::-ms-reveal,
+  input[type="password"]::-ms-clear {
+    display: none;
+  }
 }

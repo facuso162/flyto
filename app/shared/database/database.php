@@ -16,7 +16,7 @@ class Database
         $pass = Env::env('DB_PASS', '');
         $charset = 'utf8mb4';
 
-        $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
+        $dsn = "mysql:host=127.0.0.1;port=3308;dbname=flyto;charset=utf8mb4";
 
         $options = [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
