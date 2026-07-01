@@ -77,7 +77,10 @@ class BuscarVueloValidator
             );
         }
 
-        if ($date < new \DateTimeImmutable('today')) {
+        $todayString = (new \DateTimeImmutable('today', new \DateTimeZone('America/Argentina/Buenos_Aires')))->format('Y-m-d');
+        $dateString = $date->format('Y-m-d');
+
+        if ($dateString < $todayString) {
             throw new HttpException(
                 'La fecha de salida debe ser hoy o una fecha futura.',
                 400,

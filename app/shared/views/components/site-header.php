@@ -9,7 +9,9 @@ $navItems = [
 ];
 
 $basePath = $basePath ?? '';
-$currentPath= $currentPath ?? '';
+$currentPath = $currentPath !== '' && $currentPath !== null 
+    ? $currentPath 
+    : parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
 $isAuthenticated = $isAuthenticated ?? false;
 $currentUser = $currentUser ?? null;
 $currentUser = is_array($currentUser) ? $currentUser : [];
@@ -38,7 +40,18 @@ if ($userName === '') {
 
         <nav class="hidden items-center gap-6 md:flex" aria-label="Navegación principal">
             <?php foreach ($navItems as $item): ?>
-                <?php $isActive = $currentPath === $item['href']; ?>
+                <?php 
+                    $path = $basePath !== '' && str_starts_with($currentPath, $basePath)
+                        ? substr($currentPath, strlen($basePath)) 
+                        : $currentPath;
+                    $path = $path === '' ? '/' : $path;
+
+                    if ($item['href'] === '/') {
+                        $isActive = $path === '/';
+                    } else {
+                        $isActive = str_starts_with($path, $item['href']);
+                    }
+                ?>
                 <a
                     href="<?= htmlspecialchars($basePath . $item['href'], ENT_QUOTES, 'UTF-8') ?>"
                     class="border-b pb-0.5 text-sm font-medium <?= $isActive ? 'border-flyto-ink text-flyto-ink' : 'border-transparent text-flyto-muted hover:text-flyto-ink' ?>"

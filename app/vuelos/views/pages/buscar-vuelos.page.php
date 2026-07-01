@@ -4,7 +4,36 @@ use App\Vuelos\Dtos\BuscarVuelosDto;
 
 /** @var array $resultadoBusqueda */
 
-$resultadoBusqueda = $resultadoBusqueda ?? [];
+$resultadoBusqueda = $resultadoBusqueda ?? null;
+$flash = $flash ?? [];
+
+if ($resultadoBusqueda === null) {
+    $ciudades = $ciudades ?? [];
+    $basePath = $basePath ?? '';
+    ?>
+    <section class="bg-flyto-navy py-10 text-flyto-sand md:py-14">
+        <div class="mx-auto max-w-7xl px-6">
+            <h1 class="font-display text-[34px] font-medium leading-tight md:text-[48px]">
+                Búsqueda de vuelos
+            </h1>
+        </div>
+    </section>
+
+    <div class="mx-auto max-w-4xl px-4 py-8">
+        <?php if (!empty($flash['error'])): ?>
+            <div class="mb-8 border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800" role="alert">
+                <?= htmlspecialchars($flash['error'], ENT_QUOTES, 'UTF-8') ?>
+            </div>
+        <?php endif; ?>
+
+        <div class="bg-white p-6 shadow-sm ring-1 ring-flyto-ink/5 sm:rounded-xl">
+            <?php require __DIR__ . '/../components/flight-search-card.php'; ?>
+        </div>
+    </div>
+    <?php
+    return;
+}
+
 /** @var BuscarVuelosDto $criterios */
 $criterios = $resultadoBusqueda['criterios'];
 $vuelos = $resultadoBusqueda['vuelos'] ?? [];
@@ -103,7 +132,7 @@ $renderFilterForm = static function (string $id) use ($basePath, $criterios, $ae
         </fieldset>
 
         <div class="flex items-center gap-3">
-            <button type="submit" class="inline-flex h-10 flex-1 items-center justify-center bg-flyto-navy px-4 text-sm font-medium text-flyto-sand">
+            <button type="submit" class="inline-flex h-10 flex-1 items-center justify-center bg-flyto-navy px-4 text-sm font-medium text-flyto-sand hover:bg-flyto-ink transition cursor-pointer">
                 Filtrar
             </button>
             <a href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/vuelos/buscar?<?= htmlspecialchars(http_build_query([

@@ -99,7 +99,7 @@
                         <p class="mt-1 text-xs leading-5 text-flyto-ink"><?= $contactError('mensaje') ?></p>
                     <?php endif; ?>
                 </label>
-                <button class="mt-6 inline-flex h-11 items-center gap-2 bg-flyto-navy px-7 text-sm font-medium text-flyto-sand" type="submit">
+                <button class="mt-6 inline-flex h-11 items-center gap-2 bg-flyto-navy px-7 text-sm font-medium text-flyto-sand hover:bg-flyto-ink transition cursor-pointer" type="submit">
                     <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                         <path d="M4 12L20 4L15 20L11 13L4 12Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
                     </svg>

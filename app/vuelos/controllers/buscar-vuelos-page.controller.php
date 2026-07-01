@@ -3,6 +3,9 @@
 namespace App\Vuelos\Controllers;
 
 use App\Ciudades\Services\CiudadService;
+use App\Shared\Http\Flash;
+use App\Shared\Http\HttpException;
+use App\Shared\Http\RedirectResponse;
 use App\Shared\Http\ViewResponse;
 use App\Vuelos\Dtos\BuscarVuelosDto;
 use App\Vuelos\Services\VueloService;
@@ -10,6 +13,9 @@ use App\Vuelos\Validators\BuscarVueloValidator;
 use Throwable;
 
 require_once __DIR__ . '/../../ciudades/services/ciudad.service.php';
+require_once __DIR__ . '/../../shared/http/flash.php';
+require_once __DIR__ . '/../../shared/http/http-exception.php';
+require_once __DIR__ . '/../../shared/http/redirect-response.php';
 require_once __DIR__ . '/../../shared/http/view-response.php';
 require_once __DIR__ . '/../dtos/buscar-vuelos.dto.php';
 require_once __DIR__ . '/../services/vuelo.service.php';
@@ -33,7 +39,22 @@ class BuscarVuelosPageController
 
     public function show(array $params, array $query, string $layoutPath): void
     {
-        BuscarVueloValidator::validate($_GET);
+        try {
+            BuscarVueloValidator::validate($_GET);
+        } catch (HttpException $exception) {
+            $this->viewResponse->render(
+                __DIR__ . '/../views/pages/buscar-vuelos.page.php',
+                'Buscar vuelos - Flyto',
+                [
+                    'resultadoBusqueda' => null,
+                    'ciudades' => $this->loadCiudades(),
+                    'flash' => ['error' => $exception->getMessage()],
+                ],
+                200,
+                $layoutPath
+            );
+            return;
+        }
 
         $resultadoBusqueda = $this->vueloService->buscar(BuscarVuelosDto::fromArray($_GET));
 

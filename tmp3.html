@@ -1,0 +1,506 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Flyto, plataforma pública de reservas de vuelos.">
+    <title>Buscar vuelos - Flyto</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/app.css">
+</head>
+<body>
+    <header class="sticky top-0 z-50 border-b border-flyto-ink/10 bg-white">
+    <a class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:text-flyto-navy" href="#contenido-principal">
+        Saltar al contenido principal
+    </a>
+    <div class="mx-auto flex h-14 max-w-7xl items-center justify-between px-6">
+        <a href="/" class="flex items-center gap-2" aria-label="Flyto inicio">
+            <span class="flex h-7 w-7 items-center justify-center bg-flyto-navy text-flyto-sand" aria-hidden="true">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none">
+                    <path d="M4 12L20 4L15 20L11 13L4 12Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                </svg>
+            </span>
+            <span class="font-display text-[17.6px] font-semibold leading-none tracking-normal text-flyto-navy">Flyto</span>
+        </a>
+
+        <nav class="hidden items-center gap-6 md:flex" aria-label="Navegación principal">
+            <!-- DEBUG currentPath: [/vuelos/buscar] basePath: [] -->                                            <a
+                    href="/"
+                    class="border-b pb-0.5 text-sm font-medium border-transparent text-flyto-muted hover:text-flyto-ink"
+                >
+                    Inicio                </a>
+                                            <a
+                    href="/novedades"
+                    class="border-b pb-0.5 text-sm font-medium border-transparent text-flyto-muted hover:text-flyto-ink"
+                >
+                    Novedades                </a>
+                                            <a
+                    href="/faq"
+                    class="border-b pb-0.5 text-sm font-medium border-transparent text-flyto-muted hover:text-flyto-ink"
+                >
+                    Ayuda                </a>
+                                            <a
+                    href="/contacto"
+                    class="border-b pb-0.5 text-sm font-medium border-transparent text-flyto-muted hover:text-flyto-ink"
+                >
+                    Contacto                </a>
+                                            <a
+                    href="/#hero-section"
+                    class="border-b pb-0.5 text-sm font-medium border-transparent text-flyto-muted hover:text-flyto-ink"
+                >
+                    Buscar vuelos                </a>
+                    </nav>
+
+                    <div class="hidden items-center gap-3 md:flex">
+                <a href="/auth/login" class="text-sm font-medium text-flyto-muted hover:text-flyto-ink">Ingresar</a>
+                <a href="/auth/registro" class="bg-flyto-navy px-4 py-2 text-sm font-medium text-flyto-sand">Registrarse</a>
+            </div>
+        
+        <details class="group relative md:hidden">
+            <summary class="flex h-8 w-8 cursor-pointer list-none items-center justify-center text-flyto-navy" aria-label="Abrir menú">
+                <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M4 7H20M4 12H20M4 17H20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                </svg>
+            </summary>
+            <nav class="absolute right-0 mt-3 w-56 border border-flyto-ink/10 bg-white p-3 shadow-flyto" aria-label="Navegación móvil">
+                                    <a href="/" class="block px-3 py-2 text-sm font-medium text-flyto-muted hover:bg-flyto-sand hover:text-flyto-ink">
+                        Inicio                    </a>
+                                    <a href="/novedades" class="block px-3 py-2 text-sm font-medium text-flyto-muted hover:bg-flyto-sand hover:text-flyto-ink">
+                        Novedades                    </a>
+                                    <a href="/faq" class="block px-3 py-2 text-sm font-medium text-flyto-muted hover:bg-flyto-sand hover:text-flyto-ink">
+                        Ayuda                    </a>
+                                    <a href="/contacto" class="block px-3 py-2 text-sm font-medium text-flyto-muted hover:bg-flyto-sand hover:text-flyto-ink">
+                        Contacto                    </a>
+                                    <a href="/#hero-section" class="block px-3 py-2 text-sm font-medium text-flyto-muted hover:bg-flyto-sand hover:text-flyto-ink">
+                        Buscar vuelos                    </a>
+                                                    <a href="/auth/login" class="mt-2 block px-3 py-2 text-sm font-medium text-flyto-muted hover:bg-flyto-sand hover:text-flyto-ink">Ingresar</a>
+                    <a href="/auth/registro" class="block bg-flyto-navy px-3 py-2 text-sm font-medium text-flyto-sand">Registrarse</a>
+                            </nav>
+        </details>
+    </div>
+</header>
+    <main id="contenido-principal">
+        <section class="bg-flyto-navy py-10 text-flyto-sand md:py-14">
+    <div class="mx-auto max-w-7xl px-6">
+        <p class="font-mono text-xs uppercase tracking-[1.2px] text-flyto-gold">Busqueda de vuelos</p>
+        <div class="mt-4 grid gap-4 md:grid-cols-[1fr_auto] md:items-end">
+            <div>
+                <h1 class="font-display text-[34px] font-medium leading-tight md:text-[48px]">
+                    Buenos Aires a Rosario                </h1>
+                <p class="mt-3 text-sm leading-6 text-flyto-sand/70">
+                    30/06/2026 · 1 pasajero                </p>
+            </div>
+            <p class="font-mono text-xs uppercase tracking-[0.3px] text-flyto-sand/60">
+                0 resultados
+            </p>
+        </div>
+    </div>
+</section>
+
+<section class="mx-auto max-w-7xl px-6 py-8 md:py-10">
+    <form id="buscar-vuelos" action="/vuelos/buscar" method="get" class="bg-white p-6 shadow-flyto">
+    <div class="grid border border-flyto-ink/10 md:grid-cols-[1fr_56px_1fr_160px_140px]">
+        <div class="border-b border-flyto-ink/10 p-4 md:border-b-0 md:border-r">
+            <label for="origen_field" class="block">
+                <span class="font-mono text-xs uppercase tracking-[0.3px] text-flyto-muted">Origen</span>
+            </label>
+            <select id="origen_field" name="origen" class="mt-1 block w-full bg-transparent font-display text-2xl font-semibold leading-6 text-flyto-ink outline-none" aria-describedby="origen_nombre" data-city-select data-description-target="origen_nombre" required>
+                    <option value=""  disabled>Seleccionar</option>
+            <option
+            value="16"
+            data-description="Arequipa, Perú"
+                    >
+            Arequipa        </option>
+                <option
+            value="12"
+            data-description="Asunción, Paraguay"
+                    >
+            Asunción        </option>
+                <option
+            value="7"
+            data-description="Brasilia, Brasil"
+                    >
+            Brasilia        </option>
+                <option
+            value="1"
+            data-description="Buenos Aires, Argentina"
+            selected        >
+            Buenos Aires        </option>
+                <option
+            value="13"
+            data-description="Ciudad del Este, Paraguay"
+                    >
+            Ciudad del Este        </option>
+                <option
+            value="3"
+            data-description="Córdoba, Argentina"
+                    >
+            Córdoba        </option>
+                <option
+            value="15"
+            data-description="Cusco, Perú"
+                    >
+            Cusco        </option>
+                <option
+            value="14"
+            data-description="Lima, Perú"
+                    >
+            Lima        </option>
+                <option
+            value="4"
+            data-description="Mendoza, Argentina"
+                    >
+            Mendoza        </option>
+                <option
+            value="10"
+            data-description="Montevideo, Uruguay"
+                    >
+            Montevideo        </option>
+                <option
+            value="11"
+            data-description="Punta del Este, Uruguay"
+                    >
+            Punta del Este        </option>
+                <option
+            value="6"
+            data-description="Río de Janeiro, Brasil"
+                    >
+            Río de Janeiro        </option>
+                <option
+            value="2"
+            data-description="Rosario, Argentina"
+                    >
+            Rosario        </option>
+                <option
+            value="8"
+            data-description="Santiago de Chile, Chile"
+                    >
+            Santiago de Chile        </option>
+                <option
+            value="5"
+            data-description="São Paulo, Brasil"
+                    >
+            São Paulo        </option>
+                <option
+            value="9"
+            data-description="Valparaíso, Chile"
+                    >
+            Valparaíso        </option>
+                    </select>
+            <span id="origen_nombre" class="mt-1 block text-xs text-flyto-muted">Buenos Aires</span>
+        </div>
+
+        <button id="change-destiny-origin" type="button" class="flex h-12 items-center justify-center border-b border-flyto-ink/10 text-flyto-muted hover:text-flyto-navy md:h-auto md:border-b-0 md:border-r" aria-label="Intercambiar origen y destino">
+            <svg class="h-4 w-4 text-flyto-muted" viewBox="0 0 24 24" fill="none">
+                <path d="M7 7H19M19 7L16 4M19 7L16 10M17 17H5M5 17L8 14M5 17L8 20" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+
+        <div class="border-b border-flyto-ink/10 p-4 md:border-b-0 md:border-r">
+            <label for="destino_field" class="block">
+                <span class="font-mono text-xs uppercase tracking-[0.3px] text-flyto-muted">Destino</span>
+            </label>
+            <select id="destino_field" name="destino" class="mt-1 block w-full bg-transparent font-display text-2xl font-semibold leading-6 text-flyto-ink outline-none" aria-describedby="destino_nombre" data-city-select data-description-target="destino_nombre" required>
+                    <option value=""  disabled>Seleccionar</option>
+            <option
+            value="16"
+            data-description="Arequipa, Perú"
+                    >
+            Arequipa        </option>
+                <option
+            value="12"
+            data-description="Asunción, Paraguay"
+                    >
+            Asunción        </option>
+                <option
+            value="7"
+            data-description="Brasilia, Brasil"
+                    >
+            Brasilia        </option>
+                <option
+            value="1"
+            data-description="Buenos Aires, Argentina"
+                    >
+            Buenos Aires        </option>
+                <option
+            value="13"
+            data-description="Ciudad del Este, Paraguay"
+                    >
+            Ciudad del Este        </option>
+                <option
+            value="3"
+            data-description="Córdoba, Argentina"
+                    >
+            Córdoba        </option>
+                <option
+            value="15"
+            data-description="Cusco, Perú"
+                    >
+            Cusco        </option>
+                <option
+            value="14"
+            data-description="Lima, Perú"
+                    >
+            Lima        </option>
+                <option
+            value="4"
+            data-description="Mendoza, Argentina"
+                    >
+            Mendoza        </option>
+                <option
+            value="10"
+            data-description="Montevideo, Uruguay"
+                    >
+            Montevideo        </option>
+                <option
+            value="11"
+            data-description="Punta del Este, Uruguay"
+                    >
+            Punta del Este        </option>
+                <option
+            value="6"
+            data-description="Río de Janeiro, Brasil"
+                    >
+            Río de Janeiro        </option>
+                <option
+            value="2"
+            data-description="Rosario, Argentina"
+            selected        >
+            Rosario        </option>
+                <option
+            value="8"
+            data-description="Santiago de Chile, Chile"
+                    >
+            Santiago de Chile        </option>
+                <option
+            value="5"
+            data-description="São Paulo, Brasil"
+                    >
+            São Paulo        </option>
+                <option
+            value="9"
+            data-description="Valparaíso, Chile"
+                    >
+            Valparaíso        </option>
+                    </select>
+            <span id="destino_nombre" class="mt-1 block text-xs text-flyto-muted">Rosario</span>
+        </div>
+
+        <div class="border-b border-flyto-ink/10 p-4 md:border-b-0 md:border-r">
+            <label for="fecha_field" class="block">
+                <span class="font-mono text-xs uppercase tracking-[0.3px] text-flyto-muted">Fecha</span>
+            </label>
+            <input
+                id="fecha_field"
+                type="date"
+                name="fechaSalida"
+                value="2026-06-30"
+                class="mt-1 block h-8 w-full bg-transparent text-sm font-medium leading-5 text-flyto-ink outline-none"
+                required
+            >
+        </div>
+
+        <div class="p-4">
+            <label for="pasajeros_field" class="block">
+                <span class="font-mono text-xs uppercase tracking-[0.3px] text-flyto-muted">Pasajeros</span>
+            </label>
+            <select id="pasajeros_field" name="cantidadPasajeros" class="mt-1 block w-full bg-transparent text-sm font-medium leading-5 text-flyto-ink outline-none" required>
+                <option value=""  disabled>Seleccionar</option>
+                                    <option value="1" selected>
+                        1                    </option>
+                                    <option value="2" >
+                        2                    </option>
+                                    <option value="3" >
+                        3                    </option>
+                                    <option value="4" >
+                        4                    </option>
+                            </select>
+        </div>
+    </div>
+
+    <div class="mt-4 flex justify-end">
+        <button class="inline-flex h-11 items-center gap-2 bg-flyto-navy px-8 text-sm font-medium text-flyto-sand hover:bg-flyto-ink transition cursor-pointer" type="submit">
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M10.5 18A7.5 7.5 0 1 1 16 15.45L20 19.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+            Buscar vuelos
+        </button>
+    </div>
+</form>
+
+    <div class="mt-8 lg:hidden">
+        <details class="border border-flyto-ink/10 bg-white p-4 shadow-flyto">
+            <summary class="flex cursor-pointer list-none items-center justify-between text-sm font-semibold text-flyto-ink">
+                Filtros
+                <span class="font-mono text-xs uppercase text-flyto-muted">Abrir</span>
+            </summary>
+            <div class="mt-5 border-t border-flyto-ink/10 pt-5">
+                    <form id="filtros-vuelos-mobile" action="/vuelos/buscar" method="get" class="space-y-6">
+        <input type="hidden" name="origen" value="1">
+        <input type="hidden" name="destino" value="2">
+        <input type="hidden" name="fechaSalida" value="2026-06-30">
+        <input type="hidden" name="cantidadPasajeros" value="1">
+        <input type="hidden" name="orden" value="precio">
+
+        <fieldset>
+            <legend class="font-mono text-xs uppercase tracking-[0.3px] text-flyto-muted">Precio maximo</legend>
+            <div class="mt-3">
+                <input
+                    type="range"
+                    name="precioMaximo"
+                    min="0"
+                    max="0"
+                    step="1000"
+                    value="0"
+                    class="w-full accent-flyto-navy"
+                    disabled                >
+                <div class="mt-2 flex items-center justify-between text-xs text-flyto-muted">
+                    <span>$0</span>
+                    <span>Hasta $0</span>
+                </div>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend class="font-mono text-xs uppercase tracking-[0.3px] text-flyto-muted">Aerolineas</legend>
+            <div class="mt-3 space-y-3">
+                                    <p class="text-sm leading-6 text-flyto-muted">No hay aerolineas para estos criterios.</p>
+                                            </div>
+        </fieldset>
+
+        <div class="flex items-center gap-3">
+            <button type="submit" class="inline-flex h-10 flex-1 items-center justify-center bg-flyto-navy px-4 text-sm font-medium text-flyto-sand hover:bg-flyto-ink transition cursor-pointer">
+                Filtrar
+            </button>
+            <a href="/vuelos/buscar?origen=1&amp;destino=2&amp;fechaSalida=2026-06-30&amp;cantidadPasajeros=1&amp;orden=precio" class="inline-flex h-10 items-center justify-center border border-flyto-ink/15 px-4 text-sm font-medium text-flyto-muted">
+                Limpiar
+            </a>
+        </div>
+    </form>
+                </div>
+        </details>
+    </div>
+
+    <div class="mt-8 grid gap-8 lg:grid-cols-[280px_1fr]">
+        <aside class="hidden lg:block">
+            <div class="sticky top-20 border border-flyto-ink/10 bg-white p-5 shadow-flyto">
+                <div class="mb-5 flex items-center">
+                    <h2 class="text-sm font-semibold text-flyto-ink">Filtros</h2>
+                </div>
+                    <form id="filtros-vuelos-desktop" action="/vuelos/buscar" method="get" class="space-y-6">
+        <input type="hidden" name="origen" value="1">
+        <input type="hidden" name="destino" value="2">
+        <input type="hidden" name="fechaSalida" value="2026-06-30">
+        <input type="hidden" name="cantidadPasajeros" value="1">
+        <input type="hidden" name="orden" value="precio">
+
+        <fieldset>
+            <legend class="font-mono text-xs uppercase tracking-[0.3px] text-flyto-muted">Precio maximo</legend>
+            <div class="mt-3">
+                <input
+                    type="range"
+                    name="precioMaximo"
+                    min="0"
+                    max="0"
+                    step="1000"
+                    value="0"
+                    class="w-full accent-flyto-navy"
+                    disabled                >
+                <div class="mt-2 flex items-center justify-between text-xs text-flyto-muted">
+                    <span>$0</span>
+                    <span>Hasta $0</span>
+                </div>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend class="font-mono text-xs uppercase tracking-[0.3px] text-flyto-muted">Aerolineas</legend>
+            <div class="mt-3 space-y-3">
+                                    <p class="text-sm leading-6 text-flyto-muted">No hay aerolineas para estos criterios.</p>
+                                            </div>
+        </fieldset>
+
+        <div class="flex items-center gap-3">
+            <button type="submit" class="inline-flex h-10 flex-1 items-center justify-center bg-flyto-navy px-4 text-sm font-medium text-flyto-sand hover:bg-flyto-ink transition cursor-pointer">
+                Filtrar
+            </button>
+            <a href="/vuelos/buscar?origen=1&amp;destino=2&amp;fechaSalida=2026-06-30&amp;cantidadPasajeros=1&amp;orden=precio" class="inline-flex h-10 items-center justify-center border border-flyto-ink/15 px-4 text-sm font-medium text-flyto-muted">
+                Limpiar
+            </a>
+        </div>
+    </form>
+                </div>
+        </aside>
+
+        <div>
+            <div class="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-flyto-ink/10 pb-4">
+                <p class="text-sm text-flyto-muted">
+                    Ordenar por
+                </p>
+                <div class="flex flex-wrap gap-2">
+                                            <a
+                            href="/vuelos/buscar?origen=1&amp;destino=2&amp;fechaSalida=2026-06-30&amp;cantidadPasajeros=1&amp;orden=precio"
+                            class="inline-flex h-9 items-center border px-3 text-sm font-medium border-flyto-navy bg-flyto-navy text-flyto-sand"
+                        >
+                            Precio                        </a>
+                                            <a
+                            href="/vuelos/buscar?origen=1&amp;destino=2&amp;fechaSalida=2026-06-30&amp;cantidadPasajeros=1&amp;orden=duracion"
+                            class="inline-flex h-9 items-center border px-3 text-sm font-medium border-flyto-ink/15 bg-white text-flyto-muted hover:text-flyto-ink"
+                        >
+                            Duracion                        </a>
+                                            <a
+                            href="/vuelos/buscar?origen=1&amp;destino=2&amp;fechaSalida=2026-06-30&amp;cantidadPasajeros=1&amp;orden=salida"
+                            class="inline-flex h-9 items-center border px-3 text-sm font-medium border-flyto-ink/15 bg-white text-flyto-muted hover:text-flyto-ink"
+                        >
+                            Salida                        </a>
+                                    </div>
+            </div>
+
+                            <div class="border border-flyto-ink/10 bg-white p-8 text-center shadow-flyto">
+                    <h2 class="font-display text-2xl font-medium text-flyto-ink">No encontramos vuelos disponibles</h2>
+                    <p class="mx-auto mt-3 max-w-lg text-sm leading-6 text-flyto-muted">
+                        Proba cambiando la fecha, la cantidad de pasajeros o limpiando los filtros aplicados.
+                    </p>
+                </div>
+                    </div>
+    </div>
+</section>
+    </main>
+    
+<footer class="bg-flyto-navy text-flyto-sand">
+    <div class="mx-auto grid max-w-7xl gap-10 px-6 py-12 md:grid-cols-[259px_1fr]">
+        <div>
+            <a href="/" class="flex items-center gap-2" aria-label="Flyto inicio">
+                <span class="flex h-6 w-6 items-center justify-center bg-flyto-sand/20" aria-hidden="true">
+                    <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none">
+                        <path d="M4 12L20 4L15 20L11 13L4 12Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                    </svg>
+                </span>
+                <span class="font-display text-base font-medium">Flyto</span>
+            </a>
+            <p class="mt-4 max-w-[259px] text-xs leading-[19.5px] text-flyto-sand/50">
+                Plataforma de reservas de vuelos para viajeros que valoran la claridad y el profesionalismo.
+            </p>
+        </div>
+
+        <nav class="grid gap-3 text-xs md:justify-start" aria-label="Enlaces importantes">
+            <p class="font-mono uppercase tracking-[1.2px] text-flyto-sand/70">Enlaces importantes</p>
+            <a href="/novedades" class="text-flyto-sand/50 hover:text-flyto-sand">Novedades</a>
+            <a href="/contacto" class="text-flyto-sand/50 hover:text-flyto-sand">Contacto</a>
+            <a href="/faq" class="text-flyto-sand/50 hover:text-flyto-sand">FAQ</a>
+            <a href="/#hero-section" class="text-flyto-sand/50 hover:text-flyto-sand">Buscar Vuelos</a>
+            <a href="/" class="text-flyto-sand/50 hover:text-flyto-sand">Inicio</a>
+        </nav>
+    </div>
+    <div class="border-t border-flyto-sand/10">
+        <div class="mx-auto max-w-7xl px-6 py-4">
+            <p class="font-mono text-xs leading-4 text-flyto-sand/40">© 2026 Flyto. Todos los derechos reservados.</p>
+        </div>
+    </div>
+</footer>
+    <script src="/assets/js/app.js" defer></script>
+    <script src="/assets/js/validaciones.js" defer></script>
+</body>
+</html>
