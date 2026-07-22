@@ -24,9 +24,12 @@ class ListadoPromocionesPageController
     ) {
     }
 
+    // TODO - Dejar de usar el array $params y el array $query
     public function show(array $params, array $query, string $layoutPath): void
     {
+        // TODO - No poner un fallback si no encuentra el usuario, lanzar un error
         $usuario = $this->sessionService->getUser() ?? [];
+        // TODO - No poner un fallback si no encuentra el id, lanzar un error
         $ceoId = (int) ($usuario['id'] ?? 0);
         $promociones = $this->promocionService->getByCeoId($ceoId);
 
@@ -84,11 +87,11 @@ class ListadoPromocionesPageController
     private function esActiva(Promocion $promocion): bool
     {
         return $promocion->activa
-            && ($promocion->estado['descripcion'] ?? '') === 'activa';
+            && ($promocion->estado['descripcion'] ?? '') === 'activa'; // TODO - las constantes de tipos deberian estar en un enum
     }
 
     private function esPendiente(Promocion $promocion): bool
     {
-        return ($promocion->estado['descripcion'] ?? '') === 'pendiente_activacion';
+        return ($promocion->estado['descripcion'] ?? '') === 'pendiente_activacion'; // TODO - las constantes de tipos deberian estar en un enum
     }
 }

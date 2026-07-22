@@ -970,6 +970,9 @@ function routePublicPage(
     return true;
 }
 
+// TODO - Chequear si este router puede reemplazar los chequeos de rol y autenticacion en varios controllers,
+// si es asi, refactorizar los controllers de forma que no se encarguen de eso. Si algun chequeo tiene alguna
+// loga extra, se puede extender el router para contemplarlo, o encadenar middlewares.
 function routeProtectedPage(
     array $routes,
     string $requestPath,

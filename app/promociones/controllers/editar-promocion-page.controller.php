@@ -27,13 +27,16 @@ class EditarPromocionPageController
     ) {
     }
 
+    // TODO - Dejar de usar el array $params y el array $query
     public function show(array $params, array $query, string $layoutPath): void
     {
         try {
             PromocionValidator::edicionId($_GET);
+            // TODO - No poner un fallback si no encuentra el usuario, lanzar un error
             $usuario = $this->sessionService->getUser() ?? [];
             $promocion = $this->promocionService->getEditableByCeoId(
                 (int) $query['id'],
+                // TODO - No poner un fallback si no encuentra el id, lanzar un error
                 (int) ($usuario['id'] ?? 0)
             );
         } catch (HttpException $exception) {

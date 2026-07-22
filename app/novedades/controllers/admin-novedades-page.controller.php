@@ -22,10 +22,13 @@ class AdminNovedadesPageController
         $this->viewResponse = $viewResponse;
     }
 
+    // TODO - Dejar de usar el array $params y el array $query
     public function show(array $params, array $query, string $layoutPath): void
     {
         $flash = Flash::consume();
+        // TODO - Poner constante de navegacion como en otras paginas
         $itemsPorPagina = 3;
+        // TODO - Usar una funcion paginaDesdeQuery como en otras paginas
         $paginaActual = max(1, (int) ($query['pagina'] ?? 1));
 
         try {

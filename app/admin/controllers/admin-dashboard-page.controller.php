@@ -8,8 +8,8 @@ use App\Usuarios\Services\UsuarioService;
 
 class AdminDashboardPageController
 {
-    private const ESTADO_PROMOCION_PENDIENTE = 'pendiente_activacion';
-    private const TIPO_CEO = 'ceo';
+    private const ESTADO_PROMOCION_PENDIENTE = 'pendiente_activacion'; // TODO - las constantes de tipos deberian estar en un enum
+    private const TIPO_CEO = 'ceo'; // TODO - las constantes de tipos deberian estar en un enum
     private const LIMITE_DASHBOARD = 3;
 
     public function __construct(
@@ -19,6 +19,7 @@ class AdminDashboardPageController
     ) {
     }
 
+    // TODO - Dejar de usar el array $params y el array $query
     public function show(array $params, array $query, string $layoutPath): void
     {
         $promocionesPendientes = $this->promocionService->getByEstado(self::ESTADO_PROMOCION_PENDIENTE);

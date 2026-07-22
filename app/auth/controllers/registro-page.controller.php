@@ -23,10 +23,12 @@ class RegistroPageController
         $this->viewResponse = $viewResponse;
     }
 
+    // TODO - Dejar de usar el array $params y el array $query
     public function show(array $params, array $query, string $layoutPath): void
     {
         $this->sessionService->start();
 
+        // TODO - Chequear si de esto se hace cargo la funcion show o si el router ya lo hace
         if ($this->sessionService->isAuthenticated()) {
             RedirectResponse::to('/');
             return;

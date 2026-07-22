@@ -28,11 +28,13 @@ class PagoPageController
     ) {
     }
 
+    // TODO - Dejar de usar el array $params y el array $query
     public function show(array $params, array $query, string $layoutPath): void
     {
         $this->sessionService->start();
         $usuario = $this->sessionService->getUser();
 
+        // TODO - Chequear si de esto se hace cargo la funcion show o si el router ya lo hace
         if (!is_array($usuario) || !isset($usuario['id'])) {
             Flash::error('Necesitas iniciar sesion para realizar una reserva.');
             RedirectResponse::to('/auth/login', [], 303);

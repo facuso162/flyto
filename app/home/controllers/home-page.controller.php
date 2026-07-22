@@ -29,6 +29,7 @@ class HomePageController
         $this->viewResponse = $viewResponse;
     }
 
+    // TODO - Dejar de usar el array $params y el array $query
     public function show(array $params, array $query, string $layoutPath): void
     {
         $flash = Flash::consume();

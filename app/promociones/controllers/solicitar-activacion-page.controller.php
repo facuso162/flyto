@@ -20,6 +20,7 @@ class SolicitarActivacionPageController
     {
     }
 
+    // TODO - Dejar de usar el array $params y el array $query
     public function show(array $params, array $query, string $layoutPath): void
     {
         try {
@@ -33,6 +34,7 @@ class SolicitarActivacionPageController
         $this->viewResponse->render(
             __DIR__ . '/../views/pages/solicitar-activacion.page.php',
             'Solicitar activación - Panel CEO - Flyto',
+            // TODO - Si no encuentra el id, lanzar error, procesarlo antes de ejecutar el render
             ['promocionId' => (int) $_GET['id']],
             200,
             $layoutPath

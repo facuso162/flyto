@@ -12,7 +12,7 @@ require_once __DIR__ . '/../services/promocion.service.php';
 
 class SolicitudesPromocionesPageController
 {
-    private const ESTADO_PENDIENTE = 'pendiente_activacion';
+    private const ESTADO_PENDIENTE = 'pendiente_activacion'; // TODO - las constantes de tipos deberian estar en un enum
     private const SOLICITUDES_POR_PAGINA = 3;
 
     public function __construct(
@@ -21,6 +21,7 @@ class SolicitudesPromocionesPageController
     ) {
     }
 
+    // TODO - Dejar de usar el array $params y el array $query
     public function show(array $params, array $query, string $layoutPath): void
     {
         $solicitudes = $this->promocionService->getByEstado(self::ESTADO_PENDIENTE);

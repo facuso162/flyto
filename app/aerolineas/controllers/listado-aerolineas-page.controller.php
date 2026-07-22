@@ -12,6 +12,7 @@ require_once __DIR__ . '/../services/aerolinea.service.php';
 
 class ListadoAerolineasPageController
 {
+    // TODO - Todas las paginas con paginacion deberian tener una constante como esta 
     private const AEROLINEAS_POR_PAGINA = 3;
 
     public function __construct(
@@ -20,6 +21,7 @@ class ListadoAerolineasPageController
     ) {
     }
 
+    // TODO - Dejar de usar el array $params y el array $query
     public function show(array $params, array $query, string $layoutPath): void
     {
         $aerolineas = $this->aerolineaService->getTodas();
@@ -47,6 +49,7 @@ class ListadoAerolineasPageController
         );
     }
 
+    // TODO - Usar esta funcion en todas las paginas
     private function paginaDesdeQuery(array $query): int
     {
         $valor = $query['pagina'] ?? 1;

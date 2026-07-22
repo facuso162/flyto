@@ -23,11 +23,13 @@ class ConfirmacionPageController
     ) {
     }
 
+    // TODO - Dejar de usar el array $params y el array $query
     public function show(array $params, array $query, string $layoutPath): void
     {
         $this->sessionService->start();
         $usuario = $this->sessionService->getUser();
 
+        // TODO - Chequear si de esto se hace cargo la funcion show o si el router ya lo hace
         if (!is_array($usuario) || !isset($usuario['id'])) {
             Flash::error('Necesitas iniciar sesion para ver la confirmacion.');
             RedirectResponse::to('/auth/login', [], 303);
@@ -43,6 +45,7 @@ class ConfirmacionPageController
 
         $reserva = $this->reservaService->obtenerReservaUsuario((int) $reservaId, (int) $usuario['id']);
 
+        // TODO - Dejar de usar este prefijo, usar el id directamente
         $codigoReserva = sprintf(
             'FLY-%06d',
             $reserva->id
@@ -54,6 +57,7 @@ class ConfirmacionPageController
             [
                 'reserva' => $reserva,
                 'codigoReserva' => $codigoReserva,
+                // TODO - No poner un fallback de string vacio, si no hay un email, hay un error, no se deberia llegar a ese estado
                 'correoConfirmacion' => (string) ($reserva->usuario['email'] ?? $usuario['email'] ?? ''),
             ],
             200,

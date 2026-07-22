@@ -19,17 +19,21 @@ class MisReservasPageController
     ) {
     }
 
+    // TODO - Dejar de usar el array $params y el array $query
     public function show(array $params, array $query, string $layoutPath): void
     {
         $this->sessionService->start();
         $usuario = $this->sessionService->getUser();
         $estado = strtolower(trim((string) ($query['estado'] ?? 'todas')));
-
+        
+        // TODO - Poner estos estados en un enum o en una constante
+        // Tener en cuenta que son estados de reserva, estan en el data-insert.sql
         if (!in_array($estado, ['todas', 'confirmada', 'completada', 'cancelada'], true)) {
             $estado = 'todas';
         }
 
         $reservas = $this->reservaService->listarReservasUsuario(
+            // TODO - Dejar de usar este fallback
             (int) ($usuario['id'] ?? 0),
             $estado === 'todas' ? null : $estado
         );
