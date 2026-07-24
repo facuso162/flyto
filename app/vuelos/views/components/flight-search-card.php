@@ -21,9 +21,16 @@ $cityDescription = static function (array $ciudades, string $selectedId, string 
 $origenDescripcion = (string) ($flight['origen_nombre'] ?? $cityDescription($ciudades, $selectedOrigen));
 $destinoDescripcion = (string) ($flight['destino_nombre'] ?? $cityDescription($ciudades, $selectedDestino));
 
-$renderCityOptions = static function (array $ciudades, string $selectedId): void {
+$renderCityOptions = static function (
+    array $ciudades,
+    string $selectedId,
+    string $placeholder = 'Seleccionar',
+    bool $allowEmpty = false
+): void {
     ?>
-    <option value="" <?= $selectedId === '' ? 'selected' : '' ?> disabled>Seleccionar</option>
+    <option value="" <?= $selectedId === '' ? 'selected' : '' ?> <?= $allowEmpty ? '' : 'disabled' ?>>
+        <?= htmlspecialchars($placeholder, ENT_QUOTES, 'UTF-8') ?>
+    </option>
     <?php
 
     foreach ($ciudades as $ciudad) {
@@ -60,22 +67,21 @@ $renderCityOptions = static function (array $ciudades, string $selectedId): void
         </button>
 
         <label class="block border-b border-flyto-ink/10 p-4 md:border-b-0 md:border-r">
-            <span class="font-mono text-xs uppercase tracking-[0.3px] text-flyto-muted">Destino</span>
-            <select name="destino" class="mt-1 block w-full bg-transparent font-display text-2xl font-semibold leading-6 text-flyto-ink outline-none" aria-describedby="destino_nombre" data-city-select data-description-target="destino_nombre" required>
-                <?php $renderCityOptions($ciudades, $selectedDestino); ?>
+            <span class="font-mono text-xs uppercase tracking-[0.3px] text-flyto-muted">Destino (opcional)</span>
+            <select name="destino" class="mt-1 block w-full bg-transparent font-display text-2xl font-semibold leading-6 text-flyto-ink outline-none" aria-describedby="destino_nombre" data-city-select data-description-target="destino_nombre">
+                <?php $renderCityOptions($ciudades, $selectedDestino, 'Cualquier destino', true); ?>
             </select>
             <span id="destino_nombre" class="mt-1 block text-xs text-flyto-muted"><?= htmlspecialchars($destinoDescripcion, ENT_QUOTES, 'UTF-8') ?></span>
         </label>
 
         <label class="block border-b border-flyto-ink/10 p-4 md:border-b-0 md:border-r">
-            <span class="font-mono text-xs uppercase tracking-[0.3px] text-flyto-muted">Fecha</span>
+            <span class="font-mono text-xs uppercase tracking-[0.3px] text-flyto-muted">Fecha de salida (opcional)</span>
             <input
                 type="date"
                 name="fechaSalida"
                 value="<?= htmlspecialchars($selectedFecha, ENT_QUOTES, 'UTF-8') ?>"
                 class="mt-1 block h-8 w-full bg-transparent text-sm font-medium leading-5 text-flyto-ink outline-none"
                 min="<?= date('Y-m-d') ?>"
-                required
             >
         </label>
 

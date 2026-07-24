@@ -11,8 +11,8 @@ class BuscarVueloValidator
     public static function validate(array $data): void
     {
         $origen = self::getRequiredStringValue($data, 'origen');
-        $destino = self::getRequiredStringValue($data, 'destino');
-        $fechaSalida = self::getRequiredStringValue($data, 'fechaSalida');
+        $destino = self::getOptionalStringValue($data, 'destino');
+        $fechaSalida = self::getOptionalStringValue($data, 'fechaSalida');
         $cantidadPasajeros = self::getRequiredStringValue($data, 'cantidadPasajeros');
         $precioMaximo = self::getOptionalStringValue($data, 'precioMaximo');
         $aerolineas = self::getOptionalAirlineValues($data, 'aerolineas');
@@ -26,7 +26,7 @@ class BuscarVueloValidator
             );
         }
 
-        if (!ctype_digit($destino) || (int) $destino < 1) {
+        if ($destino !== null && (!ctype_digit($destino) || (int) $destino < 1)) {
             throw new HttpException(
                 'El destino debe ser numerico.',
                 400,
@@ -34,11 +34,13 @@ class BuscarVueloValidator
             );
         }
 
-        if ($origen === $destino) {
+        if ($destino !== null && $origen === $destino) {
             throw new HttpException('El origen y el destino deben ser distintos.', 400, ['field' => 'destino']);
         }
 
-        self::validateFechaSalida($fechaSalida);
+        if ($fechaSalida !== null) {
+            self::validateFechaSalida($fechaSalida);
+        }
         self::validateCantidadPasajeros($cantidadPasajeros);
 
         if ($precioMaximo !== null && (!ctype_digit($precioMaximo) || (int) $precioMaximo < 0)) {
@@ -144,15 +146,7 @@ class BuscarVueloValidator
 
         $value = trim((string) $data[$key]);
 
-        if ($value === '') {
-            throw new HttpException(
-                "El campo {$key} no puede estar vacio si se envia.",
-                400,
-                ['field' => $key]
-            );
-        }
-
-        return $value;
+        return $value === '' ? null : $value;
     }
 
     /**

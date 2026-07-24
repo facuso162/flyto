@@ -36,7 +36,7 @@ class VueloService
         $precioMaximoDisponible = $this->precioMaximo($base);
         $precioMaximoSeleccionado = $dto->precioMaximo ?? $precioMaximoDisponible;
         $vuelos = $this->aplicarFiltros($base, $precioMaximoSeleccionado, $dto->aerolineas);
-        $this->ordenar($vuelos, $dto->orden);
+        $this->ordenar($vuelos, $dto->orden, $dto->fechaSalida);
 
         return [
             'criterios' => $dto,
@@ -211,9 +211,18 @@ class VueloService
     /**
      * @param Vuelo[] $vuelos
      */
-    private function ordenar(array &$vuelos, string $orden): void
+    private function ordenar(array &$vuelos, string $orden, ?string $fechaDeseada): void
     {
-        usort($vuelos, function (Vuelo $a, Vuelo $b) use ($orden) {
+        usort($vuelos, function (Vuelo $a, Vuelo $b) use ($orden, $fechaDeseada) {
+            $aCoincideConFecha = $fechaDeseada !== null
+                && $a->fechaSalida->format('Y-m-d') === $fechaDeseada;
+            $bCoincideConFecha = $fechaDeseada !== null
+                && $b->fechaSalida->format('Y-m-d') === $fechaDeseada;
+
+            if ($fechaDeseada !== null && $aCoincideConFecha !== $bCoincideConFecha) {
+                return $aCoincideConFecha ? -1 : 1;
+            }
+
             return match ($orden) {
                 'duracion' => $a->duracionMinutos() <=> $b->duracionMinutos(),
                 'salida' => $a->fechaSalida <=> $b->fechaSalida,

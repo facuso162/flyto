@@ -96,8 +96,8 @@ class VueloRepository
             INNER JOIN paises destino_pais ON destino_pais.id = destino.pais_id
             INNER JOIN estados_vuelos ev ON ev.id = v.estado_id
             WHERE v.origen_ciudad_id = :origen
-                AND v.destino_ciudad_id = :destino
-                AND DATE(v.fecha_salida) = :fechaSalida
+                " . ($dto->destino !== null ? "AND v.destino_ciudad_id = :destino" : "") . "
+                AND v.fecha_salida >= NOW()
                 AND LOWER(ev.nombre) = 'pendiente'
             GROUP BY
                 v.id,
@@ -142,12 +142,14 @@ class VueloRepository
         ";
 
         $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([
+        $parametros = [
             ':origen' => $dto->origen,
-            ':destino' => $dto->destino,
-            ':fechaSalida' => $dto->fechaSalida,
             ':cantidadPasajeros' => $dto->cantidadPasajeros,
-        ]);
+        ];
+        if ($dto->destino !== null) {
+            $parametros[':destino'] = $dto->destino;
+        }
+        $stmt->execute($parametros);
 
         return array_map(fn (array $row) => $this->mapRow($row), $stmt->fetchAll(PDO::FETCH_ASSOC));
     }

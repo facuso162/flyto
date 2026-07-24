@@ -5,8 +5,8 @@ namespace App\Vuelos\Dtos;
 class BuscarVuelosDto
 {
     public int $origen;
-    public int $destino;
-    public string $fechaSalida;
+    public ?int $destino;
+    public ?string $fechaSalida;
     public int $cantidadPasajeros;
     public ?int $precioMaximo;
     /** @var string[] */
@@ -15,8 +15,8 @@ class BuscarVuelosDto
 
     public function __construct(
         int $origen,
-        int $destino,
-        string $fechaSalida,
+        ?int $destino,
+        ?string $fechaSalida,
         int $cantidadPasajeros,
         ?int $precioMaximo = null,
         array $aerolineas = [],
@@ -35,10 +35,16 @@ class BuscarVuelosDto
     {
         return new self(
             origen: (int) $data['origen'],
-            destino: (int) $data['destino'],
-            fechaSalida: (string) $data['fechaSalida'],
+            destino: isset($data['destino']) && trim((string) $data['destino']) !== ''
+                ? (int) $data['destino']
+                : null,
+            fechaSalida: isset($data['fechaSalida']) && trim((string) $data['fechaSalida']) !== ''
+                ? (string) $data['fechaSalida']
+                : null,
             cantidadPasajeros: (int) $data['cantidadPasajeros'],
-            precioMaximo: array_key_exists('precioMaximo', $data) ? (int) $data['precioMaximo'] : null,
+            precioMaximo: isset($data['precioMaximo']) && trim((string) $data['precioMaximo']) !== ''
+                ? (int) $data['precioMaximo']
+                : null,
             aerolineas: self::parseAerolineas($data['aerolineas'] ?? []),
             orden: (string) ($data['orden'] ?? 'precio')
         );

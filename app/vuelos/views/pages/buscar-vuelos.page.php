@@ -20,16 +20,24 @@ foreach ($ciudades as $ciudad) {
 }
 
 $origen = $ciudadesPorId[$criterios->origen] ?? ['nombre' => 'Origen', 'abreviacion' => 'ORI'];
-$destino = $ciudadesPorId[$criterios->destino] ?? ['nombre' => 'Destino', 'abreviacion' => 'DST'];
+$destino = $criterios->destino !== null
+    ? ($ciudadesPorId[$criterios->destino] ?? ['nombre' => 'Destino', 'abreviacion' => 'DST'])
+    : null;
 $formatMoney = static fn (float $amount): string => '$' . number_format($amount, 0, ',', '.');
 $buildQuery = static function (array $overrides = []) use ($criterios): string {
     $query = [
         'origen' => $criterios->origen,
-        'destino' => $criterios->destino,
-        'fechaSalida' => $criterios->fechaSalida,
         'cantidadPasajeros' => $criterios->cantidadPasajeros,
         'orden' => $criterios->orden,
     ];
+
+    if ($criterios->destino !== null) {
+        $query['destino'] = $criterios->destino;
+    }
+
+    if ($criterios->fechaSalida !== null) {
+        $query['fechaSalida'] = $criterios->fechaSalida;
+    }
 
     if ($criterios->precioMaximo !== null) {
         $query['precioMaximo'] = $criterios->precioMaximo;
@@ -51,12 +59,16 @@ $buildQuery = static function (array $overrides = []) use ($criterios): string {
     return http_build_query($query);
 };
 
-$renderFilterForm = static function (string $id) use ($basePath, $criterios, $aerolineas, $precioMaximoDisponible, $precioMaximoSeleccionado, $formatMoney): void {
+$renderFilterForm = static function (string $id) use ($basePath, $criterios, $aerolineas, $precioMaximoDisponible, $precioMaximoSeleccionado, $formatMoney, $buildQuery): void {
     ?>
     <form id="<?= htmlspecialchars($id, ENT_QUOTES, 'UTF-8') ?>" action="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/vuelos/buscar" method="get" class="space-y-6">
         <input type="hidden" name="origen" value="<?= htmlspecialchars((string) $criterios->origen, ENT_QUOTES, 'UTF-8') ?>">
-        <input type="hidden" name="destino" value="<?= htmlspecialchars((string) $criterios->destino, ENT_QUOTES, 'UTF-8') ?>">
-        <input type="hidden" name="fechaSalida" value="<?= htmlspecialchars($criterios->fechaSalida, ENT_QUOTES, 'UTF-8') ?>">
+        <?php if ($criterios->destino !== null): ?>
+            <input type="hidden" name="destino" value="<?= htmlspecialchars((string) $criterios->destino, ENT_QUOTES, 'UTF-8') ?>">
+        <?php endif; ?>
+        <?php if ($criterios->fechaSalida !== null): ?>
+            <input type="hidden" name="fechaSalida" value="<?= htmlspecialchars($criterios->fechaSalida, ENT_QUOTES, 'UTF-8') ?>">
+        <?php endif; ?>
         <input type="hidden" name="cantidadPasajeros" value="<?= htmlspecialchars((string) $criterios->cantidadPasajeros, ENT_QUOTES, 'UTF-8') ?>">
         <input type="hidden" name="orden" value="<?= htmlspecialchars($criterios->orden, ENT_QUOTES, 'UTF-8') ?>">
 
@@ -106,12 +118,9 @@ $renderFilterForm = static function (string $id) use ($basePath, $criterios, $ae
             <button type="submit" class="inline-flex h-10 flex-1 items-center justify-center bg-flyto-navy px-4 text-sm font-medium text-flyto-sand">
                 Filtrar
             </button>
-            <a href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/vuelos/buscar?<?= htmlspecialchars(http_build_query([
-                'origen' => $criterios->origen,
-                'destino' => $criterios->destino,
-                'fechaSalida' => $criterios->fechaSalida,
-                'cantidadPasajeros' => $criterios->cantidadPasajeros,
-                'orden' => $criterios->orden,
+            <a href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/vuelos/buscar?<?= htmlspecialchars($buildQuery([
+                'precioMaximo' => null,
+                'aerolineas' => null,
             ]), ENT_QUOTES, 'UTF-8') ?>" class="inline-flex h-10 items-center justify-center border border-flyto-ink/15 px-4 text-sm font-medium text-flyto-muted">
                 Limpiar
             </a>
@@ -123,9 +132,9 @@ $renderFilterForm = static function (string $id) use ($basePath, $criterios, $ae
 $flight = [
     'origen' => $criterios->origen,
     'origen_nombre' => $origen['nombre'],
-    'destino' => $criterios->destino,
-    'destino_nombre' => $destino['nombre'],
-    'fechaSalida' => $criterios->fechaSalida,
+    'destino' => $criterios->destino ?? '',
+    'destino_nombre' => $destino['nombre'] ?? 'Cualquier destino',
+    'fechaSalida' => $criterios->fechaSalida ?? '',
     'cantidadPasajeros' => $criterios->cantidadPasajeros,
 ];
 
@@ -136,10 +145,14 @@ $flight = [
         <div class="mt-4 grid gap-4 md:grid-cols-[1fr_auto] md:items-end">
             <div>
                 <h1 class="font-display text-[34px] font-medium leading-tight md:text-[48px]">
-                    <?= htmlspecialchars($origen['nombre'], ENT_QUOTES, 'UTF-8') ?> a <?= htmlspecialchars($destino['nombre'], ENT_QUOTES, 'UTF-8') ?>
+                    <?= htmlspecialchars($origen['nombre'], ENT_QUOTES, 'UTF-8') ?>
+                    <?= $destino !== null ? ' a ' . htmlspecialchars($destino['nombre'], ENT_QUOTES, 'UTF-8') : ' a cualquier destino' ?>
                 </h1>
                 <p class="mt-3 text-sm leading-6 text-flyto-sand/70">
-                    <?= htmlspecialchars((new DateTime($criterios->fechaSalida))->format('d/m/Y'), ENT_QUOTES, 'UTF-8') ?> · <?= htmlspecialchars((string) $criterios->cantidadPasajeros, ENT_QUOTES, 'UTF-8') ?> pasajero<?= $criterios->cantidadPasajeros === 1 ? '' : 's' ?>
+                    <?php if ($criterios->fechaSalida !== null): ?>
+                        <?= htmlspecialchars((new DateTime($criterios->fechaSalida))->format('d/m/Y'), ENT_QUOTES, 'UTF-8') ?> ·
+                    <?php endif; ?>
+                    <?= htmlspecialchars((string) $criterios->cantidadPasajeros, ENT_QUOTES, 'UTF-8') ?> pasajero<?= $criterios->cantidadPasajeros === 1 ? '' : 's' ?>
                 </p>
             </div>
             <p class="font-mono text-xs uppercase tracking-[0.3px] text-flyto-sand/60">
@@ -195,7 +208,7 @@ $flight = [
                 <div class="border border-flyto-ink/10 bg-white p-8 text-center shadow-flyto">
                     <h2 class="font-display text-2xl font-medium text-flyto-ink">No encontramos vuelos disponibles</h2>
                     <p class="mx-auto mt-3 max-w-lg text-sm leading-6 text-flyto-muted">
-                        Proba cambiando la fecha, la cantidad de pasajeros o limpiando los filtros aplicados.
+                        Probá cambiando el destino, la fecha, la cantidad de pasajeros o limpiando los filtros aplicados.
                     </p>
                 </div>
             <?php else: ?>

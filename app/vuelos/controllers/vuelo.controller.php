@@ -41,7 +41,17 @@ class VueloController
                     'aerolineas' => $resultado['criterios']->aerolineas,
                     'orden' => $resultado['criterios']->orden,
                 ],
-                'vuelos' => array_map(fn ($vuelo) => $vuelo->toArray(), $resultado['vuelos']),
+                'vuelos' => array_map(
+                    fn ($vuelo) => array_merge(
+                        $vuelo->toArray(),
+                        [
+                            'esFechaFlexible' => $resultado['criterios']->fechaSalida !== null
+                                && $vuelo->fechaSalida->format('Y-m-d')
+                                    !== $resultado['criterios']->fechaSalida,
+                        ]
+                    ),
+                    $resultado['vuelos']
+                ),
                 'aerolineas' => array_map(fn ($aerolinea) => $aerolinea->toArray(), $resultado['aerolineas']),
                 'precioMaximoDisponible' => $resultado['precioMaximoDisponible'],
                 'precioMaximoSeleccionado' => $resultado['precioMaximoSeleccionado'],

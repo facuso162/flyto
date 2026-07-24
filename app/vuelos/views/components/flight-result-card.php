@@ -9,6 +9,9 @@ $asientosTexto = $asientosLibres === 1 ? 'asiento' : 'asientos';
 $tienePromocion = $vuelo->promocion !== null;
 $precioFinal = $vuelo->precioConPromocion();
 $cantidadPasajerosSeleccionada = isset($criterios) ? (int) $criterios->cantidadPasajeros : 1;
+$esFechaFlexible = isset($criterios)
+    && $criterios->fechaSalida !== null
+    && $vuelo->fechaSalida->format('Y-m-d') !== $criterios->fechaSalida;
 $seleccionarQuery = http_build_query([
     'vueloId' => $vuelo->id,
     'cantidadPasajeros' => $cantidadPasajerosSeleccionada,
@@ -16,6 +19,13 @@ $seleccionarQuery = http_build_query([
 
 ?>
 <article class="border border-flyto-ink/10 bg-white p-5 shadow-flyto md:p-6">
+    <?php if ($esFechaFlexible): ?>
+        <div class="mb-5 flex flex-wrap items-center gap-2 border border-flyto-gold/60 bg-flyto-gold/10 px-3 py-2 text-xs leading-5 text-flyto-ink">
+            <span class="font-mono font-semibold uppercase tracking-[0.3px]">Fecha flexible</span>
+            <span aria-hidden="true">·</span>
+            <span>No respeta la fecha elegida. Sale el <?= htmlspecialchars($vuelo->fechaSalida->format('d/m/Y'), ENT_QUOTES, 'UTF-8') ?>.</span>
+        </div>
+    <?php endif; ?>
     <div class="grid gap-5 lg:grid-cols-[1fr_auto] lg:items-center">
         <div class="min-w-0">
             <div class="flex items-start gap-4">
