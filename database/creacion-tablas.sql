@@ -183,6 +183,7 @@ CREATE TABLE pasajeros (
     documento VARCHAR(30) NOT NULL,
     pasaporte VARCHAR(30) NOT NULL,
     fecha_nacimiento DATE NOT NULL,
+    nacionalidad VARCHAR(80) NOT NULL,
     telefono_contacto VARCHAR(30) NOT NULL,
     correo_electronico VARCHAR(120) NOT NULL,
 
