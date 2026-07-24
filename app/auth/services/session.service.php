@@ -92,4 +92,15 @@ class SessionService
     {
         return $this->get(self::USER_KEY);
     }
+
+    public function updateUser(array $userData): void
+    {
+        $currentUser = $this->getUser();
+
+        if ($currentUser === null) {
+            return;
+        }
+
+        $this->set(self::USER_KEY, array_replace($currentUser, $userData));
+    }
 }

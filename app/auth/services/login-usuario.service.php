@@ -45,6 +45,7 @@ class LoginUsuarioService
             'nombre' => $usuario->nombre,
             'apellido' => $usuario->apellido,
             'email' => $usuario->email,
+            'telefono' => $usuario->telefono,
             'tipo_usuario' => [
                 'id' => $usuario->tipoUsuario->id,
                 'nombre' => $usuario->tipoUsuario->nombre

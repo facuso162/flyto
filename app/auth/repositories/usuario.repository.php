@@ -421,4 +421,38 @@ class UsuarioRepository
             ':clave_hash' => $passwordHash
         ]);
     }
+
+    public function updateProfileData(int $usuarioId, string $nombre, string $apellido, ?string $telefono): void
+    {
+        $sql = "
+            UPDATE usuarios SET
+                nombre = :nombre,
+                apellido = :apellido,
+                telefono = :telefono
+            WHERE id = :id
+        ";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            ':id' => $usuarioId,
+            ':nombre' => $nombre,
+            ':apellido' => $apellido,
+            ':telefono' => $telefono,
+        ]);
+    }
+
+    public function updatePassword(int $usuarioId, string $passwordHash): void
+    {
+        $sql = "
+            UPDATE usuarios SET
+                clave_hash = :clave_hash
+            WHERE id = :id
+        ";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([
+            ':id' => $usuarioId,
+            ':clave_hash' => $passwordHash,
+        ]);
+    }
 }

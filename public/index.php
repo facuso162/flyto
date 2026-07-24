@@ -60,6 +60,9 @@ use App\Novedades\Services\NovedadService;
 use App\Paises\Repositories\PaisRepository;
 use App\Paises\Services\PaisService;
 use App\Perfil\Controllers\MiPerfilPageController;
+use App\Perfil\Controllers\PerfilActionController;
+use App\Perfil\Services\CambioContrasenaPerfilSessionService;
+use App\Perfil\Services\PerfilService;
 use App\Promociones\Controllers\AprobarPromocionActionController;
 use App\Promociones\Controllers\BorrarPromocionActionController;
 use App\Promociones\Controllers\CrearPromocionActionController;
@@ -232,6 +235,9 @@ require_once __DIR__ . '/../app/novedades/controllers/editar-novedad-action.cont
 require_once __DIR__ . '/../app/novedades/controllers/borrar-novedad-action.controller.php';
 
 require_once __DIR__ . '/../app/perfil/controllers/mi-perfil-page.controller.php';
+require_once __DIR__ . '/../app/perfil/controllers/perfil-action.controller.php';
+require_once __DIR__ . '/../app/perfil/services/cambio-contrasena-perfil-session.service.php';
+require_once __DIR__ . '/../app/perfil/services/perfil.service.php';
 
 require_once __DIR__ . '/../app/reservas/repositories/reserva.repository.php';
 require_once __DIR__ . '/../app/reservas/services/reserva.service.php';
@@ -723,8 +729,29 @@ $container->scoped(BorrarNovedadActionController::class, function ($c) {
     );
 });
 
+$container->scoped(PerfilService::class, function ($c) {
+    return new PerfilService($c->get(UsuarioRepository::class));
+});
+
+$container->scoped(CambioContrasenaPerfilSessionService::class, function ($c) {
+    return new CambioContrasenaPerfilSessionService($c->get(SessionService::class));
+});
+
 $container->scoped(MiPerfilPageController::class, function ($c) {
-    return new MiPerfilPageController($c->get(ViewResponse::class));
+    return new MiPerfilPageController(
+        $c->get(ViewResponse::class),
+        $c->get(SessionService::class),
+        $c->get(PerfilService::class),
+        $c->get(CambioContrasenaPerfilSessionService::class)
+    );
+});
+
+$container->scoped(PerfilActionController::class, function ($c) {
+    return new PerfilActionController(
+        $c->get(PerfilService::class),
+        $c->get(SessionService::class),
+        $c->get(CambioContrasenaPerfilSessionService::class)
+    );
 });
 
 $container->scoped(ReservaRepository::class, function ($c) {
@@ -1291,6 +1318,7 @@ $router->registerModule(require __DIR__ . '/../app/auth/routes.php');
 $router->registerModule(require __DIR__ . '/../app/aerolineas/routes.php');
 $router->registerModule(require __DIR__ . '/../app/contacto/routes.php');
 $router->registerModule(require __DIR__ . '/../app/novedades/routes.php');
+$router->registerModule(require __DIR__ . '/../app/perfil/routes.php');
 $router->registerModule(require __DIR__ . '/../app/promociones/routes.php');
 $router->registerModule(require __DIR__ . '/../app/promociones/admin-routes.php');
 $router->registerModule(require __DIR__ . '/../app/reservas/routes.php');

@@ -37,11 +37,12 @@
     function customError(field, form) {
         var value = field.value || '';
         var name = field.name || '';
-        if (field.type === 'password' && name !== 'pago[cvv]' && field.required && value !== '' && !/^.{8,40}$/.test(value)) return passwordMessage;
-        if (field.type === 'password' && name !== 'pago[cvv]' && field.required && value !== '' && !/[A-Z]/.test(value)) return passwordMessage;
-        if (field.type === 'password' && name !== 'pago[cvv]' && field.required && value !== '' && !/[a-z]/.test(value)) return passwordMessage;
-        if (field.type === 'password' && name !== 'pago[cvv]' && field.required && value !== '' && !/[0-9]/.test(value)) return passwordMessage;
-        if (field.type === 'password' && name !== 'pago[cvv]' && field.required && value !== '' && !/[^a-zA-Z0-9]/.test(value)) return passwordMessage;
+        var validatesPasswordPolicy = field.dataset.passwordPolicy !== 'none';
+        if (field.type === 'password' && name !== 'pago[cvv]' && validatesPasswordPolicy && field.required && value !== '' && !/^.{8,40}$/.test(value)) return passwordMessage;
+        if (field.type === 'password' && name !== 'pago[cvv]' && validatesPasswordPolicy && field.required && value !== '' && !/[A-Z]/.test(value)) return passwordMessage;
+        if (field.type === 'password' && name !== 'pago[cvv]' && validatesPasswordPolicy && field.required && value !== '' && !/[a-z]/.test(value)) return passwordMessage;
+        if (field.type === 'password' && name !== 'pago[cvv]' && validatesPasswordPolicy && field.required && value !== '' && !/[0-9]/.test(value)) return passwordMessage;
+        if (field.type === 'password' && name !== 'pago[cvv]' && validatesPasswordPolicy && field.required && value !== '' && !/[^a-zA-Z0-9]/.test(value)) return passwordMessage;
         if (name === 'password_confirmation' && value !== '' && value !== (form.querySelector('[name="password"]') || {}).value) return 'Las contrasenas no coinciden.';
         if (name === 'telefono' || name.indexOf('telefonoContacto') !== -1) {
             if (value !== '' && !/^[0-9]+$/.test(value)) return 'Este telefono solo puede contener digitos.';
@@ -255,6 +256,14 @@
 
     document.querySelectorAll('form').forEach(initForm);
     document.querySelectorAll('[data-password-toggle]').forEach(initPasswordToggle);
+    document.querySelectorAll('[data-toast]').forEach(function (toast) {
+        var close = toast.querySelector('[data-toast-close]');
+        var dismiss = function () {
+            toast.classList.add('hidden');
+        };
+        if (close) close.addEventListener('click', dismiss);
+        window.setTimeout(dismiss, 5000);
+    });
 
     document.querySelectorAll('[data-city-select]').forEach(function (select) {
         var update = function () { var target = document.getElementById(select.dataset.descriptionTarget); var option = select.options[select.selectedIndex]; if (target && option) target.textContent = option.dataset.description || option.textContent; };
