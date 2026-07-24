@@ -14,7 +14,7 @@ $currentUser = is_array($currentUser) ? $currentUser : [];
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?></title>
-    <link rel="stylesheet" href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/assets/css/app.css?v=2">
+    <link rel="stylesheet" href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/assets/css/app.css?v=3">
 </head>
 <body class="min-h-screen bg-flyto-sand text-flyto-ink">
     <?php require __DIR__ . '/../../../ceo/views/components/ceo-navbar.php'; ?>
