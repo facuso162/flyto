@@ -47,6 +47,7 @@ use App\Ciudades\Services\CiudadService;
 use App\Ceo\Controllers\CeoDashboardPageController;
 use App\Container;
 use App\Home\Controllers\HomePageController;
+use App\MapaSitio\Controllers\MapaSitioPageController;
 use App\Novedades\Controllers\AdminNovedadesPageController;
 use App\Novedades\Controllers\BorrarNovedadActionController;
 use App\Novedades\Controllers\CrearNovedadActionController;
@@ -184,6 +185,7 @@ require_once __DIR__ . '/../app/ciudades/repositories/ciudad.repository.php';
 require_once __DIR__ . '/../app/ciudades/services/ciudad.service.php';
 
 require_once __DIR__ . '/../app/home/controllers/home-page.controller.php';
+require_once __DIR__ . '/../app/mapa-sitio/controllers/mapa-sitio-page.controller.php';
 
 require_once __DIR__ . '/../app/promociones/repositories/promocion.repository.php';
 require_once __DIR__ . '/../app/promociones/services/promocion.service.php';
@@ -283,6 +285,13 @@ $container->scoped(CeoMiddleware::class, function ($c) {
 
 $container->scoped(GuestMiddleware::class, function ($c) {
     return new GuestMiddleware($c->get(SessionService::class));
+});
+
+$container->scoped(MapaSitioPageController::class, function ($c) {
+    return new MapaSitioPageController(
+        $c->get(SessionService::class),
+        $c->get(ViewResponse::class)
+    );
 });
 
 $container->scoped(UsuarioRepository::class, function ($c) {
@@ -1111,6 +1120,10 @@ $publicRoutes = [
         'controller' => BuscarVuelosPageController::class,
         'action' => 'show',
     ],
+    '/mapa-de-sitio' => [
+        'controller' => MapaSitioPageController::class,
+        'action' => 'showPublic',
+    ],
 ];
 
 $protectedPublicRoutes = [
@@ -1141,6 +1154,10 @@ $protectedPublicRoutes = [
 ];
 
 $adminRoutes = [
+    '/admin/mapa-de-sitio' => [
+        'controller' => MapaSitioPageController::class,
+        'action' => 'showAdmin',
+    ],
     '/admin' => [
         'controller' => AdminDashboardPageController::class,
         'action' => 'show',
@@ -1200,6 +1217,10 @@ $adminRoutes = [
 ];
 
 $ceoRoutes = [
+    '/ceo/mapa-de-sitio' => [
+        'controller' => MapaSitioPageController::class,
+        'action' => 'showCeo',
+    ],
     '/ceo' => [
         'controller' => CeoDashboardPageController::class,
         'action' => 'show',

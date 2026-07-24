@@ -22,6 +22,7 @@
             <a href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/contacto" class="text-flyto-sand/50 hover:text-flyto-sand">Contacto</a>
             <a href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/faq" class="text-flyto-sand/50 hover:text-flyto-sand">FAQ</a>
             <a href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/#hero-section" class="text-flyto-sand/50 hover:text-flyto-sand">Buscar Vuelos</a>
+            <a href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/mapa-de-sitio" class="text-flyto-sand/50 hover:text-flyto-sand">Mapa de Sitio</a>
             <a href="<?= htmlspecialchars($basePath ?: '/', ENT_QUOTES, 'UTF-8') ?>" class="text-flyto-sand/50 hover:text-flyto-sand">Inicio</a>
         </nav>
     </div>

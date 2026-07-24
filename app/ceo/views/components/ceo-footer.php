@@ -16,6 +16,7 @@ $basePath = $basePath ?? '';
             <a class="hover:text-white" href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/ceo/vuelos">Vuelos</a>
             <a class="hover:text-white" href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/ceo/promociones">Promociones</a>
             <a class="hover:text-white" href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/ceo/reportes">Reportes</a>
+            <a class="hover:text-white" href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/ceo/mapa-de-sitio">Mapa de Sitio</a>
         </nav>
         <span class="font-mono">© <?= date('Y') ?> Flyto S.A.</span>
     </div>

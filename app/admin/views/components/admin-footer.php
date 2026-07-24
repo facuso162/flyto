@@ -7,10 +7,11 @@
             <span class="font-display text-sm font-medium">Flyto &middot; Panel Admin</span>
         </div>
         <nav class="flex flex-wrap gap-5 text-xs text-flyto-sand/50" aria-label="Navegacion secundaria Admin">
-            <a href="#" class="hover:text-flyto-sand">Aerolineas</a>
-            <a href="#" class="hover:text-flyto-sand">CEOs</a>
-            <a href="#" class="hover:text-flyto-sand">Promociones</a>
-            <a href="#" class="hover:text-flyto-sand">Reportes</a>
+            <a href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/admin/aerolineas" class="hover:text-flyto-sand">Aerolineas</a>
+            <a href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/admin/ceos" class="hover:text-flyto-sand">CEOs</a>
+            <a href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/admin/promociones" class="hover:text-flyto-sand">Promociones</a>
+            <a href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/admin/reportes" class="hover:text-flyto-sand">Reportes</a>
+            <a href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/admin/mapa-de-sitio" class="hover:text-flyto-sand">Mapa de Sitio</a>
         </nav>
         <p class="font-mono text-xs text-flyto-sand/40">&copy; 2026 Flyto S.A.</p>
     </div>
