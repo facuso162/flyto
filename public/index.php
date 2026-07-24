@@ -1033,6 +1033,16 @@ function routeProtectedPage(
     try {
         $container->get($middlewareClass)->handle();
     } catch (HttpException $exception) {
+        if ($exception->getStatusCode() === 401 && $requestPath === '/reservas/pasajeros') {
+            $intendedPath = $requestPath;
+
+            if ($query !== []) {
+                $intendedPath .= '?' . http_build_query($query);
+            }
+
+            $container->get(SessionService::class)->rememberIntendedPath($intendedPath);
+        }
+
         Flash::error($forbiddenMessage);
         RedirectResponse::to($exception->getStatusCode() === 401 ? '/auth/login' : '/', [], 303);
         return true;

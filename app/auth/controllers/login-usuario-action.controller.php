@@ -37,7 +37,7 @@ class LoginUsuarioActionController
         $this->sessionService->start();
 
         if ($this->sessionService->isAuthenticated()) {
-            RedirectResponse::to('/', [], 303);
+            RedirectResponse::to($this->sessionService->consumeIntendedPath() ?? '/', [], 303);
             return;
         }
 
@@ -53,7 +53,7 @@ class LoginUsuarioActionController
 
             $this->loginUsuarioService->execute($dto);
 
-            RedirectResponse::to('/', [], 303);
+            RedirectResponse::to($this->sessionService->consumeIntendedPath() ?? '/', [], 303);
         } catch (HttpException $exception) {
             Flash::error('No pudimos iniciar sesion. Revisa los datos e intentalo nuevamente.');
             Flash::validationErrors($this->validationErrorsFromException($exception));

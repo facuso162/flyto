@@ -30,7 +30,7 @@ class LoginPageController
 
         // TODO - Chequear si de esto se hace cargo la funcion show o si el router ya lo hace
         if ($this->sessionService->isAuthenticated()) {
-            RedirectResponse::to('/');
+            RedirectResponse::to($this->sessionService->consumeIntendedPath() ?? '/');
             return;
         }
 

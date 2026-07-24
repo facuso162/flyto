@@ -12,6 +12,7 @@ namespace App\Auth\Services;
 class SessionService
 {
     private const USER_KEY = 'usuario';
+    private const INTENDED_PATH_KEY = 'auth_intended_path';
 
     public function start(): void
     {
@@ -75,11 +76,16 @@ class SessionService
     {
         $this->start();
 
+        $intendedPath = $this->get(self::INTENDED_PATH_KEY);
         session_unset();
 
         $this->regenerate();
 
         $this->set(self::USER_KEY, $userData);
+
+        if (is_string($intendedPath) && $this->isSafeInternalPath($intendedPath)) {
+            $this->set(self::INTENDED_PATH_KEY, $intendedPath);
+        }
     }
 
     public function logout(): void
@@ -102,5 +108,45 @@ class SessionService
         }
 
         $this->set(self::USER_KEY, array_replace($currentUser, $userData));
+    }
+
+    public function rememberIntendedPath(string $path): void
+    {
+        $this->start();
+
+        if ($this->isSafeInternalPath($path)) {
+            $this->set(self::INTENDED_PATH_KEY, $path);
+        }
+    }
+
+    public function consumeIntendedPath(): ?string
+    {
+        $this->start();
+
+        $path = $this->get(self::INTENDED_PATH_KEY);
+        $this->remove(self::INTENDED_PATH_KEY);
+
+        return is_string($path) && $this->isSafeInternalPath($path)
+            ? $path
+            : null;
+    }
+
+    private function isSafeInternalPath(string $path): bool
+    {
+        if ($path === '' || $path[0] !== '/' || str_starts_with($path, '//')) {
+            return false;
+        }
+
+        if (str_contains($path, "\r") || str_contains($path, "\n")) {
+            return false;
+        }
+
+        $parts = parse_url($path);
+
+        return is_array($parts)
+            && !isset($parts['scheme'])
+            && !isset($parts['host'])
+            && !isset($parts['user'])
+            && !isset($parts['pass']);
     }
 }
