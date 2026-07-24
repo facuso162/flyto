@@ -132,7 +132,7 @@ $steps = ['Selección', 'Pasajeros', 'Pago', 'Confirmación'];
                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v10h13V10M9 20v-6h6v6"/></svg>
                 Ver mis reservas
             </a>
-            <a href="<?= $html($basePath) ?>/vuelos/buscar" class="flex h-[46px] items-center justify-center gap-2 bg-flyto-navy px-5 text-sm font-medium text-flyto-sand transition hover:bg-flyto-ink">
+            <a href="<?= $html($basePath) ?>/#hero-section" class="flex h-[46px] items-center justify-center gap-2 bg-flyto-navy px-5 text-sm font-medium text-flyto-sand transition hover:bg-flyto-ink">
                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.5 16.5v2l-8-1.5v4l2 1.5V24L12 23l-3.5 1v-1.5l2-1.5v-4l-8 1.5v-2l8-4V7a1.5 1.5 0 0 1 3 0v5.5l8 4Z" transform="rotate(-45 12 12)"/></svg>
                 Buscar otro vuelo
             </a>

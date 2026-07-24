@@ -188,10 +188,10 @@ class ReservaRepository
             $pasajeroStmt = $this->pdo->prepare("
                 INSERT INTO pasajeros (
                     reserva_id, nombre, apellido, documento, pasaporte,
-                    fecha_nacimiento, telefono_contacto, correo_electronico
+                    fecha_nacimiento, nacionalidad, telefono_contacto, correo_electronico
                 ) VALUES (
                     :reserva_id, :nombre, :apellido, :documento, :pasaporte,
-                    :fecha_nacimiento, :telefono_contacto, :correo_electronico
+                    :fecha_nacimiento, :nacionalidad, :telefono_contacto, :correo_electronico
                 )
             ");
 
@@ -203,6 +203,7 @@ class ReservaRepository
                     ':documento' => $pasajero->documento,
                     ':pasaporte' => $pasajero->pasaporte,
                     ':fecha_nacimiento' => $pasajero->fechaNacimiento->format('Y-m-d'),
+                    ':nacionalidad' => $pasajero->nacionalidad,
                     ':telefono_contacto' => $pasajero->telefonoContacto,
                     ':correo_electronico' => $pasajero->correoElectronico,
                 ]);
@@ -409,7 +410,7 @@ class ReservaRepository
     private function mapReserva(array $row): Reserva
     {
         $pasajerosStmt = $this->pdo->prepare("
-            SELECT id, nombre, apellido, documento, pasaporte, fecha_nacimiento,
+            SELECT id, nombre, apellido, documento, pasaporte, fecha_nacimiento, nacionalidad,
                    telefono_contacto, correo_electronico
             FROM pasajeros
             WHERE reserva_id = :reserva_id
@@ -425,6 +426,7 @@ class ReservaRepository
                 documento: (string) $pasajero['documento'],
                 pasaporte: (string) $pasajero['pasaporte'],
                 fechaNacimiento: new \DateTime($pasajero['fecha_nacimiento']),
+                nacionalidad: (string) $pasajero['nacionalidad'],
                 telefonoContacto: (string) $pasajero['telefono_contacto'],
                 correoElectronico: (string) $pasajero['correo_electronico']
             ),

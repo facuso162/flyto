@@ -113,7 +113,7 @@ if ($reserva !== null) {
                             </div>
                             <div>
                                 <dt class="font-mono text-[10.4px] uppercase tracking-[0.26px] text-flyto-muted">Total pagado</dt>
-                                <dd class="mt-0.5 text-sm leading-5">USD <?= $html($formatMoney($reserva->precioTotal)) ?></dd>
+                                <dd class="mt-0.5 text-sm leading-5">ARS <?= $html($formatMoney($reserva->precioTotal)) ?></dd>
                             </div>
                         </dl>
                     </div>
@@ -126,7 +126,7 @@ if ($reserva !== null) {
                         </div>
                         <form class="p-5" method="post" action="<?= $html($basePath) ?>/reservas/cancelar">
                             <input type="hidden" name="reservaId" value="<?= (int) $reserva->id ?>">
-                            <button type="submit" class="flex h-9 w-full items-center border border-red-200 px-3.5 text-left text-sm font-medium text-red-600 transition hover:bg-red-50">
+                            <button type="submit" class="flex h-9 w-full items-center border border-red-700/30 px-3.5 text-left text-sm font-medium text-red-700 transition hover:border-red-700 hover:bg-red-50">
                                 Cancelar reserva
                             </button>
                         </form>

@@ -81,9 +81,16 @@ class EditarVueloActionController
             fechaLlegada: new \DateTimeImmutable((string) $data['fechaLlegada']),
             origenCiudadId: (int) $data['origenCiudadId'],
             destinoCiudadId: (int) $data['destinoCiudadId'],
-            duracionHoras: (float) $data['duracionHoras'],
+            duracionHoras: $this->durationHours($data),
             distanciaKm: (int) $data['distanciaKm']
         );
+    }
+
+    private function durationHours(array $data): float
+    {
+        $salida = new \DateTimeImmutable((string) $data['fechaSalida']);
+        $llegada = new \DateTimeImmutable((string) $data['fechaLlegada']);
+        return round(($llegada->getTimestamp() - $salida->getTimestamp()) / 3600, 2);
     }
 
     private function validationErrorsFromException(HttpException $exception): array

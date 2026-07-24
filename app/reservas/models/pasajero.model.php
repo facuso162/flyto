@@ -10,6 +10,7 @@ class Pasajero
     public string $documento;
     public string $pasaporte;
     public \DateTime $fechaNacimiento;
+    public string $nacionalidad;
     public string $telefonoContacto;
     public string $correoElectronico;
 
@@ -20,6 +21,7 @@ class Pasajero
         string $documento,
         string $pasaporte,
         \DateTime $fechaNacimiento,
+        string $nacionalidad,
         string $telefonoContacto,
         string $correoElectronico
     ) {
@@ -29,6 +31,7 @@ class Pasajero
         $this->documento = $documento;
         $this->pasaporte = $pasaporte;
         $this->fechaNacimiento = $fechaNacimiento;
+        $this->nacionalidad = $nacionalidad;
         $this->telefonoContacto = $telefonoContacto;
         $this->correoElectronico = $correoElectronico;
     }

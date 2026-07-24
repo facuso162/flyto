@@ -35,7 +35,10 @@ class PasajerosValidator
             self::date($pasajero, 'fechaNacimiento', "pasajeros.$index.fechaNacimiento");
             self::requiredString($pasajero, 'nacionalidad', 80, "pasajeros.$index.nacionalidad");
             $email = self::requiredString($pasajero, 'correoElectronico', 120, "pasajeros.$index.correoElectronico");
-            self::requiredString($pasajero, 'telefonoContacto', 30, "pasajeros.$index.telefonoContacto");
+            $telefono = self::requiredString($pasajero, 'telefonoContacto', 30, "pasajeros.$index.telefonoContacto");
+            if (preg_match('/^[0-9]+$/', $telefono) !== 1) {
+                throw new HttpException('El telefono solo puede contener digitos.', 400, ['field' => "pasajeros.$index.telefonoContacto"]);
+            }
 
             if (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
                 throw new HttpException('El correo electronico no tiene un formato valido.', 400, ['field' => "pasajeros.$index.correoElectronico"]);
@@ -66,7 +69,8 @@ class PasajerosValidator
             throw new HttpException('Este campo es obligatorio.', 400, ['field' => $field]);
         }
 
-        if (strlen($value) > $maxLength) {
+        $length = function_exists('mb_strlen') ? mb_strlen($value) : strlen($value);
+        if ($length > $maxLength) {
             throw new HttpException("Este campo no puede superar los $maxLength caracteres.", 400, ['field' => $field]);
         }
 

@@ -63,7 +63,7 @@ $backQuery = http_build_query([
                     <label class="block">
                         <span class="<?= $labelClass ?>">Número de tarjeta</span>
                         <span class="relative mt-1.5 block">
-                            <input class="h-[42px] w-full border border-flyto-ink/15 bg-white py-2.5 pl-3 pr-10 font-mono text-sm text-flyto-ink outline-none transition placeholder:text-flyto-muted/50 focus:border-flyto-navy focus:ring-1 focus:ring-flyto-navy" type="text" name="pago[numeroTarjeta]" inputmode="numeric" autocomplete="cc-number" placeholder="1234 5678 9012 3456" maxlength="23" pattern="[0-9 ]{13,23}" required>
+                            <input class="h-[42px] w-full border border-flyto-ink/15 bg-white py-2.5 pl-3 pr-10 font-mono text-sm text-flyto-ink outline-none transition placeholder:text-flyto-muted/50 focus:border-flyto-navy focus:ring-1 focus:ring-flyto-navy" type="text" name="pago[numeroTarjeta]" inputmode="numeric" autocomplete="cc-number" placeholder="1234 5678 9012 3456" maxlength="19" pattern="[0-9]{4}( [0-9]{4}){2}( [0-9]{1,4})?" required>
                             <svg class="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-flyto-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="1"/><path d="M2 10h20"/></svg>
                         </span>
                         <?= $fieldError('numeroTarjeta') ?>

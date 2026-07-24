@@ -52,7 +52,7 @@ $e = static fn (string $valor): string => htmlspecialchars($valor, ENT_QUOTES, '
             <p class="mt-1.5 font-mono text-xs text-flyto-muted">
                 <?= $e($vuelo->fechaSalida->format('Y-m-d H:i')) ?>
                 <span class="mx-2 font-sans" aria-hidden="true">·</span>
-                USD <?= $e(number_format($vuelo->precio, 0, ',', '.')) ?>
+                ARS <?= $e(number_format($vuelo->precio, 0, ',', '.')) ?>
                 <span class="mx-2 font-sans" aria-hidden="true">·</span>
                 <?= $ocupacion ?>% ocupado
                 <span class="mx-2 font-sans" aria-hidden="true">·</span>

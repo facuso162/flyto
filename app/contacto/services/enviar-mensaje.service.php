@@ -36,7 +36,7 @@ class EnviarMensajeService
             throw new HttpException('El nombre es obligatorio.', 400, ['field' => 'nombre']);
         }
 
-        if (strlen($mensaje['nombre']) > 80) {
+        if ($this->length($mensaje['nombre']) > 80) {
             throw new HttpException('El nombre no puede superar los 80 caracteres.', 400, ['field' => 'nombre']);
         }
 
@@ -44,11 +44,11 @@ class EnviarMensajeService
             throw new HttpException('El apellido es obligatorio.', 400, ['field' => 'apellido']);
         }
 
-        if (strlen($mensaje['apellido']) > 80) {
+        if ($this->length($mensaje['apellido']) > 80) {
             throw new HttpException('El apellido no puede superar los 80 caracteres.', 400, ['field' => 'apellido']);
         }
 
-        if ($mensaje['email'] === '' || filter_var($mensaje['email'], FILTER_VALIDATE_EMAIL) === false) {
+        if ($mensaje['email'] === '' || $this->length($mensaje['email']) > 120 || filter_var($mensaje['email'], FILTER_VALIDATE_EMAIL) === false) {
             throw new HttpException('El email es obligatorio y debe tener un formato valido.', 400, ['field' => 'email']);
         }
 
@@ -56,7 +56,11 @@ class EnviarMensajeService
             throw new HttpException('El asunto es obligatorio.', 400, ['field' => 'asunto']);
         }
 
-        if (strlen($mensaje['asunto']) > 120) {
+        if (!in_array($mensaje['asunto'], ['Consulta sobre vuelos', 'Reserva existente', 'Soporte de cuenta', 'Otros'], true)) {
+            throw new HttpException('El asunto seleccionado no es valido.', 400, ['field' => 'asunto']);
+        }
+
+        if ($this->length($mensaje['asunto']) > 120) {
             throw new HttpException('El asunto no puede superar los 120 caracteres.', 400, ['field' => 'asunto']);
         }
 
@@ -64,9 +68,14 @@ class EnviarMensajeService
             throw new HttpException('El mensaje es obligatorio.', 400, ['field' => 'mensaje']);
         }
 
-        if (strlen($mensaje['mensaje']) > 2000) {
+        if ($this->length($mensaje['mensaje']) > 2000) {
             throw new HttpException('El mensaje no puede superar los 2000 caracteres.', 400, ['field' => 'mensaje']);
         }
+    }
+
+    private function length(string $value): int
+    {
+        return function_exists('mb_strlen') ? mb_strlen($value) : strlen($value);
     }
 
     private function getStringValue(array $data, string $key): string

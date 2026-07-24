@@ -86,6 +86,7 @@ class CrearReservaActionController
                     documento: trim((string) $pasajero['documento']),
                     pasaporte: trim((string) $pasajero['pasaporte']),
                     fechaNacimiento: new \DateTime((string) $pasajero['fechaNacimiento']),
+                    nacionalidad: trim((string) $pasajero['nacionalidad']),
                     telefonoContacto: trim((string) $pasajero['telefonoContacto']),
                     correoElectronico: trim((string) $pasajero['correoElectronico'])
                 ),

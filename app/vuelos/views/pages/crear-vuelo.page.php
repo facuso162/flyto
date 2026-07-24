@@ -39,8 +39,8 @@ $fieldError = static function (string $field) use ($error): void {
                 <div class="grid gap-x-5 gap-y-5 p-6 sm:grid-cols-2">
                     <?php foreach ([
                         ['codigoVuelo', 'Código del vuelo', 'text', $codigoVueloPropuesto, 'AAA000', 'maxlength="10"'],
-                        ['precio', 'Precio (AR$)', 'number', '', '1240', 'min="0" step="0.01"'],
-                        ['asientosDisponibles', 'Asientos disponibles', 'number', '', '180', 'min="0" step="1"'],
+                        ['precio', 'Precio (AR$)', 'number', '', '1240', 'min="0" max="99999999.99" step="0.01" inputmode="decimal"'],
+                        ['asientosDisponibles', 'Asientos disponibles', 'number', '', '180', 'min="0" max="2147483647" step="1" inputmode="numeric"'],
                         ['fechaSalida', 'Fecha y hora de salida', 'datetime-local', '', '', 'min="' . $minDateTime . '"'],
                         ['fechaLlegada', 'Fecha y hora de llegada', 'datetime-local', '', '', 'min="' . $minDateTime . '"'],
                     ] as [$name, $label, $type, $default, $placeholder, $attributes]): ?>
@@ -69,7 +69,7 @@ $fieldError = static function (string $field) use ($error): void {
                     <?php foreach ([['duracionHoras', 'Duración estimada (horas)', '9.5', '0.01'], ['distanciaKm', 'Distancia (km)', '7240', '1']] as [$name, $label, $placeholder, $step]): ?>
                         <label class="block">
                             <span class="font-mono text-[10px] font-medium uppercase tracking-[0.1em] text-flyto-muted"><?= $label ?></span>
-                            <input type="number" name="<?= $name ?>" value="<?= $value($name) ?>" placeholder="<?= $placeholder ?>" min="0" step="<?= $step ?>" required class="<?= $inputClass($name) ?>" <?= $error($name) !== '' ? 'aria-invalid="true" aria-describedby="error-' . $name . '"' : '' ?>>
+                            <input type="number" name="<?= $name ?>" value="<?= $value($name) ?>" placeholder="<?= $placeholder ?>" min="0" max="<?= $name === 'duracionHoras' ? '999.99' : '2147483647' ?>" step="<?= $step ?>" <?= $name === 'duracionHoras' ? 'readonly' : '' ?> required class="<?= $inputClass($name) ?>" <?= $error($name) !== '' ? 'aria-invalid="true" aria-describedby="error-' . $name . '"' : '' ?>>
                             <?php $fieldError($name); ?>
                         </label>
                     <?php endforeach; ?>

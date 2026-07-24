@@ -75,7 +75,7 @@ $fieldError = static function (string $field) use ($error, $html): void {
 
                     <label class="mt-5 block">
                         <span class="font-mono text-[10px] font-medium uppercase tracking-[0.1em] text-flyto-muted">Fecha de expiracion</span>
-                        <input type="date" name="fechaExpiracion" value="<?= $value('fechaExpiracion') ?>" required class="<?= $fieldClass('fechaExpiracion') ?> h-[42px]" <?= $error('fechaExpiracion') !== '' ? 'aria-invalid="true" aria-describedby="error-fechaExpiracion"' : '' ?>>
+                        <input type="date" name="fechaExpiracion" min="<?= (new DateTimeImmutable('tomorrow'))->format('Y-m-d') ?>" value="<?= $value('fechaExpiracion') ?>" required class="<?= $fieldClass('fechaExpiracion') ?> h-[42px]" <?= $error('fechaExpiracion') !== '' ? 'aria-invalid="true" aria-describedby="error-fechaExpiracion"' : '' ?>>
                         <?php $fieldError('fechaExpiracion'); ?>
                     </label>
                 </div>

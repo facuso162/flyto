@@ -12,7 +12,7 @@ class VerificarTokenRecuperacionValidator
     {
         $token = self::getStringValue($data, 'token');
 
-        if ($token === '') {
+        if (preg_match('/^[0-9]{6}$/', $token) !== 1) {
             throw new HttpException(
                 'El codigo de recuperacion es obligatorio.',
                 400,

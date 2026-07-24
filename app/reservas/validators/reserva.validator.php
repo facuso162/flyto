@@ -17,13 +17,14 @@ class ReservaValidator
         $pago = $data['pago'];
         self::requiredString($pago, 'nombreTitular', 120, 'pago.nombreTitular');
 
-        $numeroTarjeta = preg_replace('/\s+/', '', self::requiredString($pago, 'numeroTarjeta', 23, 'pago.numeroTarjeta'));
-        if (!is_string($numeroTarjeta) || preg_match('/^\d{13,19}$/', $numeroTarjeta) !== 1) {
+        $numeroTarjeta = self::requiredString($pago, 'numeroTarjeta', 19, 'pago.numeroTarjeta');
+        $numeroTarjetaNormalizado = preg_replace('/ /', '', $numeroTarjeta);
+        if (preg_match('/^[0-9 ]{13,19}$/', $numeroTarjeta) !== 1 || !is_string($numeroTarjetaNormalizado) || preg_match('/^[0-9]{13,16}$/', $numeroTarjetaNormalizado) !== 1) {
             throw new HttpException('El numero de tarjeta no tiene un formato valido.', 400, ['field' => 'pago.numeroTarjeta']);
         }
 
         $vencimiento = self::requiredString($pago, 'vencimiento', 5, 'pago.vencimiento');
-        if (preg_match('/^(0[1-9]|1[0-2])\/(\d{2})$/', $vencimiento) !== 1) {
+        if (preg_match('/^(0[1-9]|1[0-2])\/([0-9]{2})$/', $vencimiento) !== 1) {
             throw new HttpException('El vencimiento debe tener el formato MM/AA.', 400, ['field' => 'pago.vencimiento']);
         }
 
@@ -70,9 +71,9 @@ class ReservaValidator
 
         $pago = $data['pago'];
         self::requiredString($pago, 'nombreTitular', 120, 'pago.nombreTitular');
-        $numeroTarjeta = self::requiredString($pago, 'numeroTarjeta', 19, 'pago.numeroTarjeta');
+        $numeroTarjeta = self::requiredString($pago, 'numeroTarjeta', 16, 'pago.numeroTarjeta');
 
-        if (preg_match('/^\d{13,19}$/', $numeroTarjeta) !== 1) {
+        if (preg_match('/^\d{13,16}$/', $numeroTarjeta) !== 1) {
             throw new HttpException('El numero de tarjeta no tiene un formato valido.', 400, ['field' => 'pago.numeroTarjeta']);
         }
 
@@ -98,7 +99,8 @@ class ReservaValidator
             throw new HttpException('Este campo es obligatorio.', 400, ['field' => $field]);
         }
 
-        if (strlen($value) > $maxLength) {
+        $length = function_exists('mb_strlen') ? mb_strlen($value) : strlen($value);
+        if ($length > $maxLength) {
             throw new HttpException("Este campo no puede superar los $maxLength caracteres.", 400, ['field' => $field]);
         }
 

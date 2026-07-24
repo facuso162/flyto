@@ -75,14 +75,14 @@ $e = static fn (string $text): string => htmlspecialchars($text, ENT_QUOTES, 'UT
                     </label>
 
                     <?php foreach ([
-                        ['precio', 'Precio (USD)', 'number', '0.01'],
+                        ['precio', 'Precio (ARS)', 'number', '0.01'],
                         ['asientosDisponibles', 'Asientos disponibles', 'number', '1'],
                         ['fechaSalida', 'Fecha y hora de salida', 'datetime-local', null],
                         ['fechaLlegada', 'Fecha y hora de llegada', 'datetime-local', null],
                     ] as [$name, $label, $type, $step]): ?>
                         <label class="block">
                             <span class="font-mono text-[10px] font-medium uppercase tracking-[0.025em] text-flyto-muted"><?= $label ?></span>
-                            <input type="<?= $type ?>" name="<?= $name ?>" value="<?= $value($name) ?>" <?= $type === 'number' ? 'min="0" step="' . $step . '"' : 'min="' . $minDateTime . '"' ?> required class="<?= $inputClass($name) ?>" <?= $error($name) !== '' ? 'aria-invalid="true" aria-describedby="error-' . $name . '"' : '' ?>>
+                            <input type="<?= $type ?>" name="<?= $name ?>" value="<?= $value($name) ?>" <?= $type === 'number' ? 'min="0" max="' . ($name === 'precio' ? '99999999.99' : '2147483647') . '" step="' . $step . '"' : 'min="' . $minDateTime . '"' ?> required class="<?= $inputClass($name) ?>" <?= $error($name) !== '' ? 'aria-invalid="true" aria-describedby="error-' . $name . '"' : '' ?>>
                             <?php $fieldError($name); ?>
                         </label>
                     <?php endforeach; ?>
@@ -105,7 +105,7 @@ $e = static fn (string $text): string => htmlspecialchars($text, ENT_QUOTES, 'UT
                     <?php foreach ([['duracionHoras', 'Duración estimada (horas)', '0.01'], ['distanciaKm', 'Distancia (km)', '1']] as [$name, $label, $step]): ?>
                         <label class="block">
                             <span class="font-mono text-[10px] font-medium uppercase tracking-[0.025em] text-flyto-muted"><?= $label ?></span>
-                            <input type="number" name="<?= $name ?>" value="<?= $value($name) ?>" min="0" step="<?= $step ?>" required class="<?= $inputClass($name) ?>" <?= $error($name) !== '' ? 'aria-invalid="true" aria-describedby="error-' . $name . '"' : '' ?>>
+                            <input type="number" name="<?= $name ?>" value="<?= $value($name) ?>" min="0" max="<?= $name === 'duracionHoras' ? '999.99' : '2147483647' ?>" step="<?= $step ?>" <?= $name === 'duracionHoras' ? 'readonly' : '' ?> required class="<?= $inputClass($name) ?>" <?= $error($name) !== '' ? 'aria-invalid="true" aria-describedby="error-' . $name . '"' : '' ?>>
                             <?php $fieldError($name); ?>
                         </label>
                     <?php endforeach; ?>

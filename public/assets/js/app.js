@@ -1,154 +1,227 @@
 (function () {
-    function updateCityDescription(select) {
-        var targetId = select.dataset.descriptionTarget;
-        var target = targetId ? document.getElementById(targetId) : null;
-        var option = select.options[select.selectedIndex];
+    'use strict';
 
-        if (target && option) {
-            target.textContent = option.dataset.description || option.textContent;
+    var activeClasses = ['bg-flyto-navy', 'text-flyto-sand'];
+    var disabledClasses = ['cursor-not-allowed', 'border', 'border-flyto-ink/10', 'bg-[#e5e4e0]', 'text-flyto-muted'];
+    var passwordMessage = 'La contrasena debe tener entre 8 y 40 caracteres, una mayuscula, una minuscula, un numero y un caracter especial.';
+
+    function fieldKey(field) {
+        return (field.name || 'campo').replace(/\[\]/g, '').replace(/[\[\].]+/g, '-').replace(/-+$/, '');
+    }
+
+    function errorSlot(field) {
+        var key = field.dataset.fieldKey || fieldKey(field);
+        field.dataset.fieldKey = key;
+        var scope = field.closest('label, fieldset, .field-group') || field.parentElement;
+        var slot = scope && (
+            scope.querySelector('[data-field-error="' + key + '"]') ||
+            scope.querySelector('[id="error-' + key + '"]') ||
+            scope.querySelector('.form-field-error') ||
+            scope.querySelector('p')
+        );
+        if (!slot && scope && scope.nextElementSibling && scope.nextElementSibling.matches('p, span')) {
+            slot = scope.nextElementSibling;
         }
+        if (!slot) {
+            slot = document.createElement('p');
+            if (scope) scope.appendChild(slot);
+        }
+        slot.dataset.fieldError = key;
+        slot.id = slot.id || ('error-' + key);
+        slot.classList.add('form-field-error', 'mt-1', 'text-xs', 'leading-5', 'text-red-700');
+        slot.setAttribute('role', 'alert');
+        slot.setAttribute('aria-live', 'polite');
+        return slot;
     }
 
-    document.querySelectorAll('[data-city-select]').forEach(function (select) {
-        updateCityDescription(select);
-        select.addEventListener('change', function () {
-            updateCityDescription(select);
-        });
-    });
+    function customError(field, form) {
+        var value = field.value || '';
+        var name = field.name || '';
+        if (field.type === 'password' && name !== 'pago[cvv]' && field.required && value !== '' && !/^.{8,40}$/.test(value)) return passwordMessage;
+        if (field.type === 'password' && name !== 'pago[cvv]' && field.required && value !== '' && !/[A-Z]/.test(value)) return passwordMessage;
+        if (field.type === 'password' && name !== 'pago[cvv]' && field.required && value !== '' && !/[a-z]/.test(value)) return passwordMessage;
+        if (field.type === 'password' && name !== 'pago[cvv]' && field.required && value !== '' && !/[0-9]/.test(value)) return passwordMessage;
+        if (field.type === 'password' && name !== 'pago[cvv]' && field.required && value !== '' && !/[^a-zA-Z0-9]/.test(value)) return passwordMessage;
+        if (name === 'password_confirmation' && value !== '' && value !== (form.querySelector('[name="password"]') || {}).value) return 'Las contrasenas no coinciden.';
+        if (name === 'telefono' || name.indexOf('telefonoContacto') !== -1) {
+            if (value !== '' && !/^[0-9]+$/.test(value)) return 'Este telefono solo puede contener digitos.';
+        }
+        if (name === 'token' && value !== '' && !/^[0-9]{6}$/.test(value)) return 'El codigo debe tener exactamente 6 digitos.';
+        if (name === 'pago[vencimiento]' && value !== '' && !/^(0[1-9]|1[0-2])\/[0-9]{2}$/.test(value)) return 'El vencimiento debe tener el formato MM/AA.';
+        if (name === 'origen' && value !== '' && value === (form.querySelector('[name="destino"]') || {}).value) return 'El origen y el destino deben ser distintos.';
+        if (name === 'destino' && value !== '' && value === (form.querySelector('[name="origen"]') || {}).value) return 'El origen y el destino deben ser distintos.';
+        if ((name === 'fechaLlegada' || name === 'fechaSalida') && value !== '') {
+            var other = form.querySelector('[name="' + (name === 'fechaLlegada' ? 'fechaSalida' : 'fechaLlegada') + '"]');
+            if (other && name === 'fechaLlegada' && other.value && value <= other.value) return 'La llegada debe ser posterior a la salida.';
+        }
+        return '';
+    }
 
-    var swapButton = document.getElementById('change-destiny-origin');
-    if (swapButton) {
-        swapButton.addEventListener('click', function () {
-            var origin = document.querySelector('select[name="origen"]');
-            var destination = document.querySelector('select[name="destino"]');
+    function valid(field, form) {
+        return !customError(field, form) && field.checkValidity();
+    }
 
-            if (!origin || !destination) {
-                return;
+    function setButtonState(form, enabled) {
+        var button = form.querySelector('button[type="submit"], input[type="submit"]');
+        if (!button) return;
+        button.disabled = !enabled;
+        var swapsVisualState = button.dataset.validationStyle === 'swap' || button.classList.contains('bg-[#e5e4e0]');
+        if (swapsVisualState) {
+            activeClasses.forEach(function (name) { button.classList.toggle(name, enabled); });
+            disabledClasses.forEach(function (name) { button.classList.toggle(name, !enabled); });
+            return;
+        }
+        button.classList.toggle('opacity-50', !enabled);
+    }
+
+    function updateField(field, form, show) {
+        if (field.type === 'hidden') return true;
+        var message = customError(field, form);
+        if (!message && !field.checkValidity()) message = field.validationMessage;
+        var slot = errorSlot(field);
+        var touched = field.dataset.touched === '1';
+        var shouldShow = (show || touched) && message !== '';
+        slot.textContent = shouldShow ? message : '';
+        slot.setAttribute('aria-hidden', shouldShow ? 'false' : 'true');
+        field.setAttribute('aria-invalid', message ? 'true' : 'false');
+        if (message) field.setAttribute('aria-describedby', slot.id);
+        else field.removeAttribute('aria-describedby');
+        return !message;
+    }
+
+    function updateForm(form, show) {
+        var fields = Array.prototype.slice.call(form.querySelectorAll('input, select, textarea'));
+        var salida = form.querySelector('[name="fechaSalida"]');
+        var llegada = form.querySelector('[name="fechaLlegada"]');
+        if (salida && llegada && salida.value) llegada.min = salida.value;
+        updateFlightDuration(form);
+        var allValid = fields.every(function (field) {
+            if (field.type === 'hidden') {
+                var isId = /(^|\[)(id|.*Id|usuario_id|vueloId|reservaId|aerolineaId)(\]|$)/.test(field.name || '');
+                return !isId || /^[1-9][0-9]*$/.test(String(field.value || '').trim());
             }
-
-            var originValue = origin.value;
-            origin.value = destination.value;
-            destination.value = originValue;
-            updateCityDescription(origin);
-            updateCityDescription(destination);
+            return updateField(field, form, show);
         });
+        setButtonState(form, allValid);
+        return allValid;
     }
 
-    document.querySelectorAll('[data-news-carousel]').forEach(function (carousel) {
-        var slides = Array.prototype.slice.call(carousel.querySelectorAll('[data-news-slide]'));
-        var currentIndex = 0;
+    function formatExpiry(field) {
+        if (field.name !== 'pago[vencimiento]') return;
+        var digits = field.value.replace(/[^0-9]/g, '').slice(0, 4);
+        if (digits === '0') {
+            digits = '01';
+        }
+        if (digits.length >= 2) {
+            var month = parseInt(digits.slice(0, 2), 10);
+            if (month > 12) digits = '12' + digits.slice(2);
+            if (month === 0) digits = '01' + digits.slice(2);
+        }
+        field.value = digits.length >= 2 ? digits.slice(0, 2) + '/' + digits.slice(2) : digits;
+    }
 
-        if (slides.length === 0) {
+    function formatCardNumber(field) {
+        if (field.name !== 'pago[numeroTarjeta]') return;
+        var digits = field.value.replace(/[^0-9]/g, '').slice(0, 16);
+        field.value = (digits.match(/.{1,4}/g) || []).join(' ');
+    }
+
+    function updateFlightDuration(form) {
+        var salida = form.querySelector('[name="fechaSalida"]');
+        var llegada = form.querySelector('[name="fechaLlegada"]');
+        var duracion = form.querySelector('[name="duracionHoras"]');
+        if (!salida || !llegada || !duracion) return;
+
+        var inicio = new Date(salida.value);
+        var fin = new Date(llegada.value);
+        var diferencia = fin.getTime() - inicio.getTime();
+        if (!salida.value || !llegada.value || !Number.isFinite(diferencia) || diferencia <= 0) {
+            duracion.value = '';
             return;
         }
 
-        function showSlide(nextIndex) {
-            slides.forEach(function (slide, index) {
-                slide.classList.toggle('hidden', index !== nextIndex);
-            });
-            currentIndex = nextIndex;
+        duracion.value = (Math.round((diferencia / 3600000) * 100) / 100).toFixed(2);
+    }
+
+    function clampDiscount(field) {
+        if (field.name !== 'descuento' || field.value === '') return;
+        var value = Number(field.value);
+        if (!Number.isFinite(value)) return;
+        field.value = String(Math.min(100, Math.max(0, Math.trunc(value))));
+    }
+
+    function requiresDigitsOnly(field) {
+        var name = field.name || '';
+        return field.type === 'tel' ||
+            name === 'telefono' ||
+            name.indexOf('telefonoContacto') !== -1 ||
+            name === 'token' ||
+            name === 'pago[cvv]' ||
+            (field.type === 'number' && field.step === '1');
+    }
+
+    function sanitizeField(field) {
+        if (requiresDigitsOnly(field)) {
+            field.value = field.value.replace(/[^0-9]/g, '');
+            return;
         }
+        if (field.name === 'pago[numeroTarjeta]') {
+            formatCardNumber(field);
+            return;
+        }
+        if (field.type === 'number' && field.value !== '') {
+            var value = field.value.replace(/[^0-9.]/g, '');
+            var parts = value.split('.');
+            field.value = parts.shift() + (parts.length ? '.' + parts.join('') : '');
+        }
+    }
 
-        carousel.querySelectorAll('.js-next-news').forEach(function (button) {
-            button.addEventListener('click', function () {
-                if (slides.length === 0) {
-                    return;
-                }
-
-                showSlide((currentIndex + 1) % slides.length);
+    function initForm(form) {
+        var fields = Array.prototype.slice.call(form.querySelectorAll('input, select, textarea'));
+        fields.forEach(function (field) {
+            if (field.type !== 'hidden') errorSlot(field);
+            field.addEventListener('beforeinput', function (event) {
+                if (!event.data) return;
+                if (requiresDigitsOnly(field) && /[^0-9]/.test(event.data)) event.preventDefault();
+                if ((field.name === 'pago[numeroTarjeta]' || field.name === 'pago[vencimiento]') && /[^0-9]/.test(event.data)) event.preventDefault();
+                if (field.type === 'number' && /[^0-9.]/.test(event.data)) event.preventDefault();
             });
+            ['input', 'change'].forEach(function (eventName) {
+                field.addEventListener(eventName, function () {
+                    formatCardNumber(field);
+                    formatExpiry(field);
+                    clampDiscount(field);
+                    sanitizeField(field);
+                    if (field.name === 'codigoIata') field.value = field.value.toUpperCase();
+                    updateForm(form, false);
+                });
+            });
+            field.addEventListener('blur', function () { field.dataset.touched = '1'; updateForm(form, false); });
         });
+        updateForm(form, false);
+        form.addEventListener('submit', function (event) {
+            var allValid = updateForm(form, true);
+            if (!allValid) { event.preventDefault(); return; }
+            fields.forEach(function (field) {
+                if (field.type !== 'password' && field.name !== 'pago[cvv]' && field.name !== 'pago[numeroTarjeta]') field.value = field.value.trim();
+            });
+            var button = form.querySelector('button[type="submit"], input[type="submit"]');
+            if (button) { button.disabled = true; button.dataset.originalText = button.textContent; if (button.tagName === 'BUTTON') button.textContent = 'Procesando...'; }
+        });
+    }
+
+    document.querySelectorAll('form').forEach(initForm);
+
+    document.querySelectorAll('[data-city-select]').forEach(function (select) {
+        var update = function () { var target = document.getElementById(select.dataset.descriptionTarget); var option = select.options[select.selectedIndex]; if (target && option) target.textContent = option.dataset.description || option.textContent; };
+        update(); select.addEventListener('change', update);
     });
 
-    var recuperarContrasenaEmail = document.getElementById('recuperar-contrasena-email');
-    var recuperarContrasenaSubmit = document.getElementById('recuperar-contrasena-submit');
-
-    if (recuperarContrasenaEmail && recuperarContrasenaSubmit) {
-        var activeClasses = ['bg-flyto-navy', 'text-flyto-sand'];
-        var disabledClasses = ['cursor-not-allowed', 'border', 'border-flyto-ink/10', 'bg-[#e5e4e0]', 'text-flyto-muted'];
-
-        function setRecoverySubmitClasses(classes, enabled) {
-            classes.forEach(function (className) {
-                recuperarContrasenaSubmit.classList.toggle(className, enabled);
-            });
-        }
-
-        function updateRecoverySubmitState() {
-            var isValid = recuperarContrasenaEmail.checkValidity();
-
-            recuperarContrasenaSubmit.disabled = !isValid;
-            setRecoverySubmitClasses(activeClasses, isValid);
-            setRecoverySubmitClasses(disabledClasses, !isValid);
-        }
-
-        recuperarContrasenaEmail.addEventListener('input', updateRecoverySubmitState);
-        recuperarContrasenaEmail.addEventListener('blur', updateRecoverySubmitState);
-        updateRecoverySubmitState();
-    }
-
-    var recuperarContrasenaToken = document.getElementById('recuperar-contrasena-token');
-    var recuperarContrasenaTokenSubmit = document.getElementById('recuperar-contrasena-token-submit');
-
-    if (recuperarContrasenaToken && recuperarContrasenaTokenSubmit) {
-        var tokenActiveClasses = ['bg-flyto-navy', 'text-flyto-sand'];
-        var tokenDisabledClasses = ['cursor-not-allowed', 'border', 'border-flyto-ink/10', 'bg-[#e5e4e0]', 'text-flyto-muted'];
-
-        function setRecoveryTokenSubmitClasses(classes, enabled) {
-            classes.forEach(function (className) {
-                recuperarContrasenaTokenSubmit.classList.toggle(className, enabled);
-            });
-        }
-
-        function updateRecoveryTokenSubmitState() {
-            var isValid = recuperarContrasenaToken.value.trim() !== '';
-
-            recuperarContrasenaTokenSubmit.disabled = !isValid;
-            setRecoveryTokenSubmitClasses(tokenActiveClasses, isValid);
-            setRecoveryTokenSubmitClasses(tokenDisabledClasses, !isValid);
-        }
-
-        recuperarContrasenaToken.addEventListener('input', updateRecoveryTokenSubmitState);
-        recuperarContrasenaToken.addEventListener('blur', updateRecoveryTokenSubmitState);
-        updateRecoveryTokenSubmitState();
-    }
-
-    var recuperarContrasenaPassword = document.getElementById('recuperar-contrasena-password');
-    var recuperarContrasenaPasswordConfirmation = document.getElementById('recuperar-contrasena-password-confirmation');
-    var recuperarContrasenaCambiarSubmit = document.getElementById('recuperar-contrasena-cambiar-submit');
-
-    if (recuperarContrasenaPassword && recuperarContrasenaPasswordConfirmation && recuperarContrasenaCambiarSubmit) {
-        var changePasswordActiveClasses = ['bg-flyto-navy', 'text-flyto-sand'];
-        var changePasswordDisabledClasses = ['cursor-not-allowed', 'border', 'border-flyto-ink/10', 'bg-[#e5e4e0]', 'text-flyto-muted'];
-
-        function setChangePasswordSubmitClasses(classes, enabled) {
-            classes.forEach(function (className) {
-                recuperarContrasenaCambiarSubmit.classList.toggle(className, enabled);
-            });
-        }
-
-        function isStrongRecoveryPassword(password) {
-            return password.length >= 8 &&
-                /[A-Z]/.test(password) &&
-                /[0-9]/.test(password) &&
-                /[^a-zA-Z0-9]/.test(password);
-        }
-
-        function updateChangePasswordSubmitState() {
-            var password = recuperarContrasenaPassword.value;
-            var passwordConfirmation = recuperarContrasenaPasswordConfirmation.value;
-            var isValid = isStrongRecoveryPassword(password) &&
-                passwordConfirmation !== '' &&
-                passwordConfirmation === password;
-
-            recuperarContrasenaCambiarSubmit.disabled = !isValid;
-            setChangePasswordSubmitClasses(changePasswordActiveClasses, isValid);
-            setChangePasswordSubmitClasses(changePasswordDisabledClasses, !isValid);
-        }
-
-        recuperarContrasenaPassword.addEventListener('input', updateChangePasswordSubmitState);
-        recuperarContrasenaPassword.addEventListener('blur', updateChangePasswordSubmitState);
-        recuperarContrasenaPasswordConfirmation.addEventListener('input', updateChangePasswordSubmitState);
-        recuperarContrasenaPasswordConfirmation.addEventListener('blur', updateChangePasswordSubmitState);
-        updateChangePasswordSubmitState();
-    }
+    var swap = document.getElementById('change-destiny-origin');
+    if (swap) swap.addEventListener('click', function () {
+        var origin = document.querySelector('select[name="origen"]'), destination = document.querySelector('select[name="destino"]');
+        if (!origin || !destination) return;
+        var value = origin.value; origin.value = destination.value; destination.value = value;
+        origin.dispatchEvent(new Event('change', { bubbles: true })); destination.dispatchEvent(new Event('change', { bubbles: true }));
+    });
 })();

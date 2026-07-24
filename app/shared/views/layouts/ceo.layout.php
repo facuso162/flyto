@@ -14,7 +14,7 @@ $currentUser = is_array($currentUser) ? $currentUser : [];
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?></title>
-    <link rel="stylesheet" href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/assets/css/app.css">
+    <link rel="stylesheet" href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/assets/css/app.css?v=2">
 </head>
 <body class="min-h-screen bg-flyto-sand text-flyto-ink">
     <?php require __DIR__ . '/../../../ceo/views/components/ceo-navbar.php'; ?>
@@ -27,5 +27,6 @@ $currentUser = is_array($currentUser) ? $currentUser : [];
     </div>
 
     <?php require __DIR__ . '/../../../ceo/views/components/ceo-footer.php'; ?>
+    <script src="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/assets/js/app.js?v=2" defer></script>
 </body>
 </html>

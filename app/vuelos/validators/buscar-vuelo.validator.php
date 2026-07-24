@@ -18,7 +18,7 @@ class BuscarVueloValidator
         $aerolineas = self::getOptionalAirlineValues($data, 'aerolineas');
         $orden = self::getOptionalStringValue($data, 'orden');
 
-        if (!ctype_digit($origen)) {
+        if (!ctype_digit($origen) || (int) $origen < 1) {
             throw new HttpException(
                 'El origen debe ser numerico.',
                 400,
@@ -26,7 +26,7 @@ class BuscarVueloValidator
             );
         }
 
-        if (!ctype_digit($destino)) {
+        if (!ctype_digit($destino) || (int) $destino < 1) {
             throw new HttpException(
                 'El destino debe ser numerico.',
                 400,
@@ -34,10 +34,14 @@ class BuscarVueloValidator
             );
         }
 
+        if ($origen === $destino) {
+            throw new HttpException('El origen y el destino deben ser distintos.', 400, ['field' => 'destino']);
+        }
+
         self::validateFechaSalida($fechaSalida);
         self::validateCantidadPasajeros($cantidadPasajeros);
 
-        if ($precioMaximo !== null && !ctype_digit($precioMaximo)) {
+        if ($precioMaximo !== null && (!ctype_digit($precioMaximo) || (int) $precioMaximo < 0)) {
             throw new HttpException(
                 'El precio maximo debe ser un numero entero.',
                 400,
@@ -46,7 +50,7 @@ class BuscarVueloValidator
         }
 
         foreach ($aerolineas as $aerolinea) {
-            if (!preg_match('/^[A-Z0-9]{2,3}$/', $aerolinea)) {
+            if (!preg_match('/^[A-Z0-9]{1,3}$/', strtoupper($aerolinea))) {
                 throw new HttpException(
                     'Las aerolineas deben enviarse como codigos IATA validos.',
                     400,

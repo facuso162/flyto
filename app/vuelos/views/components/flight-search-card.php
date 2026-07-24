@@ -74,6 +74,7 @@ $renderCityOptions = static function (array $ciudades, string $selectedId): void
                 name="fechaSalida"
                 value="<?= htmlspecialchars($selectedFecha, ENT_QUOTES, 'UTF-8') ?>"
                 class="mt-1 block h-8 w-full bg-transparent text-sm font-medium leading-5 text-flyto-ink outline-none"
+                min="<?= date('Y-m-d') ?>"
                 required
             >
         </label>

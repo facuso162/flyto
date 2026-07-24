@@ -62,7 +62,7 @@ $fieldError = static function (string $field) use ($error): void {
 
                     <label class="block sm:col-span-2">
                         <span class="font-mono text-[10px] font-medium uppercase tracking-[0.1em] text-flyto-muted">Descripci&oacute;n</span>
-                        <textarea name="descripcion" rows="4" maxlength="500" required placeholder="Describ&iacute; brevemente la aerol&iacute;nea, su historia y cobertura..." class="<?= $fieldClass('descripcion') ?> min-h-[102px] resize-y py-2.5" <?= $error('descripcion') !== '' ? 'aria-invalid="true" aria-describedby="error-descripcion"' : '' ?>><?= $value('descripcion') ?></textarea>
+                        <textarea name="descripcion" rows="4" maxlength="200" required placeholder="Describ&iacute; brevemente la aerol&iacute;nea, su historia y cobertura..." class="<?= $fieldClass('descripcion') ?> min-h-[102px] resize-y py-2.5" <?= $error('descripcion') !== '' ? 'aria-invalid="true" aria-describedby="error-descripcion"' : '' ?>><?= $value('descripcion') ?></textarea>
                         <?php $fieldError('descripcion'); ?>
                     </label>
                 </div>

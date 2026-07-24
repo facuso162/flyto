@@ -5,6 +5,7 @@ namespace App\Auth\Validators;
 use App\Shared\Http\HttpException;
 
 require_once __DIR__ . '/../../shared/http/http-exception.php';
+require_once __DIR__ . '/../../shared/validation/password-policy.php';
 
 class CambiarContrasenaValidator
 {
@@ -30,12 +31,7 @@ class CambiarContrasenaValidator
             );
         }
 
-        if (
-            strlen($password) < 8 ||
-            !preg_match('/[A-Z]/', $password) ||
-            !preg_match('/[0-9]/', $password) ||
-            !preg_match('/[^a-zA-Z0-9]/', $password)
-        ) {
+        if (!\App\Shared\Validation\PasswordPolicy::isValid($password)) {
             throw new HttpException(
                 'La contrasena debe tener minimo 8 caracteres, una mayuscula, un numero y un caracter especial.',
                 400,

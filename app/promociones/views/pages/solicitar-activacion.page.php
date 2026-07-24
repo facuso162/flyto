@@ -19,7 +19,7 @@ $e = static fn (string $valor): string => htmlspecialchars($valor, ENT_QUOTES, '
                 <div class="p-6">
                     <label class="block">
                         <span class="font-mono text-[10px] font-medium uppercase tracking-[0.1em] text-flyto-muted">Fecha de fin de la promoción</span>
-                        <input type="date" name="fecha_fin" min="<?= (new DateTime('tomorrow'))->format('Y-m-d') ?>" required class="mt-1.5 h-[42px] w-full border border-flyto-ink/15 bg-white px-3 text-sm outline-none transition focus:border-flyto-navy focus:ring-1 focus:ring-flyto-navy">
+                        <input type="date" name="fecha_fin" min="<?= (new DateTimeImmutable('tomorrow'))->format('Y-m-d') ?>" required class="mt-1.5 h-[42px] w-full border border-flyto-ink/15 bg-white px-3 text-sm outline-none transition focus:border-flyto-navy focus:ring-1 focus:ring-flyto-navy">
                     </label>
                 </div>
             </div>

@@ -18,11 +18,21 @@ if (!function_exists('flytoAuthField')) {
         string $value = '',
         string $error = ''
     ): void {
+        $fieldId = 'field-' . preg_replace('/[^a-z0-9_-]+/i', '-', $name);
+        $rules = match ($name) {
+            'nombre', 'apellido' => 'maxlength="80"',
+            'email' => 'maxlength="120"',
+            'telefono' => 'maxlength="15" pattern="[0-9]*" inputmode="numeric"',
+            'password', 'password_confirmation' => 'minlength="8" maxlength="40"',
+            'token' => 'minlength="6" maxlength="6" pattern="[0-9]{6}" inputmode="numeric"',
+            default => '',
+        };
         ?>
         <label class="block">
-            <span class="font-mono text-[10.4px] font-medium uppercase tracking-[0.26px] text-flyto-muted"><?= $label ?></span>
+            <span class="font-mono text-[10.4px] font-medium uppercase tracking-[0.26px] text-flyto-muted"><?= $label ?><?= $name === 'telefono' ? ' (opcional)' : '' ?></span>
             <input
-                required
+                <?= $name !== 'telefono' ? 'required' : '' ?>
+                id="<?= $fieldId ?>"
                 name="<?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>"
                 type="<?= htmlspecialchars($type, ENT_QUOTES, 'UTF-8') ?>"
                 class="mt-1 h-[41.6px] w-full border border-flyto-ink/10 bg-white px-3 text-sm text-flyto-ink outline-none placeholder:text-flyto-muted/40 focus:border-flyto-navy"
@@ -30,10 +40,9 @@ if (!function_exists('flytoAuthField')) {
                 <?php if ($type !== 'password' && $value !== ''): ?>value="<?= htmlspecialchars($value, ENT_QUOTES, 'UTF-8') ?>"<?php endif; ?>
                 <?php if ($autocomplete !== ''): ?>autocomplete="<?= htmlspecialchars($autocomplete, ENT_QUOTES, 'UTF-8') ?>"<?php endif; ?>
                 <?= $extraAttributes ?>
+                <?= $rules ?>
             >
-            <?php if ($error !== ''): ?>
-                <p class="mt-1 text-xs leading-5 text-flyto-ink"><?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?></p>
-            <?php endif; ?>
+            <p id="error-<?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>" data-field-error="<?= htmlspecialchars($name, ENT_QUOTES, 'UTF-8') ?>" role="alert" aria-hidden="<?= $error === '' ? 'true' : 'false' ?>" class="form-field-error mt-1 text-xs leading-5 text-red-700"><?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?></p>
         </label>
         <?php
     }

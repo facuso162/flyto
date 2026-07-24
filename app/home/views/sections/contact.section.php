@@ -44,7 +44,7 @@
                 </div>
             </div>
 
-            <form action="<?= htmlspecialchars($basePath ?? '', ENT_QUOTES, 'UTF-8') ?>/contacto/enviar" method="post" class="p-8">
+            <form action="<?= htmlspecialchars($basePath ?? '', ENT_QUOTES, 'UTF-8') ?>/contacto/enviar" method="post" class="p-8" novalidate>
                 <input type="hidden" name="redirectTo" value="<?= $contactRedirectTo ?>">
                 <p class="font-mono text-xs uppercase tracking-[1.2px] text-flyto-muted">Formulario de consulta</p>
                 <?php if (!empty($contactFlash['success'])): ?>
@@ -59,14 +59,14 @@
                 <div class="mt-6 grid gap-4 md:grid-cols-2">
                     <label class="block">
                         <span class="font-mono text-[10.4px] font-medium uppercase tracking-[0.26px] text-flyto-muted">Nombre</span>
-                        <input required name="nombre" value="<?= $contactValue('nombre') ?>" class="mt-1 h-10 w-full border border-flyto-ink/10 bg-white px-3 text-sm outline-none focus:border-flyto-navy" placeholder="Tu nombre">
+                        <input required name="nombre" maxlength="80" value="<?= $contactValue('nombre') ?>" class="mt-1 h-10 w-full border border-flyto-ink/10 bg-white px-3 text-sm outline-none focus:border-flyto-navy" placeholder="Tu nombre">
                         <?php if ($contactError('nombre') !== ''): ?>
                             <p class="mt-1 text-xs leading-5 text-flyto-ink"><?= $contactError('nombre') ?></p>
                         <?php endif; ?>
                     </label>
                     <label class="block">
                         <span class="font-mono text-[10.4px] font-medium uppercase tracking-[0.26px] text-flyto-muted">Apellido</span>
-                        <input required name="apellido" value="<?= $contactValue('apellido') ?>" class="mt-1 h-10 w-full border border-flyto-ink/10 bg-white px-3 text-sm outline-none focus:border-flyto-navy" placeholder="Tu apellido">
+                        <input required name="apellido" maxlength="80" value="<?= $contactValue('apellido') ?>" class="mt-1 h-10 w-full border border-flyto-ink/10 bg-white px-3 text-sm outline-none focus:border-flyto-navy" placeholder="Tu apellido">
                         <?php if ($contactError('apellido') !== ''): ?>
                             <p class="mt-1 text-xs leading-5 text-flyto-ink"><?= $contactError('apellido') ?></p>
                         <?php endif; ?>
@@ -74,7 +74,7 @@
                 </div>
                 <label class="mt-4 block">
                     <span class="font-mono text-[10.4px] font-medium uppercase tracking-[0.26px] text-flyto-muted">Correo electrónico</span>
-                    <input required name="email" type="email" value="<?= $contactValue('email') ?>" class="mt-1 h-10 w-full border border-flyto-ink/10 bg-white px-3 text-sm outline-none focus:border-flyto-navy" placeholder="nombre@ejemplo.com">
+                    <input required name="email" type="email" maxlength="120" value="<?= $contactValue('email') ?>" class="mt-1 h-10 w-full border border-flyto-ink/10 bg-white px-3 text-sm outline-none focus:border-flyto-navy" placeholder="nombre@ejemplo.com">
                     <?php if ($contactError('email') !== ''): ?>
                         <p class="mt-1 text-xs leading-5 text-flyto-ink"><?= $contactError('email') ?></p>
                     <?php endif; ?>

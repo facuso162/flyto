@@ -98,7 +98,7 @@ $filtros = [
                             <p class="mt-0.5 text-flyto-ink"><?= count($reserva->pasajeros) ?></p>
                         </div>
                         <span class="inline-flex w-fit items-center justify-center px-2.5 py-1 text-xs font-medium <?= $badge ?>"><?= $html(ucfirst($estado)) ?></span>
-                        <strong class="font-display text-base font-medium leading-6">USD <?= $html(number_format($reserva->precioTotal, 0, ',', '.')) ?></strong>
+                        <strong class="font-display text-base font-medium leading-6">ARS <?= $html(number_format($reserva->precioTotal, 0, ',', '.')) ?></strong>
                         <svg class="hidden h-4 w-4 text-flyto-muted lg:block" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                             <path d="M6 3L11 8L6 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>

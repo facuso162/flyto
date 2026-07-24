@@ -54,8 +54,8 @@ class CrearAerolineaValidator
             self::invalid('descripcion', 'La descripcion es obligatoria.');
         }
 
-        if (self::length($descripcion) > 500) {
-            self::invalid('descripcion', 'La descripcion no puede superar los 500 caracteres.');
+        if (self::length($descripcion) > 200) {
+            self::invalid('descripcion', 'La descripcion no puede superar los 200 caracteres.');
         }
     }
 

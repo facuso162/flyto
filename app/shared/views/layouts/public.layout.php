@@ -16,7 +16,7 @@ $currentPath = $currentPath ?? '/';
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/assets/css/app.css">
+    <link rel="stylesheet" href="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/assets/css/app.css?v=2">
 </head>
 <body>
     <?php require __DIR__ . '/../components/site-header.php'; ?>
@@ -24,6 +24,6 @@ $currentPath = $currentPath ?? '/';
         <?= $content ?>
     </main>
     <?php require __DIR__ . '/../components/site-footer.php'; ?>
-    <script src="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/assets/js/app.js" defer></script>
+    <script src="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/assets/js/app.js?v=2" defer></script>
 </body>
 </html>
