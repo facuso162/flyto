@@ -27,6 +27,22 @@
     @apply border-red-700;
   }
 
+  .password-requirement {
+    @apply text-flyto-muted;
+  }
+
+  .password-requirement [data-password-requirement-icon] {
+    @apply border-flyto-muted/30;
+  }
+
+  .password-requirement[data-fulfilled="true"] {
+    @apply font-medium text-green-700;
+  }
+
+  .password-requirement[data-fulfilled="true"] [data-password-requirement-icon] {
+    @apply border-green-700 bg-green-50;
+  }
+
   form button[type="submit"]:disabled,
   form input[type="submit"]:disabled {
     background-color: #e5e4e0;

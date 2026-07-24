@@ -61,6 +61,31 @@
         return !customError(field, form) && field.checkValidity();
     }
 
+    function updatePasswordRequirements(form) {
+        var password = form.querySelector('[name="password"]');
+        var confirmation = form.querySelector('[name="password_confirmation"]');
+        if (!password) return;
+
+        var value = password.value || '';
+        var values = {
+            length: Array.from(value).length >= 8 && Array.from(value).length <= 40,
+            uppercase: /[A-Z]/.test(value),
+            lowercase: /[a-z]/.test(value),
+            number: /[0-9]/.test(value),
+            special: /[^a-zA-Z0-9]/.test(value),
+            match: Boolean(confirmation && value !== '' && confirmation.value !== '' && confirmation.value === value)
+        };
+
+        form.querySelectorAll('[data-password-requirement]').forEach(function (item) {
+            var fulfilled = Boolean(values[item.dataset.passwordRequirement]);
+            var icon = item.querySelector('[data-password-requirement-icon]');
+            var label = item.querySelector('span:last-child');
+            item.dataset.fulfilled = fulfilled ? 'true' : 'false';
+            item.setAttribute('aria-label', (fulfilled ? 'Cumplido: ' : 'Pendiente: ') + (label ? label.textContent : 'requisito'));
+            if (icon) icon.textContent = fulfilled ? '\u2713' : '\u00d7';
+        });
+    }
+
     function setButtonState(form, enabled) {
         var button = form.querySelector('button[type="submit"], input[type="submit"]');
         if (!button) return;
@@ -95,6 +120,7 @@
         var llegada = form.querySelector('[name="fechaLlegada"]');
         if (salida && llegada && salida.value) llegada.min = salida.value;
         updateFlightDuration(form);
+        updatePasswordRequirements(form);
         var allValid = fields.every(function (field) {
             if (field.type === 'hidden') {
                 var isId = /(^|\[)(id|.*Id|usuario_id|vueloId|reservaId|aerolineaId)(\]|$)/.test(field.name || '');
@@ -210,7 +236,25 @@
         });
     }
 
+    function initPasswordToggle(button) {
+        var input = document.getElementById(button.getAttribute('aria-controls'));
+        if (!input) return;
+
+        button.addEventListener('click', function () {
+            var visible = input.type === 'text';
+            input.type = visible ? 'password' : 'text';
+            button.setAttribute('aria-pressed', visible ? 'false' : 'true');
+            button.setAttribute('aria-label', visible ? 'Mostrar contrase\u00f1a' : 'Ocultar contrase\u00f1a');
+            var openEye = button.querySelector('[data-password-eye-open]');
+            var closedEye = button.querySelector('[data-password-eye-closed]');
+            if (openEye) openEye.classList.toggle('hidden', !visible);
+            if (closedEye) closedEye.classList.toggle('hidden', visible);
+            input.focus();
+        });
+    }
+
     document.querySelectorAll('form').forEach(initForm);
+    document.querySelectorAll('[data-password-toggle]').forEach(initPasswordToggle);
 
     document.querySelectorAll('[data-city-select]').forEach(function (select) {
         var update = function () { var target = document.getElementById(select.dataset.descriptionTarget); var option = select.options[select.selectedIndex]; if (target && option) target.textContent = option.dataset.description || option.textContent; };

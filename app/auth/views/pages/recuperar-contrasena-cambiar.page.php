@@ -36,8 +36,8 @@ flytoAuthShellStart('Cambio de contrase&ntilde;a', 'Cre&aacute; tu nueva contras
     <?php endif; ?>
 
     <div class="grid gap-4">
-        <?php flytoAuthField('Nueva contrase&ntilde;a', 'password', 'password', '********', 'new-password', 'id="recuperar-contrasena-password"', '', $cambiarContrasenaError('password')); ?>
-        <?php flytoAuthField('Repetir contrase&ntilde;a', 'password_confirmation', 'password', '********', 'new-password', 'id="recuperar-contrasena-password-confirmation"', '', $cambiarContrasenaError('password_confirmation')); ?>
+        <?php flytoAuthField('Nueva contrase&ntilde;a', 'password', 'password', '********', 'new-password', '', '', $cambiarContrasenaError('password')); ?>
+        <?php flytoAuthField('Repetir contrase&ntilde;a', 'password_confirmation', 'password', '********', 'new-password', '', '', $cambiarContrasenaError('password_confirmation')); ?>
     </div>
 
     <div class="mt-5">

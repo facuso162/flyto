@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../../../shared/views/components/password-ui.php';
+
 $basePath = $basePath ?? '';
 $aerolineas = $aerolineas ?? null;
 $aerolineas = is_array($aerolineas) ? $aerolineas : [];
@@ -66,13 +68,19 @@ $fieldError = static function (string $field) use ($error): void {
 
                     <label class="block sm:col-span-2">
                         <span class="font-mono text-[10px] font-medium uppercase tracking-[0.1em] text-flyto-muted">Contrasena</span>
-                        <input type="password" name="password" maxlength="40" required placeholder="********" class="<?= $fieldClass('password') ?> h-[42px]" <?= $error('password') !== '' ? 'aria-invalid="true" aria-describedby="error-password"' : '' ?>>
+                        <div class="relative">
+                            <input id="crear-ceo-password" type="password" name="password" minlength="8" maxlength="40" autocomplete="new-password" required placeholder="********" class="<?= $fieldClass('password') ?> h-[42px] pr-11" <?= $error('password') !== '' ? 'aria-invalid="true" aria-describedby="error-password"' : '' ?>>
+                            <?php flytoPasswordToggleButton('crear-ceo-password'); ?>
+                        </div>
                         <?php $fieldError('password'); ?>
                     </label>
 
                     <label class="block sm:col-span-2">
                         <span class="font-mono text-[10px] font-medium uppercase tracking-[0.1em] text-flyto-muted">Confirmar contrasena</span>
-                        <input type="password" name="password_confirmation" maxlength="40" required placeholder="********" class="<?= $fieldClass('password_confirmation') ?> h-[42px]" <?= $error('password_confirmation') !== '' ? 'aria-invalid="true" aria-describedby="error-password_confirmation"' : '' ?>>
+                        <div class="relative">
+                            <input id="crear-ceo-password-confirmation" type="password" name="password_confirmation" minlength="8" maxlength="40" autocomplete="new-password" required placeholder="********" class="<?= $fieldClass('password_confirmation') ?> h-[42px] pr-11" <?= $error('password_confirmation') !== '' ? 'aria-invalid="true" aria-describedby="error-password_confirmation"' : '' ?>>
+                            <?php flytoPasswordToggleButton('crear-ceo-password-confirmation'); ?>
+                        </div>
                         <?php $fieldError('password_confirmation'); ?>
                     </label>
 
@@ -89,15 +97,8 @@ $fieldError = static function (string $field) use ($error): void {
                         <?php $fieldError('aerolineaId'); ?>
                     </label>
 
-                    <div class="border border-flyto-ink/10 bg-flyto-sand/40 px-4 py-3 sm:col-span-2">
-                        <p class="font-mono text-[10px] uppercase tracking-[0.1em] text-flyto-muted">Requisitos de la contrasena</p>
-                        <ul class="mt-2 space-y-2 text-xs text-flyto-muted">
-                            <li class="flex items-center gap-2"><span aria-hidden="true">&times;</span> Minimo 8 caracteres</li>
-                            <li class="flex items-center gap-2"><span aria-hidden="true">&times;</span> Al menos una letra mayuscula</li>
-                            <li class="flex items-center gap-2"><span aria-hidden="true">&times;</span> Al menos un numero</li>
-                            <li class="flex items-center gap-2"><span aria-hidden="true">&times;</span> Al menos un caracter especial (!@#$%...)</li>
-                            <li class="flex items-center gap-2"><span aria-hidden="true">&times;</span> Las contrasenas coinciden</li>
-                        </ul>
+                    <div class="sm:col-span-2">
+                        <?php flytoPasswordRequirements(); ?>
                     </div>
                 </div>
             </div>

@@ -35,7 +35,7 @@ class RegisterUsuarioValidator
             !\App\Shared\Validation\PasswordPolicy::isValid($password)
         ) {
             throw new HttpException(
-                'La contrasena debe tener entre 8 y 40 caracteres, una mayuscula, una minuscula, un numero y un caracter especial.',
+                \App\Shared\Validation\PasswordPolicy::message(),
                 400,
                 ['field' => 'password']
             );

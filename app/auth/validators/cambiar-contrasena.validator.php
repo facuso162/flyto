@@ -33,7 +33,7 @@ class CambiarContrasenaValidator
 
         if (!\App\Shared\Validation\PasswordPolicy::isValid($password)) {
             throw new HttpException(
-                'La contrasena debe tener minimo 8 caracteres, una mayuscula, un numero y un caracter especial.',
+                \App\Shared\Validation\PasswordPolicy::message(),
                 400,
                 ['field' => 'password']
             );
