@@ -101,8 +101,10 @@ use App\Shared\Config\Env;
 use App\Shared\Database\Database;
 use App\Shared\Http\Flash;
 use App\Shared\Http\HttpException;
+use App\Shared\Http\JsonResponse;
 use App\Shared\Http\RedirectResponse;
 use App\Shared\Http\ViewResponse;
+use App\Shared\Controllers\NotFoundPageController;
 use App\Shared\Services\EmailService;
 use App\Usuarios\Controllers\CrearCeoActionController;
 use App\Usuarios\Controllers\CrearCeoPageController;
@@ -133,8 +135,10 @@ require_once __DIR__ . '/../app/shared/config/env.php';
 require_once __DIR__ . '/../app/shared/database/database.php';
 require_once __DIR__ . '/../app/shared/http/flash.php';
 require_once __DIR__ . '/../app/shared/http/http-exception.php';
+require_once __DIR__ . '/../app/shared/http/json-response.php';
 require_once __DIR__ . '/../app/shared/http/redirect-response.php';
 require_once __DIR__ . '/../app/shared/http/view-response.php';
+require_once __DIR__ . '/../app/shared/controllers/not-found-page.controller.php';
 require_once __DIR__ . '/../app/shared/services/email.service.php';
 
 require_once __DIR__ . '/../app/auth/middlewares/auth.middleware.php';
@@ -275,6 +279,10 @@ $container->singleton(SessionService::class, function () {
 
 $container->scoped(ViewResponse::class, function ($c) {
     return new ViewResponse($c->get(SessionService::class));
+});
+
+$container->scoped(NotFoundPageController::class, function ($c) {
+    return new NotFoundPageController($c->get(ViewResponse::class));
 });
 
 $container->scoped(AuthMiddleware::class, function ($c) {
@@ -1334,8 +1342,23 @@ if (is_string($requestQuery) && $requestQuery !== '') {
     $normalizedUri .= '?' . $requestQuery;
 }
 
-$router->resolve(
+$routeWasResolved = $router->resolve(
     $_SERVER['REQUEST_METHOD'],
     $normalizedUri,
     $container
 );
+
+if ($routeWasResolved) {
+    return;
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    $container->get(NotFoundPageController::class)->show(
+        [],
+        $queryParams,
+        __DIR__ . '/../app/shared/views/layouts/public.layout.php'
+    );
+    return;
+}
+
+JsonResponse::error('Ruta no encontrada', 404);

@@ -3,10 +3,8 @@
 namespace App;
 
 use App\Container;
-use App\Shared\Http\JsonResponse;
 
 require_once __DIR__ . '/container.php';
-require_once __DIR__ . '/shared/http/json-response.php';
 
 class Router
 {
@@ -26,7 +24,7 @@ class Router
         }
     }
 
-    public function resolve(string $method, string $uri, Container $container): void {
+    public function resolve(string $method, string $uri, Container $container): bool {
         $path = parse_url($uri, PHP_URL_PATH);
 
         $queryString = parse_url($uri, PHP_URL_QUERY);
@@ -53,10 +51,10 @@ class Router
 
                 $controller->{$route['action']}($params, $queryParams);
 
-                return;
+                return true;
             }
         }
 
-        JsonResponse::error('Ruta no encontrada', 404);
+        return false;
     }
 }
