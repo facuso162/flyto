@@ -196,7 +196,7 @@ class VueloService
     private function aplicarFiltros(array $vuelos, ?int $precioMaximo, array $aerolineas): array
     {
         return array_values(array_filter($vuelos, function (Vuelo $vuelo) use ($precioMaximo, $aerolineas) {
-            if ($precioMaximo !== null && $vuelo->precio > $precioMaximo) {
+            if ($precioMaximo !== null && $vuelo->precioConPromocion() > $precioMaximo) {
                 return false;
             }
 
