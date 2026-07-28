@@ -254,8 +254,44 @@
         });
     }
 
+    function initPriceRange(range) {
+        var container = range.closest('[data-price-range-container]');
+        var output = container && container.querySelector('[data-price-output]');
+        if (!container || !output) return;
+
+        var formatter = new Intl.NumberFormat('es-AR', {
+            style: 'currency',
+            currency: 'ARS',
+            maximumFractionDigits: 0
+        });
+
+        function updatePriceLabel() {
+            var min = Number(range.min) || 0;
+            var max = Number(range.max) || min;
+            var value = Math.min(max, Math.max(min, Number(range.value) || min));
+            var progress = max > min ? (value - min) / (max - min) : 0;
+
+            output.value = 'Hasta ' + formatter.format(value).replace('ARS', '').trim();
+
+            var thumbCenter = progress * range.clientWidth;
+            var halfLabel = output.offsetWidth / 2;
+            var labelCenter = Math.min(
+                Math.max(thumbCenter, halfLabel),
+                Math.max(halfLabel, range.clientWidth - halfLabel)
+            );
+            output.style.left = labelCenter + 'px';
+            output.style.transform = 'translateX(-50%)';
+        }
+
+        range.addEventListener('input', updatePriceLabel);
+        range.addEventListener('change', updatePriceLabel);
+        window.addEventListener('resize', updatePriceLabel);
+        updatePriceLabel();
+    }
+
     document.querySelectorAll('form').forEach(initForm);
     document.querySelectorAll('[data-password-toggle]').forEach(initPasswordToggle);
+    document.querySelectorAll('[data-price-range]').forEach(initPriceRange);
     document.querySelectorAll('[data-toast]').forEach(function (toast) {
         var close = toast.querySelector('[data-toast-close]');
         var dismiss = function () {

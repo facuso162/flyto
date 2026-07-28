@@ -25,6 +25,6 @@ $currentPath = $currentPath ?? '/';
         <?= $content ?>
     </main>
     <?php require __DIR__ . '/../components/site-footer.php'; ?>
-    <script src="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/assets/js/app.js?v=3" defer></script>
+    <script src="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/assets/js/app.js?v=4" defer></script>
 </body>
 </html>

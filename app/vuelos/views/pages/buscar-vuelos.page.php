@@ -60,6 +60,8 @@ $buildQuery = static function (array $overrides = []) use ($criterios): string {
 };
 
 $renderFilterForm = static function (string $id) use ($basePath, $criterios, $aerolineas, $precioMaximoDisponible, $precioMaximoSeleccionado, $formatMoney, $buildQuery): void {
+    $precioTope = max(0, (int) ceil($precioMaximoDisponible));
+    $precioSeleccionado = max(0, min((int) ceil($precioMaximoSeleccionado), $precioTope));
     ?>
     <form id="<?= htmlspecialchars($id, ENT_QUOTES, 'UTF-8') ?>" action="<?= htmlspecialchars($basePath, ENT_QUOTES, 'UTF-8') ?>/vuelos/buscar" method="get" class="space-y-6">
         <input type="hidden" name="origen" value="<?= htmlspecialchars((string) $criterios->origen, ENT_QUOTES, 'UTF-8') ?>">
@@ -75,19 +77,33 @@ $renderFilterForm = static function (string $id) use ($basePath, $criterios, $ae
         <fieldset>
             <legend class="font-mono text-xs uppercase tracking-[0.3px] text-flyto-muted">Precio maximo</legend>
             <div class="mt-3">
-                <input
-                    type="range"
-                    name="precioMaximo"
-                    min="0"
-                    max="<?= htmlspecialchars((string) max(0, (int) ceil($precioMaximoDisponible)), ENT_QUOTES, 'UTF-8') ?>"
-                    step="1000"
-                    value="<?= htmlspecialchars((string) max(0, (int) ceil($precioMaximoSeleccionado)), ENT_QUOTES, 'UTF-8') ?>"
-                    class="w-full accent-flyto-navy"
-                    <?= $precioMaximoDisponible <= 0 ? 'disabled' : '' ?>
-                >
-                <div class="mt-2 flex items-center justify-between text-xs text-flyto-muted">
+                <div class="pb-8">
+                    <div class="relative" data-price-range-container>
+                        <input
+                            id="<?= htmlspecialchars($id, ENT_QUOTES, 'UTF-8') ?>-precio"
+                            type="range"
+                            name="precioMaximo"
+                            min="0"
+                            max="<?= htmlspecialchars((string) $precioTope, ENT_QUOTES, 'UTF-8') ?>"
+                            step="1000"
+                            value="<?= htmlspecialchars((string) $precioSeleccionado, ENT_QUOTES, 'UTF-8') ?>"
+                            class="block w-full accent-flyto-navy"
+                            data-price-range
+                            aria-describedby="<?= htmlspecialchars($id, ENT_QUOTES, 'UTF-8') ?>-precio-actual"
+                            <?= $precioMaximoDisponible <= 0 ? 'disabled' : '' ?>
+                        >
+                        <output
+                            id="<?= htmlspecialchars($id, ENT_QUOTES, 'UTF-8') ?>-precio-actual"
+                            for="<?= htmlspecialchars($id, ENT_QUOTES, 'UTF-8') ?>-precio"
+                            class="absolute top-full mt-1 whitespace-nowrap bg-flyto-navy px-2 py-1 font-mono text-xs text-flyto-sand"
+                            data-price-output
+                            aria-live="polite"
+                        >Hasta <?= htmlspecialchars($formatMoney($precioSeleccionado), ENT_QUOTES, 'UTF-8') ?></output>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between text-xs text-flyto-muted">
                     <span>$0</span>
-                    <span>Hasta <?= htmlspecialchars($formatMoney($precioMaximoSeleccionado), ENT_QUOTES, 'UTF-8') ?></span>
+                    <span><?= htmlspecialchars($formatMoney($precioTope), ENT_QUOTES, 'UTF-8') ?></span>
                 </div>
             </div>
         </fieldset>
