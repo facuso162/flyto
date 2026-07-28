@@ -57,31 +57,31 @@
                     </p>
                 <?php endif; ?>
                 <div class="mt-6 grid gap-4 md:grid-cols-2">
-                    <label class="block">
+                    <label for="nombre" class="block">
                         <span class="font-mono text-[10.4px] font-medium uppercase tracking-[0.26px] text-flyto-muted">Nombre</span>
-                        <input required name="nombre" maxlength="80" value="<?= $contactValue('nombre') ?>" class="mt-1 h-10 w-full border border-flyto-ink/10 bg-white px-3 text-sm outline-none focus:border-flyto-navy" placeholder="Tu nombre">
+                        <input id="nombre" required name="nombre" maxlength="80" value="<?= $contactValue('nombre') ?>" class="mt-1 h-10 w-full border border-flyto-ink/10 bg-white px-3 text-sm outline-none focus:border-flyto-navy" placeholder="Tu nombre">
                         <?php if ($contactError('nombre') !== ''): ?>
                             <p class="mt-1 text-xs leading-5 text-flyto-ink"><?= $contactError('nombre') ?></p>
                         <?php endif; ?>
                     </label>
-                    <label class="block">
+                    <label for="apellido" class="block">
                         <span class="font-mono text-[10.4px] font-medium uppercase tracking-[0.26px] text-flyto-muted">Apellido</span>
-                        <input required name="apellido" maxlength="80" value="<?= $contactValue('apellido') ?>" class="mt-1 h-10 w-full border border-flyto-ink/10 bg-white px-3 text-sm outline-none focus:border-flyto-navy" placeholder="Tu apellido">
+                        <input id="apellido" required name="apellido" maxlength="80" value="<?= $contactValue('apellido') ?>" class="mt-1 h-10 w-full border border-flyto-ink/10 bg-white px-3 text-sm outline-none focus:border-flyto-navy" placeholder="Tu apellido">
                         <?php if ($contactError('apellido') !== ''): ?>
                             <p class="mt-1 text-xs leading-5 text-flyto-ink"><?= $contactError('apellido') ?></p>
                         <?php endif; ?>
                     </label>
                 </div>
-                <label class="mt-4 block">
+                <label for="email" class="mt-4 block">
                     <span class="font-mono text-[10.4px] font-medium uppercase tracking-[0.26px] text-flyto-muted">Correo electrónico</span>
-                    <input required name="email" type="email" maxlength="120" value="<?= $contactValue('email') ?>" class="mt-1 h-10 w-full border border-flyto-ink/10 bg-white px-3 text-sm outline-none focus:border-flyto-navy" placeholder="nombre@ejemplo.com">
+                    <input id="email" required name="email" type="email" maxlength="120" value="<?= $contactValue('email') ?>" class="mt-1 h-10 w-full border border-flyto-ink/10 bg-white px-3 text-sm outline-none focus:border-flyto-navy" placeholder="nombre@ejemplo.com">
                     <?php if ($contactError('email') !== ''): ?>
                         <p class="mt-1 text-xs leading-5 text-flyto-ink"><?= $contactError('email') ?></p>
                     <?php endif; ?>
                 </label>
-                <label class="mt-4 block">
+                <label for="asunto" class="mt-4 block">
                     <span class="font-mono text-[10.4px] font-medium uppercase tracking-[0.26px] text-flyto-muted">Asunto</span>
-                    <select required name="asunto" class="mt-1 h-10 w-full border border-flyto-ink/10 bg-white px-3 text-sm outline-none focus:border-flyto-navy">
+                    <select id="asunto" required name="asunto" class="mt-1 h-10 w-full border border-flyto-ink/10 bg-white px-3 text-sm outline-none focus:border-flyto-navy">
                         <option value="">Seleccioná un asunto</option>
                         <option value="Consulta sobre vuelos"<?= $contactSelected('Consulta sobre vuelos') ?>>Consulta sobre vuelos</option>
                         <option value="Reserva existente"<?= $contactSelected('Reserva existente') ?>>Reserva existente</option>
@@ -92,9 +92,9 @@
                         <p class="mt-1 text-xs leading-5 text-flyto-ink"><?= $contactError('asunto') ?></p>
                     <?php endif; ?>
                 </label>
-                <label class="mt-4 block">
+                <label for="mensaje" class="mt-4 block">
                     <span class="font-mono text-[10.4px] font-medium uppercase tracking-[0.26px] text-flyto-muted">Mensaje</span>
-                    <textarea required name="mensaje" rows="5" class="mt-1 w-full border border-flyto-ink/10 bg-white px-3 py-2 text-sm outline-none focus:border-flyto-navy" placeholder="Describí tu consulta con el mayor detalle posible..."><?= $contactValue('mensaje') ?></textarea>
+                    <textarea id="mensaje" required name="mensaje" rows="5" class="mt-1 w-full border border-flyto-ink/10 bg-white px-3 py-2 text-sm outline-none focus:border-flyto-navy" placeholder="Describí tu consulta con el mayor detalle posible..."><?= $contactValue('mensaje') ?></textarea>
                     <?php if ($contactError('mensaje') !== ''): ?>
                         <p class="mt-1 text-xs leading-5 text-flyto-ink"><?= $contactError('mensaje') ?></p>
                     <?php endif; ?>
